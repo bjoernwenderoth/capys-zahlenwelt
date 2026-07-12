@@ -14,16 +14,6 @@ Ein Mathespiel im Duolingo-Stil für Grundschüler (Klasse 1–4) zum Üben des 
 - Soundeffekte + Vorlesen der Aufgaben (Stumm-Schalter oben rechts)
 - Funktioniert auf Handy, Tablet und Desktop
 
-## Auf GitHub Pages veröffentlichen
-
-Der fertige Build liegt schon im Ordner `docs/`. So geht's:
-
-1. Neues Repository auf github.com anlegen (z. B. `einmaleins-abenteuer`)
-2. Diesen Ordner hochladen (per Git oder über "uploading an existing file" auf GitHub)
-3. Im Repository: **Settings → Pages**
-4. Bei "Build and deployment": Source = **Deploy from a branch**, Branch = **main**, Ordner = **/docs**, dann **Save**
-5. Nach 1–2 Minuten ist das Spiel erreichbar unter:
-   `https://DEIN-BENUTZERNAME.github.io/einmaleins-abenteuer/`
 
 ## Entwicklung (nur nötig, wenn du etwas ändern willst)
 
