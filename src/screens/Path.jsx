@@ -231,14 +231,16 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
     function update() {
       raf = null
       el.style.setProperty('--scroll', `${el.scrollLeft}px`)
-      const containerLeft = el.getBoundingClientRect().left
+      const containerRect = el.getBoundingClientRect()
+      // eine Welt gilt schon als "aktiv", sobald ihr Anfang kurz vor der
+      // Mitte des sichtbaren Bereichs steht – nicht erst, wenn sie den
+      // linken Rand erreicht (das kam bisher spürbar zu spät)
+      const threshold = containerRect.width * 0.5 + 30
       let best = null
       WORLDS.forEach((w, wi) => {
         const node = bannerRefs.current[w.id]
         if (!node) return
-        // eine Welt gilt als "aktiv", sobald ihr Banner die linke Kante
-        // des sichtbaren Bereichs erreicht bzw. überschritten hat
-        if (node.getBoundingClientRect().left - containerLeft <= 40) {
+        if (node.getBoundingClientRect().left - containerRect.left <= threshold) {
           if (best === null || wi > best) best = wi
         }
       })
