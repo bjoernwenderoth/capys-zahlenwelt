@@ -25,12 +25,15 @@ export function worldUnlocked(index, progress) {
 // Level-Stationen auf dem Boden jeder Szene (Koordinaten im 1000×600-Raum).
 // Der Weg schlängelt sich durch den begehbaren Bereich der Landschaft:
 // höher = weiter hinten (kleiner), tiefer = weiter vorne (größer).
+// Die Punkte sind bewusst an den Baum-/Tannen-Positionen in Panorama.jsx
+// vorbeigeführt (daneben statt durch die Baumkrone), damit Weg und Knoten
+// nicht über die Deko hinweglaufen, sondern sich in die Szene einfügen.
 export const WORLD_NODES = {
-  wald: [[110, 470], [350, 400], [620, 490], [880, 410]],
-  wiese: [[90, 460], [280, 380], [490, 500], [700, 390], [900, 480]],
-  berge: [[90, 545], [280, 502], [490, 560], [700, 505], [900, 550]],
-  see: [[90, 540], [280, 496], [490, 556], [700, 496], [900, 540]],
-  nacht: [[90, 520], [280, 455], [490, 545], [700, 460], [900, 530]],
+  wald: [[200, 460], [400, 385], [620, 490], [850, 405]],
+  wiese: [[160, 455], [280, 380], [490, 500], [700, 390], [900, 480]],
+  berge: [[50, 555], [280, 502], [490, 560], [740, 495], [850, 555]],
+  see: [[180, 565], [280, 496], [490, 556], [700, 496], [900, 540]],
+  nacht: [[90, 520], [280, 455], [490, 545], [700, 460], [940, 538]],
   schloss: [[150, 540], [500, 508], [850, 545]]
 }
 

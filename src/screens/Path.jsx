@@ -43,6 +43,45 @@ function Stars({ n }) {
   )
 }
 
+// Kleine Kieselgruppe am Wegrand – lässt den Weg mit dem Untergrund
+// verschmelzen statt wie ein aufgeklebter Streifen zu wirken
+function PebbleCluster({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`} opacity="0.85">
+      <ellipse cx="0" cy="2.2" rx="7" ry="2.4" fill="#000" opacity="0.14" />
+      <circle cx="-3" cy="-0.6" r="3.4" fill="#c9b48c" />
+      <circle cx="2.6" cy="0.6" r="2.6" fill="#a8916a" />
+      <circle cx="0" cy="-2.6" r="2" fill="#ddc9a0" />
+    </g>
+  )
+}
+
+// Streut Kieselgruppen entlang beider Wegränder – Abstand/Größe folgen
+// derselben Tiefenlogik wie die Breite des Wegs selbst (ribbonPaths.half),
+// damit sie immer knapp außerhalb der Wegkante zu liegen kommen.
+function RoadEdgeDecor() {
+  const pts = RIBBON.center
+  const step = 8
+  const items = []
+  for (let i = step; i < pts.length - step; i += step) {
+    const [x, y] = pts[i]
+    const [px, py] = pts[i - step]
+    const [nx2, ny2] = pts[i + step]
+    const dx = nx2 - px
+    const dy = ny2 - py
+    const len = Math.hypot(dx, dy) || 1
+    const nx = -dy / len
+    const ny = dx / len
+    const half = 13 + 19 * depthNorm(y)
+    const side = Math.floor(i / step) % 2 === 0 ? 1 : -1
+    const off = half * (1.05 + 0.15 * ((i * 7) % 3)) * side
+    items.push(
+      <PebbleCluster key={i} x={x + nx * off} y={y + ny * off} s={0.55 + 0.5 * depthNorm(y)} />
+    )
+  }
+  return <>{items}</>
+}
+
 // Punkte auf dem Weg: geschaffte Abschnitte (hinter Capy) leuchten golden,
 // kommende sind nur dezent zu sehen
 function SegmentDots({ progress }) {
@@ -290,8 +329,22 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
 
           {/* durchgehender Weg über die ganze Karte */}
           <svg className="world-road" viewBox={`0 0 ${MAP_WIDTH} 600`} preserveAspectRatio="none">
+            <defs>
+              <filter id="road-soft" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="5" />
+              </filter>
+              <linearGradient id="road-fill-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#f2e2b8" />
+                <stop offset="0.5" stopColor="#ecd9a8" />
+                <stop offset="1" stopColor="#ddc691" />
+              </linearGradient>
+            </defs>
+            {/* weicher Bodenschatten – lässt den Weg wie in den Untergrund
+                eingebettet wirken statt wie ein aufgeklebter Streifen */}
+            <path d={RIBBON.outer} fill="#4a3418" opacity="0.25" filter="url(#road-soft)" transform="translate(0 6)" />
             <path d={RIBBON.outer} fill="#a8834f" opacity="0.95" />
-            <path d={RIBBON.inner} fill="#ecd9a8" />
+            <path d={RIBBON.inner} fill="url(#road-fill-grad)" />
+            <RoadEdgeDecor />
             <SegmentDots progress={progress} />
           </svg>
 
