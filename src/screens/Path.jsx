@@ -250,26 +250,30 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
           Für noch gesperrte Welten wird der Name nicht verraten. */}
       {viewWorldIdx >= 0 && WORLDS[viewWorldIdx] && (
         worldUnlocked(viewWorldIdx, progress) ? (
-          <div className="world-banner-fixed">
-            <div className="world-banner-title">
-              <span className="world-emoji">{WORLDS[viewWorldIdx].emoji}</span>
-              <span>Welt {viewWorldIdx + 1}: {WORLDS[viewWorldIdx].name}</span>
-            </div>
-            <div className="world-banner-progress">
-              <span className="world-count">
-                {WORLDS[viewWorldIdx].levels.filter((lv) => progress[lv.id]).length}/
-                {WORLDS[viewWorldIdx].levels.length} ✓
-              </span>
-              geschafft
-            </div>
-          </div>
+          (() => {
+            const w = WORLDS[viewWorldIdx]
+            const doneCount = w.levels.filter((lv) => progress[lv.id]).length
+            const pct = Math.round((doneCount / w.levels.length) * 100)
+            return (
+              <div className="world-banner-fixed">
+                <div className="world-banner-icon">{w.emoji}</div>
+                <div className="world-banner-label">Welt {viewWorldIdx + 1}</div>
+                <div className="world-banner-name">{w.name}</div>
+                <div className="world-banner-bar-track">
+                  <div className="world-banner-bar-fill" style={{ width: `${pct}%` }} />
+                </div>
+                <div className="world-banner-progress-text">
+                  {doneCount}/{w.levels.length} Level ✓
+                </div>
+              </div>
+            )
+          })()
         ) : (
           <div className="world-banner-fixed locked">
-            <div className="world-banner-title">
-              <span className="world-emoji">🔒</span>
-              <span>Welt {viewWorldIdx + 1}: ???</span>
-            </div>
-            <div className="world-banner-progress">Noch nicht freigeschaltet</div>
+            <div className="world-banner-icon">🔒</div>
+            <div className="world-banner-label">Welt {viewWorldIdx + 1}</div>
+            <div className="world-banner-name">???</div>
+            <div className="world-banner-progress-text">Noch nicht freigeschaltet</div>
           </div>
         )
       )}

@@ -603,40 +603,80 @@ body {
   z-index: 15;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 180px;
-  max-width: 68vw;
+  align-items: center;
+  gap: 2px;
+  width: 156px;
+  text-align: center;
   background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(3px);
-  border-radius: 18px;
-  padding: 12px 18px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 22px;
+  padding: 16px 14px 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 
-.world-banner-title {
+.world-banner-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  font-size: 1.9rem;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+  margin-bottom: 6px;
+}
+
+.world-banner-fixed.locked .world-banner-icon {
+  background: rgba(0, 0, 0, 0.08);
+  filter: grayscale(1);
+}
+
+.world-banner-label {
+  font-size: 0.68rem;
   font-weight: 800;
-  font-size: 1.05rem;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  opacity: 0.55;
 }
 
-.world-banner-title .world-emoji {
-  font-size: 1.4rem;
+.world-banner-name {
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 8px;
 }
 
-.world-banner-progress {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
+.world-banner-fixed.locked .world-banner-name {
+  opacity: 0.6;
+}
+
+.world-banner-bar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.world-banner-bar-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.world-banner-progress-text {
+  font-size: 0.78rem;
   font-weight: 700;
-  opacity: 0.8;
+  opacity: 0.75;
+  margin-top: 6px;
 }
 
-.world-banner-fixed.locked .world-banner-progress {
-  opacity: 0.65;
+.world-banner-fixed.locked .world-banner-progress-text {
+  opacity: 0.6;
+  font-style: italic;
 }
 
 /* unsichtbarer Messpunkt am Anfang jeder Welt (keine eigene Darstellung) */
@@ -646,14 +686,6 @@ body {
   width: 1px;
   height: 1px;
   pointer-events: none;
-}
-
-.world-count {
-  background: var(--green);
-  color: #fff;
-  border-radius: 10px;
-  padding: 1px 8px;
-  font-size: 0.85rem;
 }
 
 /* Level-Knoten in der Welt */
