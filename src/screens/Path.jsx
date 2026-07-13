@@ -114,7 +114,7 @@ function CapyWalker({ targetIdx, bubbleText }) {
   return (
     <div
       className={`capy-walker ${walking ? 'walking' : ''}`}
-      style={{ left: `${(pos[0] / MAP_WIDTH) * 100}%`, top: `${pos[1] / 6}%` }}
+      style={{ left: `${(pos[0] / MAP_WIDTH) * 100}%`, top: `calc(${pos[1] / 6}% - 22px)` }}
     >
       {!walking && bubbleText && (
         <div className="bubble capy-bubble" style={{ transform: `translateX(${bubbleShift})` }}>
@@ -122,7 +122,7 @@ function CapyWalker({ targetIdx, bubbleText }) {
         </div>
       )}
       <div style={{ transform: flip ? 'scaleX(-1)' : 'none' }}>
-        <Capybara mood={walking ? 'normal' : 'happy'} size={180 * scale} />
+        <Capybara mood={walking ? 'normal' : 'happy'} size={150 * scale} />
       </div>
     </div>
   )
@@ -227,7 +227,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
                 style={{
                   left: `${(x / MAP_WIDTH) * 100}%`,
                   top: `${y / 6}%`,
-                  zIndex: Math.round(y / 100) + 4
+                  zIndex: Math.round(y / 100) + 14
                 }}
               >
                 <button
