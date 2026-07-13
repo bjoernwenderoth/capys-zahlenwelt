@@ -2,6 +2,11 @@
 // Himmel und Boden gehen fließend ineinander über, ein durchgehender
 // Weg verbindet alle Level. Themen-Deko markiert die Regionen:
 // Wald → Blumenwiese → Berge → Sonnensee → Sternenhimmel → Königsschloss
+//
+// Fünf Tiefenebenen (Himmel, ferne Hügel, Wolken, Hauptebene mit dem Weg,
+// nahe Vordergrund-Deko) bewegen sich beim Scrollen minimal unterschiedlich
+// schnell (siehe --scroll in Path.jsx), dazu kommen dezente Animationen
+// (Treiben, Glitzern, Wiegen) für einen lebendigeren, weniger flachen Look.
 
 import { Cloud, Sun, Tree, Pine, Flower, Butterfly, Star, Mountain } from './Scenes.jsx'
 
@@ -85,14 +90,24 @@ function Castle({ x, y, s = 1 }) {
   )
 }
 
-export default function Panorama() {
+// Grasbüschel für den nächsten Vordergrund – rein dekorativ, ohne Bezug
+// zu Weg/Knoten-Koordinaten, wiegt sich leicht im Wind
+function GrassTuft({ x, y, s = 1, c = '#3d8a49' }) {
+  const delay = (x * 0.23) % 4
   return (
-    <svg
-      className="panorama-scene"
-      viewBox="0 0 6000 600"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <g className="pano-sway" style={{ animationDelay: `-${delay}s` }}>
+        <path d="M -10 0 Q -12 -20 -3 -30" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path d="M 0 0 Q -1 -26 0 -34" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path d="M 10 0 Q 12 -18 4 -28" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
+      </g>
+    </g>
+  )
+}
+
+function SharedDefs() {
+  return (
+    <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
       <defs>
         <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="6" />
@@ -100,6 +115,16 @@ export default function Panorama() {
         <filter id="far" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="2.5" />
         </filter>
+        {/* weichzeichnet Schatten-Overlays, damit Kanten nicht hart wirken */}
+        <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="1.4" />
+        </filter>
+        {/* dezente Maserung für Boden/Berge – bricht die flachen Verläufe auf */}
+        <filter id="grain" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" stitchTiles="stitch" result="n" />
+          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0" />
+        </filter>
+
         {/* Himmel: fließt über die ganze Karte von Tag zu Nacht zu Abendrot */}
         <linearGradient id="pan-sky" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0.00" stopColor="#8fd7ff" />
@@ -151,139 +176,205 @@ export default function Panorama() {
           <stop offset="0" stopColor="#57bdf0" />
           <stop offset="1" stopColor="#1d7fbd" />
         </linearGradient>
+
+        {/* Licht (links oben, hell) → Schatten (rechts unten, dunkel) –
+            gilt einheitlich für Baumkronen und Berge */}
+        <linearGradient id="tree-grad-normal" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#8ee39a" />
+          <stop offset="0.55" stopColor="#54ad60" />
+          <stop offset="1" stopColor="#3d8a49" />
+        </linearGradient>
+        <linearGradient id="tree-grad-dark" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#6fc47e" />
+          <stop offset="0.55" stopColor="#3e8e4f" />
+          <stop offset="1" stopColor="#2e6e3c" />
+        </linearGradient>
+        <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stopColor="#c9e0f5" />
+          <stop offset="1" stopColor="#aac8e6" />
+        </linearGradient>
+        <linearGradient id="mtn-grad-mid" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stopColor="#9dc0e0" />
+          <stop offset="1" stopColor="#7fa8cf" />
+        </linearGradient>
+        <linearGradient id="mtn-grad-near" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stopColor="#7595b8" />
+          <stop offset="1" stopColor="#57779c" />
+        </linearGradient>
       </defs>
-
-      {/* ---------- Himmel ---------- */}
-      <rect width="6000" height="600" fill="url(#pan-sky)" />
-
-      {/* Sonne im Wald, Mond über dem Sternenhimmel, Abendsonne am Schloss */}
-      <Sun x={400} y={95} r={38} />
-      <circle cx="4560" cy="115" r="95" fill="#fff8d9" opacity="0.18" filter="url(#soft)" />
-      <circle cx="4560" cy="115" r="52" fill="#f5ecc8" />
-      <circle cx="4540" cy="100" r="10" fill="#e3d7ac" />
-      <circle cx="4578" cy="133" r="7" fill="#e3d7ac" />
-      <Sun x={5280} y={110} r={34} />
-
-      {/* Sterne + Sternschnuppe nur in der Nacht-Region */}
-      {[[4180, 70, 0.9], [4260, 150, 0.6], [4360, 50, 1], [4450, 120, 0.7], [4650, 200, 0.6],
-        [4720, 60, 0.9], [4800, 140, 0.7], [4880, 90, 0.8], [4420, 230, 0.5], [4250, 260, 0.4]].map(([x, y, o], i) => (
-        <Star key={i} x={x} y={y} s={0.5 + o * 0.7} o={o} />
-      ))}
-      <path d="M 4200 90 L 4280 140" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
-      <Star x={4195} y={87} s={1.2} />
-
-      {/* Regenbogen hinterm Schloss */}
-      <g opacity="0.8">
-        {['#ff5c5c', '#ff9d3c', '#ffd93d', '#58cc02', '#1cb0f6', '#b58aff'].map((c, i) => {
-          const r = 340 - i * 15
-          return (
-            <path key={c} d={`M ${5500 - r} 620 A ${r} ${r} 0 0 1 ${5500 + r} 620`} stroke={c} strokeWidth="15" fill="none" />
-          )
-        })}
-      </g>
-
-      {/* Wolken über der ganzen Karte */}
-      <Cloud x={700} y={80} s={0.8} o={0.8} />
-      <Cloud x={1250} y={110} s={0.9} />
-      <Cloud x={1750} y={60} s={0.65} o={0.8} />
-      <Cloud x={2400} y={90} s={0.8} />
-      <Cloud x={2900} y={140} s={0.6} o={0.8} />
-      <Cloud x={3350} y={75} s={0.85} />
-      <Cloud x={3800} y={120} s={0.6} o={0.8} />
-      <Cloud x={5150} y={190} s={0.9} />
-      <Cloud x={5800} y={90} s={0.7} />
-
-      {/* ---------- ferne Hügelkette (durchgehend) ---------- */}
-      <g filter="url(#far)" opacity="0.85">
-        <path
-          d="M 0 370 Q 250 300 500 350 T 1000 340 T 1500 310 T 2000 350 T 2500 330 T 3000 355 T 3500 340 T 4000 320 T 4500 350 T 5000 330 T 5500 345 T 6000 335 L 6000 600 L 0 600 Z"
-          fill="url(#pan-far)"
-        />
-      </g>
-
-      {/* Berge in der Bergwelt-Region */}
-      <g filter="url(#far)" opacity="0.8">
-        <Mountain x={2120} y={460} w={460} h={230} c="#aac8e6" cd="#93b6da" />
-        <Mountain x={2850} y={460} w={420} h={200} c="#aac8e6" cd="#93b6da" />
-      </g>
-      <Mountain x={2200} y={490} w={480} h={280} c="#7fa8cf" cd="#5f88b3" />
-      <Mountain x={2520} y={495} w={540} h={330} c="#7fa8cf" cd="#5f88b3" />
-      <Mountain x={2820} y={490} w={500} h={290} c="#7fa8cf" cd="#5f88b3" />
-      <Mountain x={2380} y={520} w={520} h={240} c="#57779c" cd="#425e80" />
-      <Mountain x={2720} y={525} w={560} h={260} c="#57779c" cd="#425e80" />
-
-      {/* ---------- mittlerer + vorderer Boden (durchgehend) ---------- */}
-      <path
-        d="M 0 440 Q 250 400 500 435 T 1000 425 T 1500 445 T 2000 420 T 2500 445 T 3000 430 T 3500 450 T 4000 425 T 4500 445 T 5000 425 T 5500 445 T 6000 430 L 6000 600 L 0 600 Z"
-        fill="url(#pan-mid)"
-      />
-      <path
-        d="M 0 505 Q 300 475 600 500 T 1200 495 T 1800 505 T 2400 492 T 3000 505 T 3600 495 T 4200 505 T 4800 492 T 5400 505 T 6000 498 L 6000 600 L 0 600 Z"
-        fill="url(#pan-front)"
-      />
-
-      {/* ---------- Region: Zahlenwald ---------- */}
-      <Tree x={120} y={505} s={1.2} />
-      <Tree x={330} y={452} s={0.85} dark />
-      <Pine x={520} y={500} s={0.8} />
-      <Tree x={700} y={458} s={0.8} />
-      <Pine x={905} y={520} s={0.95} />
-      <Mushroom x={250} y={560} />
-      <Mushroom x={790} y={572} s={0.8} cap="#e08a3c" />
-
-      {/* ---------- Region: Blumenwiese ---------- */}
-      <Tree x={1080} y={470} s={0.8} dark />
-      <Flower x={1180} y={520} s={1.1} c="#ff5c8a" />
-      <Flower x={1320} y={480} s={0.85} c="#b58aff" />
-      <Flower x={1450} y={555} s={1.2} c="#ffd93d" />
-      <Flower x={1580} y={500} s={0.95} c="#ff7bac" />
-      <Flower x={1700} y={545} s={1.1} c="#ff8a5c" />
-      <Flower x={1830} y={490} s={0.85} c="#7ec3ff" />
-      <Flower x={1930} y={560} s={1.15} c="#ffd93d" />
-      <Butterfly x={1400} y={330} s={1.05} c="#7ec3ff" />
-      <Butterfly x={1750} y={290} s={0.8} c="#ffb1c9" />
-
-      {/* ---------- Region: Bergwelt ---------- */}
-      <Pine x={2100} y={545} s={0.8} />
-      <Pine x={2430} y={525} s={0.6} />
-      <Pine x={2650} y={555} s={0.85} />
-      <Pine x={2920} y={540} s={0.7} />
-      <path d="M 2560 160 q 14 -12 28 0 q 14 -12 28 0" stroke="#3a4a5c" strokeWidth="4" fill="none" strokeLinecap="round" />
-
-      {/* ---------- Region: Sonnensee ---------- */}
-      <ellipse cx="3500" cy="415" rx="460" ry="58" fill="url(#pan-wasser)" />
-      <ellipse cx="3500" cy="415" rx="460" ry="58" fill="none" stroke="#f4dfa4" strokeWidth="6" opacity="0.7" />
-      <ellipse cx="3660" cy="402" rx="80" ry="8" fill="#fff" opacity="0.3" />
-      {[3180, 3380, 3580, 3760].map((x, i) => (
-        <path key={i} d={`M ${x} ${408 + (i % 2) * 14} q 16 -9 32 0 q 16 -9 32 0`} stroke="#bfe9ff" strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.7" />
-      ))}
-      <Boat x={3520} y={410} s={0.8} />
-      <Palm x={3090} y={545} s={0.95} />
-      <g transform="translate(3850 560)">
-        <ellipse cx="0" cy="14" rx="16" ry="4" fill="#000" opacity="0.15" />
-        <circle cx="0" cy="0" r="15" fill="#e05252" />
-        <path d="M -15 0 A 15 15 0 0 1 15 0 A 20 8 0 0 0 -15 0" fill="#fff" />
-        <circle cx="-5" cy="-6" r="4" fill="#ff9d9d" opacity="0.8" />
-      </g>
-
-      {/* ---------- Region: Sternenhimmel ---------- */}
-      <Pine x={4150} y={510} s={0.85} c="#0e1a36" cd="#0a1428" />
-      <Pine x={4480} y={495} s={0.6} c="#152548" cd="#0e1a36" />
-      <Pine x={4880} y={515} s={0.8} c="#0e1a36" cd="#0a1428" />
-      {[[4240, 480], [4420, 545], [4610, 500], [4760, 555], [4930, 570]].map(([x, y], i) => (
-        <g key={i}>
-          <circle cx={x} cy={y} r="9" fill="#ffe97a" opacity="0.25" filter="url(#soft)" />
-          <circle cx={x} cy={y} r="3" fill="#ffe97a" />
-        </g>
-      ))}
-
-      {/* ---------- Region: Königsschloss ---------- */}
-      <Castle x={5500} y={470} s={0.95} />
-      <Star x={5240} y={300} s={1.4} o={0.9} />
-      <Star x={5760} y={280} s={1.1} o={0.8} />
-      <Flower x={5130} y={555} s={1.05} c="#ff7bac" />
-      <Flower x={5860} y={560} s={1.0} c="#ffd93d" />
-      <Flower x={5960} y={520} s={0.85} c="#b58aff" />
     </svg>
+  )
+}
+
+export default function Panorama() {
+  return (
+    <div className="panorama-scene" aria-hidden="true">
+      <SharedDefs />
+
+      {/* ---------- Ebene 1: Himmel (bewegt sich am langsamsten) ---------- */}
+      <svg className="pano-layer pano-layer-sky" viewBox="0 0 6000 600" preserveAspectRatio="none">
+        <rect x="-400" width="6800" height="600" fill="url(#pan-sky)" />
+
+        <Sun x={400} y={95} r={38} />
+        <circle cx="4560" cy="115" r="95" fill="#fff8d9" opacity="0.18" filter="url(#soft)" />
+        <circle cx="4560" cy="115" r="52" fill="#f5ecc8" />
+        <circle cx="4540" cy="100" r="10" fill="#e3d7ac" />
+        <circle cx="4578" cy="133" r="7" fill="#e3d7ac" />
+        <Sun x={5280} y={110} r={34} />
+
+        {[[4180, 70, 0.9], [4260, 150, 0.6], [4360, 50, 1], [4450, 120, 0.7], [4650, 200, 0.6],
+          [4720, 60, 0.9], [4800, 140, 0.7], [4880, 90, 0.8], [4420, 230, 0.5], [4250, 260, 0.4]].map(([x, y, o], i) => (
+          <Star key={i} x={x} y={y} s={0.5 + o * 0.7} o={o} />
+        ))}
+        <path d="M 4200 90 L 4280 140" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+        <Star x={4195} y={87} s={1.2} />
+
+        <g opacity="0.8">
+          {['#ff5c5c', '#ff9d3c', '#ffd93d', '#58cc02', '#1cb0f6', '#b58aff'].map((c, i) => {
+            const r = 340 - i * 15
+            return (
+              <path key={c} d={`M ${5500 - r} 620 A ${r} ${r} 0 0 1 ${5500 + r} 620`} stroke={c} strokeWidth="15" fill="none" />
+            )
+          })}
+        </g>
+      </svg>
+
+      {/* ---------- Ebene 2: ferne Hügel & Berge (weichgezeichnet) ---------- */}
+      <svg className="pano-layer pano-layer-hills" viewBox="0 0 6000 600" preserveAspectRatio="none">
+        <g filter="url(#far)" opacity="0.85">
+          <path
+            d="M -400 370 Q 250 300 500 350 T 1000 340 T 1500 310 T 2000 350 T 2500 330 T 3000 355 T 3500 340 T 4000 320 T 4500 350 T 5000 330 T 5500 345 T 6400 335 L 6400 600 L -400 600 Z"
+            fill="url(#pan-far)"
+          />
+        </g>
+        <g filter="url(#far)" opacity="0.8">
+          <Mountain x={2120} y={460} w={460} h={230} c="#aac8e6" cd="#93b6da" />
+          <Mountain x={2850} y={460} w={420} h={200} c="#aac8e6" cd="#93b6da" />
+        </g>
+      </svg>
+
+      {/* ---------- Ebene 3: Wolken (treiben unabhängig, eigenes Tempo) ---------- */}
+      <svg className="pano-layer pano-layer-clouds" viewBox="0 0 6000 600" preserveAspectRatio="none">
+        <Cloud x={700} y={80} s={0.8} o={0.8} />
+        <Cloud x={1250} y={110} s={0.9} />
+        <Cloud x={1750} y={60} s={0.65} o={0.8} />
+        <Cloud x={2400} y={90} s={0.8} />
+        <Cloud x={2900} y={140} s={0.6} o={0.8} />
+        <Cloud x={3350} y={75} s={0.85} />
+        <Cloud x={3800} y={120} s={0.6} o={0.8} />
+        <Cloud x={5150} y={190} s={0.9} />
+        <Cloud x={5800} y={90} s={0.7} />
+      </svg>
+
+      {/* ---------- Ebene 4: Hauptebene – Boden, Weg-Umgebung, Deko
+           (bewegt sich 1:1 mit dem Weg/den Levelknoten, keine eigene
+           Parallaxe – hier müssen Koordinaten exakt stimmen) ---------- */}
+      <svg className="pano-layer pano-layer-ground" viewBox="0 0 6000 600" preserveAspectRatio="none">
+        <Mountain x={2200} y={490} w={480} h={280} c="#7fa8cf" cd="#5f88b3" />
+        <Mountain x={2520} y={495} w={540} h={330} c="#7fa8cf" cd="#5f88b3" />
+        <Mountain x={2820} y={490} w={500} h={290} c="#7fa8cf" cd="#5f88b3" />
+        <Mountain x={2380} y={520} w={520} h={240} c="#57779c" cd="#425e80" />
+        <Mountain x={2720} y={525} w={560} h={260} c="#57779c" cd="#425e80" />
+
+        {/* mittlerer + vorderer Boden (durchgehend) */}
+        <path
+          d="M 0 440 Q 250 400 500 435 T 1000 425 T 1500 445 T 2000 420 T 2500 445 T 3000 430 T 3500 450 T 4000 425 T 4500 445 T 5000 425 T 5500 445 T 6000 430 L 6000 600 L 0 600 Z"
+          fill="url(#pan-mid)"
+        />
+        <path
+          d="M 0 505 Q 300 475 600 500 T 1200 495 T 1800 505 T 2400 492 T 3000 505 T 3600 495 T 4200 505 T 4800 492 T 5400 505 T 6000 498 L 6000 600 L 0 600 Z"
+          fill="url(#pan-front)"
+        />
+        {/* dezente Maserung, bricht die glatten Verläufe auf */}
+        <rect x="0" y="410" width="6000" height="190" filter="url(#grain)" opacity="0.5" style={{ mixBlendMode: 'overlay' }} />
+
+        {/* ---------- Region: Zahlenwald ---------- */}
+        <Tree x={120} y={505} s={1.2} />
+        <Tree x={330} y={452} s={0.85} dark />
+        <Pine x={520} y={500} s={0.8} />
+        <Tree x={700} y={458} s={0.8} />
+        <Pine x={905} y={520} s={0.95} />
+        <Mushroom x={250} y={560} />
+        <Mushroom x={790} y={572} s={0.8} cap="#e08a3c" />
+
+        {/* ---------- Region: Blumenwiese ---------- */}
+        <Tree x={1080} y={470} s={0.8} dark />
+        <Flower x={1180} y={520} s={1.1} c="#ff5c8a" />
+        <Flower x={1320} y={480} s={0.85} c="#b58aff" />
+        <Flower x={1450} y={555} s={1.2} c="#ffd93d" />
+        <Flower x={1580} y={500} s={0.95} c="#ff7bac" />
+        <Flower x={1700} y={545} s={1.1} c="#ff8a5c" />
+        <Flower x={1830} y={490} s={0.85} c="#7ec3ff" />
+        <Flower x={1930} y={560} s={1.15} c="#ffd93d" />
+        <Butterfly x={1400} y={330} s={1.05} c="#7ec3ff" />
+        <Butterfly x={1750} y={290} s={0.8} c="#ffb1c9" />
+
+        {/* ---------- Region: Bergwelt ---------- */}
+        <Pine x={2100} y={545} s={0.8} />
+        <Pine x={2430} y={525} s={0.6} />
+        <Pine x={2650} y={555} s={0.85} />
+        <Pine x={2920} y={540} s={0.7} />
+        <path d="M 2560 160 q 14 -12 28 0 q 14 -12 28 0" stroke="#3a4a5c" strokeWidth="4" fill="none" strokeLinecap="round" />
+
+        {/* ---------- Region: Sonnensee ---------- */}
+        <ellipse cx="3500" cy="415" rx="460" ry="58" fill="url(#pan-wasser)" />
+        <ellipse cx="3500" cy="415" rx="460" ry="58" fill="none" stroke="#f4dfa4" strokeWidth="6" opacity="0.7" />
+        <ellipse className="pano-shimmer" cx="3660" cy="402" rx="80" ry="8" fill="#fff" opacity="0.3" />
+        {[3180, 3380, 3580, 3760].map((x, i) => (
+          <path
+            key={i}
+            className="pano-shimmer"
+            style={{ animationDelay: `-${i * 0.6}s` }}
+            d={`M ${x} ${408 + (i % 2) * 14} q 16 -9 32 0 q 16 -9 32 0`}
+            stroke="#bfe9ff"
+            strokeWidth="4"
+            fill="none"
+            strokeLinecap="round"
+            opacity="0.7"
+          />
+        ))}
+        <Boat x={3520} y={410} s={0.8} />
+        <Palm x={3090} y={545} s={0.95} />
+        <g transform="translate(3850 560)">
+          <ellipse cx="0" cy="14" rx="16" ry="4" fill="#000" opacity="0.15" />
+          <circle cx="0" cy="0" r="15" fill="#e05252" />
+          <path d="M -15 0 A 15 15 0 0 1 15 0 A 20 8 0 0 0 -15 0" fill="#fff" />
+          <circle cx="-5" cy="-6" r="4" fill="#ff9d9d" opacity="0.8" />
+        </g>
+
+        {/* ---------- Region: Sternenhimmel ---------- */}
+        <Pine x={4150} y={510} s={0.85} c="#0e1a36" cd="#0a1428" />
+        <Pine x={4480} y={495} s={0.6} c="#152548" cd="#0e1a36" />
+        <Pine x={4880} y={515} s={0.8} c="#0e1a36" cd="#0a1428" />
+        {[[4240, 480], [4420, 545], [4610, 500], [4760, 555], [4930, 570]].map(([x, y], i) => (
+          <g key={i} className="pano-pulse" style={{ animationDelay: `-${i * 0.4}s` }}>
+            <circle cx={x} cy={y} r="9" fill="#ffe97a" opacity="0.25" filter="url(#soft)" />
+            <circle cx={x} cy={y} r="3" fill="#ffe97a" />
+          </g>
+        ))}
+
+        {/* ---------- Region: Königsschloss ---------- */}
+        <Castle x={5500} y={470} s={0.95} />
+        <Star x={5240} y={300} s={1.4} o={0.9} />
+        <Star x={5760} y={280} s={1.1} o={0.8} />
+        <Flower x={5130} y={555} s={1.05} c="#ff7bac" />
+        <Flower x={5860} y={560} s={1.0} c="#ffd93d" />
+        <Flower x={5960} y={520} s={0.85} c="#b58aff" />
+      </svg>
+
+      {/* ---------- Ebene 5: nächster Vordergrund – Gras direkt am unteren
+           Rand, rein dekorativ (kein Bezug zu Weg-Koordinaten) ---------- */}
+      <svg className="pano-layer pano-layer-front" viewBox="0 0 6000 600" preserveAspectRatio="none">
+        {[160, 470, 830, 1220, 1620, 2050, 2480, 2950, 3260, 3680, 4080, 4460, 4820, 5220, 5680, 5960].map((x, i) => (
+          <GrassTuft
+            key={x}
+            x={x}
+            y={594}
+            s={0.9 + (i % 3) * 0.15}
+            c={x >= 4080 && x < 4950 ? '#0e1a36' : x >= 3180 && x < 3980 ? '#3f9c53' : '#3d8a49'}
+          />
+        ))}
+      </svg>
+    </div>
   )
 }

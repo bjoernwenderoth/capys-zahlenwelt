@@ -1,16 +1,24 @@
 // Landschafts-Szenen für die Welten.
 // 3D-Wirkung durch: mehrere Tiefenebenen (hinten heller/blauer + weichgezeichnet),
-// Licht- und Schattenseiten an Objekten, Bodenschatten, Glanzlichter.
+// EINE durchgehende Lichtrichtung (links oben) mit weichen Verläufen statt harter
+// Kanten, organische statt geometrische Silhouetten, Bodenschatten, Glanzlichter
+// und dezente Bewegung (Wiegen, Glitzern, Treiben).
 
 // ---------- Wiederverwendbare Elemente ----------
 
 export function Cloud({ x, y, s = 1, o = 0.9 }) {
+  const delay = -((x * 0.37) % 9)
+  const dur = 9 + ((x * 0.13) % 5)
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`} opacity={o}>
-      <ellipse cx="0" cy="0" rx="46" ry="20" fill="#fff" />
-      <ellipse cx="-28" cy="6" rx="28" ry="14" fill="#fff" />
-      <ellipse cx="30" cy="6" rx="30" ry="15" fill="#fff" />
-      <ellipse cx="0" cy="10" rx="50" ry="12" fill="#eef6ff" />
+    <g className="pano-cloud" style={{ animationDelay: `${delay}s`, animationDuration: `${dur}s` }}>
+      <g transform={`translate(${x} ${y}) scale(${s})`} opacity={o}>
+        <ellipse cx="0" cy="4" rx="48" ry="16" fill="#dceefb" opacity="0.6" />
+        <ellipse cx="0" cy="0" rx="46" ry="20" fill="#fff" />
+        <ellipse cx="-28" cy="6" rx="28" ry="14" fill="#fff" />
+        <ellipse cx="30" cy="6" rx="30" ry="15" fill="#fff" />
+        <ellipse cx="-6" cy="-10" rx="20" ry="14" fill="#fff" />
+        <ellipse cx="0" cy="10" rx="50" ry="12" fill="#eef6ff" />
+      </g>
     </g>
   )
 }
@@ -18,96 +26,149 @@ export function Cloud({ x, y, s = 1, o = 0.9 }) {
 export function Sun({ x, y, r = 42 }) {
   return (
     <g>
-      <circle cx={x} cy={y} r={r * 1.9} fill="#fff6c9" opacity="0.35" filter="url(#soft)" />
+      <circle className="pano-glow" cx={x} cy={y} r={r * 1.9} fill="#fff6c9" opacity="0.35" filter="url(#soft)" />
       <circle cx={x} cy={y} r={r} fill="#ffd93d" />
       <circle cx={x - r * 0.25} cy={y - r * 0.25} r={r * 0.55} fill="#ffe97a" />
     </g>
   )
 }
 
-// Laubbaum mit Schattenseite + Glanzlicht + Bodenschatten
+// Laubbaum: organische Kronen-Silhouette, weicher Verlauf hell (links oben) →
+// dunkel (rechts unten), leichtes Wiegen im Wind
 export function Tree({ x, y, s = 1, dark = false }) {
-  const leaf = dark ? '#3e8e4f' : '#54ad60'
   const leafD = dark ? '#2e6e3c' : '#3d8a49'
-  const leafL = dark ? '#57a868' : '#74c77f'
+  const grad = dark ? 'tree-grad-dark' : 'tree-grad-normal'
+  const sway = (x * 0.29) % 3
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <ellipse cx="0" cy="4" rx="34" ry="8" fill="#000" opacity="0.15" />
       <path d="M -5 0 L -3 -34 L 3 -34 L 5 0 Z" fill="#8a5a35" />
       <path d="M 0 -34 L 3 -34 L 5 0 L 0 0 Z" fill="#6e4527" />
-      <circle cx="0" cy="-56" r="30" fill={leaf} />
-      <circle cx="-18" cy="-44" r="20" fill={leaf} />
-      <circle cx="18" cy="-44" r="20" fill={leaf} />
-      <path d="M 4 -84 A 30 30 0 0 1 28 -40 L 12 -36 Z" fill={leafD} opacity="0.7" />
-      <circle cx="-12" cy="-64" r="11" fill={leafL} />
+      <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
+        <path
+          d="M -32 -46 Q -38 -74 -14 -84 Q -6 -98 12 -92 Q 34 -88 32 -64 Q 42 -52 30 -38 Q 26 -20 4 -22 Q -14 -18 -24 -30 Q -36 -34 -32 -46 Z"
+          fill={`url(#${grad})`}
+        />
+        <path
+          d="M 6 -90 Q 30 -84 30 -58 Q 38 -48 28 -36 Q 24 -22 6 -22 Q 18 -40 16 -58 Q 18 -76 6 -90 Z"
+          fill={leafD}
+          opacity="0.55"
+          filter="url(#edge)"
+        />
+      </g>
     </g>
   )
 }
 
-// Tanne mit Schattenseite
+// Tanne: geschwungene, organische Zweig-Etagen statt spitzer Dreiecke
 export function Pine({ x, y, s = 1, c = '#2f7a44', cd = '#226034' }) {
+  const sway = (x * 0.31) % 3
+  const tier = (top, ty, half) =>
+    `M 0 ${top} Q ${(half * 0.62).toFixed(1)} ${((top + ty) / 2).toFixed(1)} ${half} ${ty} ` +
+    `Q 0 ${ty - 8} ${-half} ${ty} Q ${(-half * 0.62).toFixed(1)} ${((top + ty) / 2).toFixed(1)} 0 ${top} Z`
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <ellipse cx="0" cy="3" rx="24" ry="6" fill="#000" opacity="0.15" />
       <rect x="-4" y="-12" width="8" height="14" fill="#7a4d2b" />
-      <path d="M 0 -95 L 22 -55 L -22 -55 Z" fill={c} />
-      <path d="M 0 -70 L 28 -30 L -28 -30 Z" fill={c} />
-      <path d="M 0 -48 L 34 -8 L -34 -8 Z" fill={c} />
-      <path d="M 0 -95 L 22 -55 L 6 -55 Z M 0 -70 L 28 -30 L 7 -30 Z M 0 -48 L 34 -8 L 8 -8 Z" fill={cd} />
-      <path d="M 0 -95 L -8 -80 L 0 -78 Z" fill="#4f9c63" />
+      <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
+        <path d={tier(-95, -55, 22)} fill={c} />
+        <path d={tier(-70, -30, 28)} fill={c} />
+        <path d={tier(-48, -8, 34)} fill={c} />
+        <path
+          d="M 0 -95 L 22 -55 L 6 -55 Z M 0 -70 L 28 -30 L 7 -30 Z M 0 -48 L 34 -8 L 8 -8 Z"
+          fill={cd}
+          opacity="0.85"
+          filter="url(#edge)"
+        />
+        <path d="M 0 -95 L -8 -80 L 0 -78 Z" fill="#4f9c63" />
+      </g>
     </g>
   )
 }
 
 export function Flower({ x, y, s = 1, c = '#ff7bac' }) {
+  const sway = (x * 0.41) % 4
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <path d="M 0 0 L 0 22" stroke="#3d8a49" strokeWidth="3" />
       <path d="M 0 10 Q 9 6 12 0" stroke="#3d8a49" strokeWidth="2.5" fill="none" />
-      {[0, 60, 120, 180, 240, 300].map((a) => (
-        <ellipse key={a} cx="0" cy="-9" rx="5.5" ry="9" fill={c} transform={`rotate(${a})`} />
-      ))}
-      <circle cx="0" cy="0" r="6" fill="#ffd93d" />
-      <circle cx="-1.8" cy="-1.8" r="2.2" fill="#ffe97a" />
+      <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
+        {[0, 60, 120, 180, 240, 300].map((a) => (
+          <ellipse key={a} cx="0" cy="-9" rx="5.5" ry="9" fill={c} transform={`rotate(${a})`} />
+        ))}
+        <circle cx="0" cy="0" r="6" fill="#ffd93d" />
+        <circle cx="-1.8" cy="-1.8" r="2.2" fill="#ffe97a" />
+      </g>
     </g>
   )
 }
 
 export function Butterfly({ x, y, s = 1, c = '#7ec3ff' }) {
+  const delay = (x * 0.6) % 2
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="-7" cy="-3" rx="8" ry="11" fill={c} transform="rotate(-25 -7 -3)" />
-      <ellipse cx="7" cy="-3" rx="8" ry="11" fill={c} transform="rotate(25 7 -3)" opacity="0.85" />
-      <rect x="-1.5" y="-9" width="3" height="16" rx="1.5" fill="#5a4632" />
+      <g className="pano-flutter" style={{ animationDelay: `-${delay}s` }}>
+        <ellipse cx="-7" cy="-3" rx="8" ry="11" fill={c} transform="rotate(-25 -7 -3)" />
+        <ellipse cx="7" cy="-3" rx="8" ry="11" fill={c} transform="rotate(25 7 -3)" opacity="0.85" />
+        <rect x="-1.5" y="-9" width="3" height="16" rx="1.5" fill="#5a4632" />
+      </g>
     </g>
   )
 }
 
 export function Star({ x, y, s = 1, o = 1 }) {
+  const delay = (x * 0.53 + y * 0.31) % 4
   return (
-    <path
-      d="M 0 -6 L 1.7 -1.7 L 6 0 L 1.7 1.7 L 0 6 L -1.7 1.7 L -6 0 L -1.7 -1.7 Z"
-      transform={`translate(${x} ${y}) scale(${s})`}
-      fill="#fff"
-      opacity={o}
-    />
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <path
+        className="pano-twinkle"
+        d="M 0 -6 L 1.7 -1.7 L 6 0 L 1.7 1.7 L 0 6 L -1.7 1.7 L -6 0 L -1.7 -1.7 Z"
+        fill="#fff"
+        opacity={o}
+        style={{ animationDelay: `-${delay}s` }}
+      />
+    </g>
   )
 }
 
-// Berg mit hellem Gesicht, dunkler Schattenflanke und Schneekappe
+// Berg: zerklüftete, organische Gratlinie statt eines glatten Dreiecks,
+// weicher Verlauf auf der Lichtseite, dezente Fels-Texturstriche im Schatten
+const MOUNTAIN_GRAD = {
+  '#aac8e6': 'mtn-grad-far',
+  '#7fa8cf': 'mtn-grad-mid',
+  '#57779c': 'mtn-grad-near'
+}
+
 export function Mountain({ x, y, w, h, c = '#7fa8cf', cd = '#5f88b3', snow = true }) {
-  const peak = [x, y - h]
+  const rid = (dx, dy) => `${(x + w * dx).toFixed(1)},${(y - h * dy).toFixed(1)}`
+  const peakX = x
+  const peakY = y - h
+  const fill = MOUNTAIN_GRAD[c] ? `url(#${MOUNTAIN_GRAD[c]})` : c
   return (
     <g>
-      <path d={`M ${x - w / 2} ${y} L ${peak[0]} ${peak[1]} L ${x + w / 2} ${y} Z`} fill={c} />
-      <path d={`M ${peak[0]} ${peak[1]} L ${x + w / 2} ${y} L ${x + w * 0.1} ${y} Z`} fill={cd} />
+      <path
+        d={`M ${x - w / 2} ${y} L ${rid(-0.3, 0.42)} L ${rid(-0.1, 0.78)} L ${peakX} ${peakY} L ${rid(0.14, 0.7)} L ${rid(0.32, 0.4)} L ${x + w / 2} ${y} Z`}
+        fill={fill}
+      />
+      <path
+        d={`M ${peakX} ${peakY} L ${rid(0.14, 0.7)} L ${rid(0.32, 0.4)} L ${x + w / 2} ${y} L ${rid(0.08, 0)} Z`}
+        fill={cd}
+        opacity="0.9"
+      />
       {snow && (
         <path
-          d={`M ${x - w * 0.14} ${y - h * 0.62} L ${peak[0]} ${peak[1]} L ${x + w * 0.14} ${y - h * 0.62}
-              L ${x + w * 0.07} ${y - h * 0.54} L ${x} ${y - h * 0.62} L ${x - w * 0.07} ${y - h * 0.52} Z`}
+          d={`M ${rid(-0.05, 0.87)} L ${peakX} ${peakY} L ${rid(0.05, 0.87)} L ${rid(0.024, 0.82)} L ${rid(-0.024, 0.82)} Z`}
           fill="#fff"
         />
       )}
+      <path
+        d={`M ${rid(-0.18, 0.3)} l 10 20 M ${rid(-0.03, 0.16)} l 8 18 M ${rid(0.22, 0.22)} l -8 16`}
+        stroke={cd}
+        strokeWidth="3"
+        opacity="0.3"
+        strokeLinecap="round"
+        filter="url(#edge)"
+      />
     </g>
   )
 }

@@ -451,6 +451,35 @@ body {
   height: 100%;
 }
 
+/* Fünf Tiefenebenen im Panorama, jede füllt die Karte komplett aus.
+   --scroll wird beim Scrollen von Path.jsx auf die Scroll-Position (px)
+   gesetzt; jede Ebene reagiert minimal unterschiedlich stark darauf,
+   dadurch entsteht eine dezente Parallaxe. Die Hauptebene (Boden/Weg)
+   bleibt exakt bei 1:1, da dort Levelknoten und Weg an den Koordinaten
+   ausgerichtet sind. */
+.pano-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pano-layer-sky {
+  transform: translateX(calc(var(--scroll, 0px) * 0.05));
+}
+
+.pano-layer-hills {
+  transform: translateX(calc(var(--scroll, 0px) * 0.032));
+}
+
+.pano-layer-clouds {
+  transform: translateX(calc(var(--scroll, 0px) * 0.018));
+}
+
+.pano-layer-front {
+  transform: translateX(calc(var(--scroll, 0px) * -0.018));
+}
+
 /* Nebel über gesperrten Regionen der Karte */
 .fog-zone {
   position: absolute;
@@ -1210,6 +1239,94 @@ body {
 @keyframes slideup {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
+}
+
+/* ---------- Panorama: dezente Landschafts-Animationen ---------- */
+
+.pano-cloud {
+  animation-name: pano-cloud-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes pano-cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(26px); }
+}
+
+.pano-glow {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-glow 5s ease-in-out infinite;
+}
+
+@keyframes pano-glow {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.08); opacity: 0.5; }
+}
+
+.pano-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pano-sway 4.2s ease-in-out infinite;
+}
+
+@keyframes pano-sway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+
+.pano-flutter {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-flutter 1.4s ease-in-out infinite;
+}
+
+@keyframes pano-flutter {
+  0%, 100% { transform: translateY(0) scaleX(1); }
+  50% { transform: translateY(-6px) scaleX(0.82); }
+}
+
+.pano-twinkle {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-twinkle 2.8s ease-in-out infinite;
+}
+
+@keyframes pano-twinkle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.7); }
+}
+
+.pano-pulse {
+  animation: pano-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pano-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+.pano-shimmer {
+  transform-box: fill-box;
+  animation: pano-shimmer 3.4s ease-in-out infinite;
+}
+
+@keyframes pano-shimmer {
+  0%, 100% { opacity: 0.35; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pano-cloud,
+  .pano-glow,
+  .pano-sway,
+  .pano-flutter,
+  .pano-twinkle,
+  .pano-pulse,
+  .pano-shimmer {
+    animation: none;
+  }
 }
 
 .capy-cheer {

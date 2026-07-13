@@ -191,6 +191,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
     let raf = null
     function update() {
       raf = null
+      el.style.setProperty('--scroll', `${el.scrollLeft}px`)
       const containerLeft = el.getBoundingClientRect().left
       let best = null
       WORLDS.forEach((w, wi) => {
