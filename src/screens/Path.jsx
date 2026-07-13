@@ -156,6 +156,8 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   const streak = currentStreak(profile.streak)
   const welcome = useMemo(() => WELCOME[Math.floor(Math.random() * WELCOME.length)], [])
   const currentRef = useRef(null)
+  const worldsScrollRef = useRef(null)
+  const bannerRefs = useRef({})
   // Wenn ein schon geschafftes Level noch einmal geübt wird, läuft Capy
   // erst sichtbar dorthin zurück, bevor das Quiz startet.
   const [pendingWalk, setPendingWalk] = useState(null)
@@ -169,6 +171,11 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   let currentIdx = ORDERED_LEVELS.findIndex((lv) => !progress[lv.id])
   if (currentIdx === -1) currentIdx = ORDERED_LEVELS.length - 1
   const currentLevel = ORDERED_LEVELS[currentIdx]
+  const currentWorldIdx = Math.max(0, WORLDS.findIndex((w) => currentLevel && w.levels.includes(currentLevel)))
+
+  // Welche Welt gerade sichtbar ist (für die feststehende Namensanzeige,
+  // die beim seitlichen Scrollen nicht mitwandert)
+  const [viewWorldIdx, setViewWorldIdx] = useState(currentWorldIdx)
 
   useEffect(() => {
     if (currentRef.current) {
@@ -176,6 +183,33 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
     }
     capyLastLevelId = currentLevel ? currentLevel.id : null
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    const el = worldsScrollRef.current
+    if (!el) return
+    let raf = null
+    function update() {
+      raf = null
+      const containerLeft = el.getBoundingClientRect().left
+      let best = null
+      WORLDS.forEach((w, wi) => {
+        const node = bannerRefs.current[w.id]
+        if (!node) return
+        // eine Welt gilt als "aktiv", sobald ihr Banner die linke Kante
+        // des sichtbaren Bereichs erreicht bzw. überschritten hat
+        if (node.getBoundingClientRect().left - containerLeft <= 40) {
+          if (best === null || wi > best) best = wi
+        }
+      })
+      if (best !== null) setViewWorldIdx(best)
+    }
+    function onScroll() {
+      if (raf === null) raf = requestAnimationFrame(update)
+    }
+    update()
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
   const bubbleText = allDone
@@ -210,7 +244,36 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
         </div>
       </header>
 
-      <div className="worlds">
+      {/* Name der gerade sichtbaren Welt – schwebt fest oben links,
+          bleibt beim seitlichen Scrollen an derselben Stelle stehen.
+          Für noch gesperrte Welten wird der Name nicht verraten. */}
+      {viewWorldIdx >= 0 && WORLDS[viewWorldIdx] && (
+        worldUnlocked(viewWorldIdx, progress) ? (
+          <div className="world-banner-fixed">
+            <div className="world-banner-title">
+              <span className="world-emoji">{WORLDS[viewWorldIdx].emoji}</span>
+              <span>Welt {viewWorldIdx + 1}: {WORLDS[viewWorldIdx].name}</span>
+            </div>
+            <div className="world-banner-progress">
+              <span className="world-count">
+                {WORLDS[viewWorldIdx].levels.filter((lv) => progress[lv.id]).length}/
+                {WORLDS[viewWorldIdx].levels.length} ✓
+              </span>
+              geschafft
+            </div>
+          </div>
+        ) : (
+          <div className="world-banner-fixed locked">
+            <div className="world-banner-title">
+              <span className="world-emoji">🔒</span>
+              <span>Welt {viewWorldIdx + 1}: ???</span>
+            </div>
+            <div className="world-banner-progress">Noch nicht freigeschaltet</div>
+          </div>
+        )
+      )}
+
+      <div className="worlds" ref={worldsScrollRef}>
         <div
           className="map-clip"
           style={{
@@ -227,24 +290,16 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
             <SegmentDots progress={progress} />
           </svg>
 
-          {/* Weltbanner */}
-          {WORLDS.map((w, wi) => {
-            if (!worldUnlocked(wi, progress)) return null
-            const doneCount = w.levels.filter((lv) => progress[lv.id]).length
-            return (
-              <div
-                key={w.id}
-                className="world-banner"
-                style={{ left: `calc(${(wi * 100) / WORLDS.length}% + 14px)` }}
-              >
-                <span className="world-emoji">{w.emoji}</span>
-                <span>
-                  Welt {wi + 1}: {w.name}
-                </span>
-                <span className="world-count">{doneCount}/{w.levels.length} ✓</span>
-              </div>
-            )
-          })}
+          {/* unsichtbare Marker an der Startposition jeder Welt – dienen
+              nur dazu, beim Scrollen zu erkennen, welche Welt gerade sichtbar ist */}
+          {WORLDS.map((w, wi) => (
+            <div
+              key={w.id}
+              ref={(el) => { bannerRefs.current[w.id] = el }}
+              className="world-banner-anchor"
+              style={{ left: `${(wi * 100) / WORLDS.length}%` }}
+            />
+          ))}
 
           {/* Level-Stationen */}
           {ORDERED_LEVELS.map((lv, gi) => {

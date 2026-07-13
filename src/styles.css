@@ -564,25 +564,59 @@ body {
   opacity: 0.9;
 }
 
-/* Weltbanner */
-.world-banner {
+/* Weltbanner: feststehende Anzeige der gerade sichtbaren Welt.
+   Liegt außerhalb des scrollenden Panoramas, bewegt sich also nicht mit,
+   wenn man auf der Karte nach links/rechts scrollt. */
+.world-banner-fixed {
   position: absolute;
-  top: 62px;
-  left: 14px;
-  z-index: 6;
+  top: 84px;
+  left: 24px;
+  z-index: 15;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 14px;
-  padding: 6px 14px;
-  font-weight: 800;
-  font-size: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 180px;
+  max-width: 68vw;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(3px);
+  border-radius: 18px;
+  padding: 12px 18px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
-.world-banner .world-emoji {
-  font-size: 1.3rem;
+.world-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.world-banner-title .world-emoji {
+  font-size: 1.4rem;
+}
+
+.world-banner-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.world-banner-fixed.locked .world-banner-progress {
+  opacity: 0.65;
+}
+
+/* unsichtbarer Messpunkt am Anfang jeder Welt (keine eigene Darstellung) */
+.world-banner-anchor {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
 
 .world-count {
