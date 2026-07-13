@@ -68,41 +68,65 @@ function SegmentDots({ progress }) {
   return <g>{dots}</g>
 }
 
-// Capy, der auf dem Weg steht und zum aktuellen Level läuft
-function CapyWalker({ targetIdx, bubbleText }) {
+// Punkte des Wegs zwischen zwei beliebigen Level-Knoten (vorwärts ODER
+// rückwärts, auch über mehrere Level hinweg) – folgt dabei dem echten
+// Wegverlauf statt einer geraden Linie.
+function pathBetween(fromNodeIdx, toNodeIdx, perSeg = 16) {
+  const points = []
+  if (toNodeIdx > fromNodeIdx) {
+    for (let k = fromNodeIdx + 1; k <= toNodeIdx; k++) {
+      const seg = sampleSegment(PTS, k, perSeg)
+      points.push(...(points.length ? seg.slice(1) : seg))
+    }
+  } else {
+    for (let k = fromNodeIdx; k > toNodeIdx; k--) {
+      const seg = sampleSegment(PTS, k, perSeg).slice().reverse()
+      points.push(...(points.length ? seg.slice(1) : seg))
+    }
+  }
+  return points
+}
+
+// Capy, der auf dem Weg steht und zum Ziel-Level läuft (vorwärts zum
+// nächsten Level, oder rückwärts, wenn ein schon geschafftes Level
+// noch einmal geübt wird). onArrive feuert, sobald Capy angekommen ist.
+function CapyWalker({ targetIdx, bubbleText, onArrive }) {
   const targetPt = PTS[targetIdx + 1]
 
-  const walkFrom = useMemo(() => {
-    if (capyLastLevelId) {
-      const prevIdx = ORDERED_LEVELS.findIndex((lv) => lv.id === capyLastLevelId)
-      if (prevIdx !== -1 && prevIdx === targetIdx - 1) return targetIdx
+  const walkPath = useMemo(() => {
+    if (!capyLastLevelId) {
+      return targetIdx === 0 ? sampleSegment(PTS, 0, 40) : null // Spielstart: hereinlaufen
     }
-    if (targetIdx === 0 && !capyLastLevelId) return 0 // Spielstart: hereinlaufen
-    return -1
+    const prevIdx = ORDERED_LEVELS.findIndex((lv) => lv.id === capyLastLevelId)
+    if (prevIdx === -1 || prevIdx === targetIdx) return null
+    return pathBetween(prevIdx, targetIdx)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [pos, setPos] = useState(() =>
-    walkFrom >= 0 ? sampleSegment(PTS, walkFrom, 1)[0] : targetPt
-  )
-  const [walking, setWalking] = useState(walkFrom >= 0)
+  const [pos, setPos] = useState(() => (walkPath ? walkPath[0] : targetPt))
+  const [walking, setWalking] = useState(!!walkPath)
   const [flip, setFlip] = useState(false)
 
   useEffect(() => {
-    if (walkFrom < 0) return
-    const samples = sampleSegment(PTS, walkFrom, 60)
-    const dur = 1800
+    if (!walkPath) {
+      onArrive?.()
+      return
+    }
+    const dur = Math.min(3200, Math.max(1200, walkPath.length * 26))
     let start = null
     let raf
     function step(ts) {
       if (start === null) start = ts
       let t = Math.min(1, (ts - start) / dur)
       t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
-      const i = Math.min(samples.length - 1, Math.floor(t * (samples.length - 1)))
-      setPos(samples[i])
-      if (i > 0) setFlip(samples[i][0] < samples[i - 1][0])
+      const i = Math.min(walkPath.length - 1, Math.floor(t * (walkPath.length - 1)))
+      setPos(walkPath[i])
+      if (i > 0) setFlip(walkPath[i][0] < walkPath[i - 1][0])
       if (t < 1) raf = requestAnimationFrame(step)
-      else setWalking(false)
+      else {
+        setWalking(false)
+        onArrive?.()
+      }
     }
     raf = requestAnimationFrame(step)
     return () => cancelAnimationFrame(raf)
@@ -132,6 +156,9 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   const streak = currentStreak(profile.streak)
   const welcome = useMemo(() => WELCOME[Math.floor(Math.random() * WELCOME.length)], [])
   const currentRef = useRef(null)
+  // Wenn ein schon geschafftes Level noch einmal geübt wird, läuft Capy
+  // erst sichtbar dorthin zurück, bevor das Quiz startet.
+  const [pendingWalk, setPendingWalk] = useState(null)
 
   const progress = profile.progress
 
@@ -154,6 +181,16 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   const bubbleText = allDone
     ? 'WOW! Du hast ALLE Welten geschafft! Du bist die Königin/der König der Zahlenwelt! 👑'
     : welcome
+
+  function handleNodeClick(lv, gi) {
+    if (pendingWalk) return // Capy ist schon unterwegs
+    const isPastLevel = !!progress[lv.id] && gi !== currentIdx
+    if (isPastLevel) {
+      setPendingWalk({ idx: gi, level: lv })
+    } else {
+      onStartLevel(lv)
+    }
+  }
 
   return (
     <div className="screen path-screen">
@@ -234,7 +271,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
                   className={`node node-${lv.kind} ${state} ${isCurrent ? 'current' : ''}`}
                   style={{ width: 64 * scale, height: 64 * scale }}
                   disabled={!unlocked}
-                  onClick={() => onStartLevel(lv)}
+                  onClick={() => handleNodeClick(lv, gi)}
                 >
                   <span className="node-icon" style={{ fontSize: `${1.25 * scale}rem` }}>
                     {!unlocked
@@ -242,16 +279,34 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
                       : KIND_ICON[lv.kind] || (lv.kind === 'learn' ? `${lv.rows[0]}·` : `${lv.rows[0]}×`)}
                   </span>
                 </button>
-                <div className="node-chip" style={{ transform: `scale(${0.85 + 0.15 * scale})` }}>
+                <button
+                  type="button"
+                  className="node-chip"
+                  style={{ transform: `scale(${0.85 + 0.15 * scale})` }}
+                  disabled={!unlocked}
+                  onClick={() => handleNodeClick(lv, gi)}
+                >
                   <div className="node-title">{lv.title}</div>
                   <div className="node-sub">{lv.subtitle}</div>
                   {stars > 0 && <Stars n={stars} />}
-                </div>
+                </button>
               </div>
             )
           })}
 
-          <CapyWalker targetIdx={currentIdx} bubbleText={bubbleText} />
+          <CapyWalker
+            key={pendingWalk ? `replay-${pendingWalk.level.id}` : 'home'}
+            targetIdx={pendingWalk ? pendingWalk.idx : currentIdx}
+            bubbleText={pendingWalk ? null : bubbleText}
+            onArrive={
+              pendingWalk
+                ? () => {
+                    capyLastLevelId = pendingWalk.level.id
+                    onStartLevel(pendingWalk.level)
+                  }
+                : undefined
+            }
+          />
 
           {/* Nebel über noch nicht erreichten Regionen:
               ein Teaser-Nebel über der nächsten Welt und EIN durchgehender

@@ -612,11 +612,19 @@ body {
 
 .node-chip {
   background: rgba(255, 255, 255, 0.92);
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
   border-radius: 12px;
   padding: 3px 10px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   line-height: 1.15;
+}
+
+.node-chip:disabled {
+  cursor: default;
 }
 
 .node-chip .node-title {
