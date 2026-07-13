@@ -494,55 +494,122 @@ body {
 
 /* Nebel beginnt weich: links Wolkenschwaden, die langsam dichter werden.
    Wichtig: in den ersten ~10 % ist alles voll transparent und keine
-   Schwade berührt den linken Rand – dadurch gibt es keine Schnittkante. */
+   Schwade berührt den linken Rand – dadurch gibt es keine Schnittkante.
+   Die nächste Welt bleibt bewusst nur ERAHNBAR (kräftige Unschärfe +
+   deutliche Trübung) statt eines klaren Vorschau-Blicks. */
 .fog-zone.fog-teaser {
   background:
-    radial-gradient(ellipse 13% 30% at 17% 22%, rgba(255, 255, 255, 0.65), transparent 68%),
-    radial-gradient(ellipse 12% 26% at 14% 55%, rgba(255, 255, 255, 0.6), transparent 68%),
-    radial-gradient(ellipse 13% 28% at 18% 85%, rgba(255, 255, 255, 0.55), transparent 68%),
-    radial-gradient(ellipse 40% 40% at 48% 35%, rgba(255, 255, 255, 0.4), transparent 75%),
-    radial-gradient(ellipse 32% 40% at 68% 65%, rgba(255, 255, 255, 0.4), transparent 75%),
-    linear-gradient(90deg, transparent 0%, transparent 9%, rgba(130, 150, 172, 0.28) 34%, rgba(120, 140, 165, 0.42) 100%);
-  /* gesamte Zone (inkl. aller Schwaden) blendet rechts weich aus,
-     dort übernimmt der dichte Nebel */
-  mask-image: linear-gradient(90deg, #000 0%, #000 76%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 76%, transparent 100%);
+    radial-gradient(ellipse 30% 16% at 10% 22%, rgba(234, 245, 255, 0.5), transparent 72%),
+    radial-gradient(ellipse 22% 12% at 34% 10%, rgba(234, 245, 255, 0.42), transparent 70%),
+    radial-gradient(ellipse 38% 20% at 22% 48%, rgba(228, 240, 253, 0.55), transparent 74%),
+    radial-gradient(ellipse 26% 14% at 6% 68%, rgba(230, 242, 254, 0.48), transparent 70%),
+    radial-gradient(ellipse 34% 18% at 42% 78%, rgba(224, 237, 252, 0.5), transparent 74%),
+    radial-gradient(ellipse 40% 22% at 58% 30%, rgba(220, 234, 250, 0.48), transparent 76%),
+    radial-gradient(ellipse 30% 16% at 74% 58%, rgba(216, 230, 248, 0.46), transparent 74%),
+    radial-gradient(ellipse 24% 13% at 88% 20%, rgba(232, 243, 255, 0.4), transparent 70%),
+    radial-gradient(ellipse 26% 15% at 66% 88%, rgba(226, 239, 253, 0.42), transparent 72%),
+    linear-gradient(90deg, transparent 0%, transparent 7%, rgba(104, 126, 158, 0.48) 30%, rgba(90, 110, 145, 0.7) 100%);
+  background-position: 0 0;
+  animation: fog-drift 52s ease-in-out infinite;
+  /* exakt dieselbe Rampe wie bei ::before (siehe unten) – beide Ebenen
+     müssen im Gleichschritt einblenden, sonst entsteht am Übergang
+     eine sichtbare Kante zwischen "Schwaden" und "Trübung" */
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 6%,
+    rgba(0, 0, 0, 0.28) 13%,
+    rgba(0, 0, 0, 0.46) 19%,
+    rgba(0, 0, 0, 0.66) 26%,
+    rgba(0, 0, 0, 0.85) 34%,
+    #000 44%,
+    #000 82%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 6%,
+    rgba(0, 0, 0, 0.28) 13%,
+    rgba(0, 0, 0, 0.46) 19%,
+    rgba(0, 0, 0, 0.66) 26%,
+    rgba(0, 0, 0, 0.85) 34%,
+    #000 44%,
+    #000 82%,
+    transparent 100%
+  );
 }
 
 .fog-zone.fog-teaser::before {
   content: '';
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(5px) grayscale(0.75) brightness(0.88);
-  -webkit-backdrop-filter: blur(5px) grayscale(0.75) brightness(0.88);
-  /* links weich einblenden, rechts weich an den dichten Nebel übergeben */
-  mask-image: linear-gradient(90deg, transparent 0%, transparent 9%, #000 40%, #000 82%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 9%, #000 40%, #000 82%, transparent 100%);
+  backdrop-filter: blur(11px) grayscale(0.92) brightness(0.66) saturate(0.7);
+  -webkit-backdrop-filter: blur(11px) grayscale(0.92) brightness(0.66) saturate(0.7);
+  /* viele enge Zwischenstufen statt eines harten Zwei-Punkt-Sprungs –
+     wird schon kurz nach dem nahtlosen Einstieg spürbar dunstig und
+     verdichtet sich dann stetig, statt "klar → Wand" zu wirken */
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 6%,
+    rgba(0, 0, 0, 0.28) 13%,
+    rgba(0, 0, 0, 0.46) 19%,
+    rgba(0, 0, 0, 0.66) 26%,
+    rgba(0, 0, 0, 0.85) 34%,
+    #000 44%,
+    #000 82%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 6%,
+    rgba(0, 0, 0, 0.28) 13%,
+    rgba(0, 0, 0, 0.46) 19%,
+    rgba(0, 0, 0, 0.66) 26%,
+    rgba(0, 0, 0, 0.85) 34%,
+    #000 44%,
+    #000 82%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
-/* EIN durchgehender dichter Nebel über allen geheimen Welten.
-   Die Einblendung links läuft über eine feste Strecke (Maske),
-   dadurch gibt es keine Kante – egal wie breit die Zone ist. */
+/* EIN durchgehender dichter Nebel über allen geheimen Welten. */
 .fog-zone.fog-dense {
   background:
-    radial-gradient(ellipse 260px 180px at 18vw 25%, rgba(255, 255, 255, 0.85), transparent 68%),
-    radial-gradient(ellipse 230px 160px at 12vw 60%, rgba(255, 255, 255, 0.8), transparent 68%),
-    radial-gradient(ellipse 250px 170px at 20vw 88%, rgba(255, 255, 255, 0.75), transparent 68%),
-    radial-gradient(ellipse 55% 55% at 45% 40%, rgba(235, 240, 246, 0.9), transparent 90%),
-    radial-gradient(ellipse 60% 60% at 78% 70%, rgba(228, 235, 243, 0.9), transparent 90%),
-    rgba(203, 214, 227, 0.94);
+    radial-gradient(ellipse 32% 15% at 12% 20%, rgba(240, 247, 255, 0.75), transparent 70%),
+    radial-gradient(ellipse 24% 12% at 30% 8%, rgba(238, 246, 255, 0.6), transparent 68%),
+    radial-gradient(ellipse 40% 20% at 20% 55%, rgba(236, 244, 254, 0.8), transparent 74%),
+    radial-gradient(ellipse 28% 14% at 8% 82%, rgba(232, 242, 253, 0.65), transparent 70%),
+    radial-gradient(ellipse 42% 22% at 42% 78%, rgba(228, 238, 252, 0.7), transparent 74%),
+    radial-gradient(ellipse 38% 20% at 55% 32%, rgba(224, 234, 250, 0.65), transparent 74%),
+    radial-gradient(ellipse 50% 50% at 45% 40%, rgba(222, 231, 245, 0.92), transparent 90%),
+    radial-gradient(ellipse 55% 55% at 78% 70%, rgba(210, 222, 240, 0.92), transparent 90%),
+    linear-gradient(160deg, rgba(196, 210, 232, 0.96) 0%, rgba(178, 194, 220, 0.96) 100%);
+  background-position: 0 0;
+  animation: fog-drift 60s ease-in-out infinite reverse;
   mask-image: linear-gradient(90deg, transparent 0, #000 min(55vw, 850px));
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 min(55vw, 850px));
 }
 
-.fog-zone .locked-center {
-  z-index: 1;
+@keyframes fog-drift {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: -2.5% 1.5%; }
 }
 
 .fog-zone .locked-center {
+  z-index: 1;
   position: static;
   padding: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-zone.fog-teaser,
+  .fog-zone.fog-dense {
+    animation: none;
+  }
 }
 
 .panorama-end {
@@ -760,7 +827,19 @@ body {
 
 .locked-lock {
   font-size: 3.2rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 18px rgba(255, 246, 201, 0.55));
+  animation: locked-lock-float 3.6s ease-in-out infinite;
+}
+
+@keyframes locked-lock-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locked-lock {
+    animation: none;
+  }
 }
 
 .locked-name {

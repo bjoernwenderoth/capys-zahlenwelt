@@ -115,6 +115,21 @@ function SharedDefs() {
         <filter id="far" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="2.5" />
         </filter>
+        {/* für die fernsten, dunstigen Bergketten – kräftigere Streuung,
+            damit sie nicht wie eine Fläche mit scharfem Rand "auftaucht" */}
+        <filter id="veryFar" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="7" />
+        </filter>
+        {/* Kanten links/rechts weich ausblenden statt hartem Formrand */}
+        <linearGradient id="fade-edges-x" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.18" stopColor="#fff" stopOpacity="1" />
+          <stop offset="0.82" stopColor="#fff" stopOpacity="1" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <mask id="mask-fade-edges-x" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1">
+          <rect x="0" y="0" width="1" height="1" fill="url(#fade-edges-x)" />
+        </mask>
         {/* weichzeichnet Schatten-Overlays, damit Kanten nicht hart wirken */}
         <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="1.4" />
@@ -247,7 +262,7 @@ export default function Panorama() {
             fill="url(#pan-far)"
           />
         </g>
-        <g filter="url(#far)" opacity="0.8">
+        <g filter="url(#veryFar)" mask="url(#mask-fade-edges-x)" opacity="0.75">
           <Mountain x={2120} y={460} w={460} h={230} c="#aac8e6" cd="#93b6da" />
           <Mountain x={2850} y={460} w={420} h={200} c="#aac8e6" cd="#93b6da" />
         </g>
