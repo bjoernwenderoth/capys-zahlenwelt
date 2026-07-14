@@ -56,6 +56,64 @@ function Log({ x, y, s = 1, rot = 0 }) {
   )
 }
 
+// Waldtiere – sitzen/stehen still zwischen den Bäumen, rein dekorativ.
+// Aufgebaut wie Capy (Körper → Kopf → Ohren → Gesicht), mit großzügigen
+// Überlappungen zwischen den Teilen, damit nichts "lose" wirkt.
+
+function Rabbit({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="9" rx="19" ry="4.5" fill="#000" opacity="0.15" />
+
+      {/* Puschelschwanz: weiches, flauschiges Eigenschatten statt harter Kante */}
+      <circle cx="14" cy="8" r="6" fill="#fbf3e6" />
+      <ellipse cx="16.5" cy="10" rx="3.4" ry="3" fill="#d9c9b8" opacity="0.45" filter="url(#edge)" />
+
+      {/* Körper, Licht links oben → Schatten rechts unten wie bei den Bäumen */}
+      <path d="M -15 12 Q -18 -6 -8 -12 Q 0 -15 8 -12 Q 18 -6 15 12 Q 15 15 0 16 Q -15 15 -15 12 Z" fill="url(#rabbit-grad)" />
+
+      {/* Pfoten */}
+      <ellipse cx="-6" cy="13" rx="4" ry="3" fill="#f4e6d2" />
+      <ellipse cx="6" cy="13" rx="4" ry="3" fill="#f4e6d2" />
+
+      {/* helleres Bauchfell */}
+      <ellipse cx="0" cy="6" rx="8" ry="7" fill="#f4e6d2" />
+
+      {/* Ein durchgehender, heller Schlagschatten über Körper UND Bauchfell hinweg,
+          damit beide wie ein einheitliches Fell wirken statt getrennt beschattet */}
+      <path d="M 8 -12 Q 18 -6 15 12 Q 15 15 0 16 Q 5 9 7 -1 Q 8 -7 8 -12 Z" fill="#9c7c56" opacity="0.25" filter="url(#edge)" />
+
+      {/* Ohren (Basis liegt tief im Kopf), Außenseite im selben Verlauf wie Körper/Kopf,
+          Innenseite mit eigenem Schatten zur Ohrbasis hin (wirkt "gemuldet") */}
+      <path d="M -9 -22 Q -13 -40 -6 -47 Q -2 -44 -4 -24 Z" fill="url(#rabbit-grad)" />
+      <path d="M -7 -30 Q -8 -40 -6 -46 Q -4 -42 -5 -31 Q -6 -29 -7 -30 Z" fill="#a9825a" opacity="0.4" filter="url(#edge)" />
+      <path d="M -8 -25 Q -10 -38 -6 -44 Q -3 -41 -5 -26 Z" fill="#f4c9d6" />
+      <ellipse cx="-6.5" cy="-27" rx="1.6" ry="3.4" fill="#dba0b6" opacity="0.5" filter="url(#edge)" />
+
+      <path d="M 9 -22 Q 13 -40 6 -47 Q 2 -44 4 -24 Z" fill="url(#rabbit-grad)" />
+      <path d="M 6 -33 Q 9 -40 6 -47 Q 3 -42 4 -33 Q 5 -30 6 -33 Z" fill="#a9825a" opacity="0.45" filter="url(#edge)" />
+      <path d="M 8 -25 Q 10 -38 6 -44 Q 3 -41 5 -26 Z" fill="#f4c9d6" />
+      <ellipse cx="6.5" cy="-27" rx="1.6" ry="3.4" fill="#dba0b6" opacity="0.5" filter="url(#edge)" />
+
+      {/* Kopf, überdeckt die Ohren-Basis */}
+      <ellipse cx="0" cy="-20" rx="11" ry="11" fill="url(#rabbit-grad)" />
+      {/* Schlagschatten am Kopf, rechte/untere Wange */}
+      <path d="M 6 -13 Q 11 -17 10 -24 Q 11 -18 8 -12 Q 4 -9 -1 -9 Q 3 -10 6 -13 Z" fill="#7c5c3c" opacity="0.35" filter="url(#edge)" />
+
+      {/* helleres Schnäuzchen, mit eigenem kleinen Schatten rechts */}
+      <ellipse cx="0" cy="-15" rx="6" ry="5" fill="#f4e6d2" />
+      <ellipse cx="2.2" cy="-13.2" rx="3" ry="2.2" fill="#d3b896" opacity="0.4" filter="url(#edge)" />
+
+      {/* Augen & Näschen */}
+      <circle cx="-3.5" cy="-21" r="1.5" fill="#2b2320" />
+      <circle cx="3.5" cy="-21" r="1.5" fill="#2b2320" />
+      <circle cx="-2.9" cy="-21.6" r="0.5" fill="#fff" />
+      <circle cx="4.1" cy="-21.6" r="0.5" fill="#fff" />
+      <ellipse cx="0" cy="-17" rx="1.5" ry="1.1" fill="#e0839a" />
+    </g>
+  )
+}
+
 function Boat({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
@@ -223,6 +281,11 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#3e8e4f" />
           <stop offset="1" stopColor="#2e6e3c" />
         </linearGradient>
+        <linearGradient id="rabbit-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#e2c299" />
+          <stop offset="0.55" stopColor="#cfa77a" />
+          <stop offset="1" stopColor="#a9825a" />
+        </linearGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
           <stop offset="0" stopColor="#c9e0f5" />
           <stop offset="1" stopColor="#aac8e6" />
@@ -377,6 +440,9 @@ export default function Panorama() {
         <Mushroom x={250} y={560} />
         <Mushroom x={790} y={572} s={0.8} cap="#e08a3c" />
         <Mushroom x={920} y={558} s={0.6} cap="#e08a3c" />
+
+        {/* Waldtiere */}
+        <Rabbit x={700} y={530} s={0.8} />
 
         {/* ---------- Region: Blumenwiese ---------- */}
         <Tree x={1080} y={470} s={0.8} dark />
