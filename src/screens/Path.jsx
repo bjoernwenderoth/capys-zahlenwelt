@@ -5,6 +5,7 @@ import {
   WORLDS,
   worldDone,
   worldUnlocked,
+  SHOW_ALL_WORLDS,
   ORDERED_LEVELS,
   GLOBAL_NODES,
   MAP_WIDTH,
@@ -286,7 +287,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
         <div
           className="map-clip"
           style={{
-            width: `calc(${Math.min(WORLDS.length, firstOpenWorld + 3)} * max(100vw, 166dvh))`
+            width: `calc(${SHOW_ALL_WORLDS ? WORLDS.length : Math.min(WORLDS.length, firstOpenWorld + 3)} * max(100vw, 166dvh))`
           }}
         >
         <div className="panorama">

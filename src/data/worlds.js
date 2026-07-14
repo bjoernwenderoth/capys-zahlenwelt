@@ -18,8 +18,12 @@ export function worldDone(world, progress) {
   return world.levels.every((lv) => (progress[lv.id] || 0) > 0)
 }
 
+// Temporär: alle Welten sichtbar/entsperrt, während die Welten gestaltet
+// werden. Zum Reaktivieren der normalen Freischaltung einfach false setzen.
+export const SHOW_ALL_WORLDS = true
+
 export function worldUnlocked(index, progress) {
-  return index === 0 || worldDone(WORLDS[index - 1], progress)
+  return SHOW_ALL_WORLDS || index === 0 || worldDone(WORLDS[index - 1], progress)
 }
 
 // Level-Stationen auf dem Boden jeder Szene (Koordinaten im 1000×600-Raum).
