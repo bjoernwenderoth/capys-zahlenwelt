@@ -3,8 +3,8 @@ import { LEVELS } from './levels.js'
 // Der Pfad führt durch 6 Welten. Die nächste Welt wird erst sichtbar,
 // wenn alle Level der vorherigen Welt geschafft sind.
 export const WORLDS = [
-  { id: 'wald', name: 'Zahlenwald', emoji: '🌲', levelIds: ['lern-1', 'ueben-1', 'lern-2', 'ueben-2'] },
   { id: 'wiese', name: 'Blumenwiese', emoji: '🌸', levelIds: ['lern-5', 'ueben-5', 'lern-10', 'ueben-10', 'wdh-1'] },
+  { id: 'wald', name: 'Zahlenwald', emoji: '🌲', levelIds: ['lern-1', 'ueben-1', 'lern-2', 'ueben-2'] },
   { id: 'berge', name: 'Bergwelt', emoji: '⛰️', levelIds: ['lern-3', 'ueben-3', 'lern-4', 'ueben-4', 'wdh-2'] },
   { id: 'see', name: 'Sonnensee', emoji: '⛵', levelIds: ['lern-6', 'ueben-6', 'lern-7', 'ueben-7', 'wdh-3'] },
   { id: 'nacht', name: 'Sternenhimmel', emoji: '🌙', levelIds: ['lern-8', 'ueben-8', 'lern-9', 'ueben-9', 'wdh-4'] },

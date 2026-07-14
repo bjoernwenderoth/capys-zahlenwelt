@@ -1,7 +1,7 @@
 // Eine einzige zusammenhängende Landkarte für alle Welten (6000 × 600).
 // Himmel und Boden gehen fließend ineinander über, ein durchgehender
 // Weg verbindet alle Level. Themen-Deko markiert die Regionen:
-// Wald → Blumenwiese → Berge → Sonnensee → Sternenhimmel → Königsschloss
+// Blumenwiese → Wald → Berge → Sonnensee → Sternenhimmel → Königsschloss
 //
 // Vier Tiefenebenen (Himmel, ferne Hügel, Wolken, Hauptebene mit dem Weg)
 // bewegen sich beim Scrollen minimal unterschiedlich schnell (siehe --scroll
@@ -18,6 +18,49 @@ function Mushroom({ x, y, s = 1, cap = '#e05252' }) {
       <path d="M -16 -6 A 16 12 0 0 1 16 -6 Z" fill={cap} />
       <circle cx="-7" cy="-12" r="3" fill="#fff" />
       <circle cx="6" cy="-10" r="2.4" fill="#fff" />
+    </g>
+  )
+}
+
+// Gänseblümchen – dichte Streu-Deko für die Blumenwiese, viel billiger
+// als die große Flower (kein Stiel), aber mit demselben Licht/Schatten-Prinzip
+function Bloom({ x, y, s = 1 }) {
+  const sway = (x * 0.47 + y * 0.13) % 3
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0.6" cy="1.6" rx="4.2" ry="1.3" fill="#000" opacity="0.12" />
+      <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+          <ellipse key={a} cx="0" cy="-2.4" rx="1.1" ry="2.6" fill="#fefefc" transform={`rotate(${a})`} />
+        ))}
+        {/* Schatten- und Lichtseite über die ganze Blüte, statt pro Blatt (bei dieser Größe kaum sichtbar) */}
+        <path d="M 0.6 -1 Q 3 0 2.6 2.4 Q 1 3 -0.4 2 Q 0.2 0.6 0.6 -1 Z" fill="#c9c2b4" opacity="0.3" filter="url(#edge)" />
+        <circle cx="0" cy="0" r="1.9" fill="#ffd93d" />
+        <circle cx="1" cy="1" r="0.9" fill="#c9861c" opacity="0.4" filter="url(#edge)" />
+        <circle cx="-0.6" cy="-0.6" r="0.8" fill="#ffe97a" />
+      </g>
+    </g>
+  )
+}
+
+// Biene – fliegt in kleinen Schleifen umher, Flügel flattern schnell & unabhängig
+function Bee({ x, y, s = 1 }) {
+  const delay = (x * 0.53 + y * 0.29) % 6
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <g className="pano-bee" style={{ animationDelay: `-${delay}s` }}>
+        <g className="pano-bee-wing" style={{ animationDelay: `-${(delay * 0.4).toFixed(2)}s` }}>
+          <ellipse cx="-3.2" cy="-3.6" rx="4.4" ry="2.8" fill="#eaf6ff" opacity="0.8" transform="rotate(-18 -3.2 -3.6)" />
+          <ellipse cx="3.2" cy="-3.6" rx="4.4" ry="2.8" fill="#eaf6ff" opacity="0.8" transform="rotate(18 3.2 -3.6)" />
+        </g>
+        {/* Körper, Licht links oben → Schatten rechts unten */}
+        <ellipse cx="0" cy="0" rx="5.4" ry="4" fill="url(#bee-grad)" />
+        <path d="M -5.2 -1.1 Q 0 -3.2 5.2 -1.1 Q 0 1 -5.2 -1.1 Z" fill="#2b2320" opacity="0.85" />
+        <path d="M -4.4 1.8 Q 0 3.4 4.4 1.8" stroke="#2b2320" strokeWidth="1.5" fill="none" opacity="0.85" />
+        <ellipse cx="1.6" cy="1.4" rx="2.3" ry="1.7" fill="#000" opacity="0.18" filter="url(#edge)" />
+        <ellipse cx="-1.6" cy="-1.6" rx="1.6" ry="1.1" fill="#fff" opacity="0.35" />
+        <circle cx="5.4" cy="-0.6" r="1.5" fill="#2b2320" />
+      </g>
     </g>
   )
 }
@@ -335,6 +378,11 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#8a5a35" />
           <stop offset="1" stopColor="#6b4a2e" />
         </linearGradient>
+        <linearGradient id="bee-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#ffd93d" />
+          <stop offset="0.55" stopColor="#f5b82e" />
+          <stop offset="1" stopColor="#d99518" />
+        </linearGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
           <stop offset="0" stopColor="#c9e0f5" />
           <stop offset="1" stopColor="#aac8e6" />
@@ -402,18 +450,18 @@ export default function Panorama() {
              gibt dem Wald Tiefe, als reiche er weit nach hinten ---------- */}
         <g filter="url(#far)" opacity="0.5">
           <path
-            d="M -60 460 Q -10 350 40 400 Q 80 330 130 395 Q 175 320 225 392 Q 270 335 320 398
-               Q 365 325 415 393 Q 460 340 510 400 Q 555 330 605 395 Q 650 338 700 398
-               Q 745 325 795 392 Q 840 335 890 400 Q 935 345 985 405 Q 1015 360 1050 420
-               L 1050 470 L -60 470 Z"
+            d="M 940 460 Q 990 350 1040 400 Q 1080 330 1130 395 Q 1175 320 1225 392 Q 1270 335 1320 398
+               Q 1365 325 1415 393 Q 1460 340 1510 400 Q 1555 330 1605 395 Q 1650 338 1700 398
+               Q 1745 325 1795 392 Q 1840 335 1890 400 Q 1935 345 1985 405 Q 2015 360 2050 420
+               L 2050 470 L 940 470 Z"
             fill="#1f5c33"
           />
         </g>
         <g filter="url(#far)" opacity="0.65">
           <path
-            d="M -60 480 Q 0 400 60 440 Q 110 380 170 435 Q 220 390 280 438 Q 330 385 390 436
-               Q 440 395 500 438 Q 550 390 610 436 Q 660 398 720 438 Q 770 390 830 436
-               Q 880 400 940 438 Q 980 405 1020 440 L 1020 490 L -60 490 Z"
+            d="M 940 480 Q 1000 400 1060 440 Q 1110 380 1170 435 Q 1220 390 1280 438 Q 1330 385 1390 436
+               Q 1440 395 1500 438 Q 1550 390 1610 436 Q 1660 398 1720 438 Q 1770 390 1830 436
+               Q 1880 400 1940 438 Q 1980 405 2020 440 L 2020 490 L 940 490 Z"
             fill="#2e7a44"
           />
         </g>
@@ -454,57 +502,92 @@ export default function Panorama() {
         {/* dezente Maserung, bricht die glatten Verläufe auf */}
         <rect x="0" y="410" width="6000" height="190" filter="url(#grain)" opacity="0.5" style={{ mixBlendMode: 'overlay' }} />
 
+        {/* ---------- Region: Blumenwiese ---------- */}
+        {/* warmer Sonnenfleck – hebt die Wiese wie ein Lichtstreifen von der übrigen Karte ab */}
+        <ellipse cx="500" cy="480" rx="620" ry="180" fill="#fff3c2" opacity="0.14" filter="url(#soft)" />
+
+        <Tree x={80} y={470} s={0.8} dark />
+        <Flower x={180} y={520} s={1.1} c="#ff5c8a" />
+        <Flower x={320} y={480} s={0.85} c="#b58aff" />
+        <Flower x={450} y={555} s={1.2} c="#ffd93d" />
+        <Flower x={580} y={500} s={0.95} c="#ff7bac" />
+        <Flower x={700} y={545} s={1.1} c="#ff8a5c" />
+        <Flower x={830} y={490} s={0.85} c="#7ec3ff" />
+        <Flower x={930} y={560} s={1.15} c="#ffd93d" />
+
+        {/* dichte Streu aus kleinen Gänseblümchen zwischen den großen Blüten – unregelmäßig
+             verteilt (Mindestabstand zueinander & zu den großen Blüten) statt im Raster */}
+        {[
+          [762, 451, 0.8], [651, 571, 0.8], [511, 567, 0.8],
+          [769, 535, 0.6], [507, 512, 0.6], [820, 581, 0.8],
+          [903, 503, 0.6], [285, 454, 0.8], [419, 467, 0.8],
+          [854, 504, 0.6], [152, 470, 0.6], [976, 457, 0.8],
+          [816, 455, 0.8], [771, 495, 0.8], [565, 540, 0.6],
+          [555, 595, 0.8], [336, 543, 0.8], [296, 569, 0.6],
+          [121, 506, 0.8], [860, 565, 0.6], [45, 493, 0.6],
+          [939, 519, 0.8], [54, 537, 0.8], [511, 472, 0.6],
+          [447, 515, 0.6], [980, 551, 0.6], [233, 450, 0.8],
+          [267, 486, 0.8], [203, 551, 0.8], [976, 499, 0.8],
+          [679, 592, 0.8], [35, 597, 0.8], [621, 540, 0.6],
+          [667, 490, 0.8], [231, 597, 0.6], [202, 493, 0.6],
+          [90, 559, 0.6], [376, 551, 0.8], [372, 484, 0.6],
+          [262, 525, 0.6], [880, 464, 0.6], [609, 480, 0.8],
+          [476, 476, 0.6], [342, 602, 0.8], [14, 466, 0.8],
+          [601, 572, 0.8], [804, 546, 0.8], [9, 565, 0.6],
+          [710, 483, 0.8], [405, 505, 0.6], [717, 596, 0.6],
+          [166, 598, 0.8], [239, 562, 0.8], [655, 456, 0.8],
+          [117, 454, 0.6], [434, 601, 0.6], [924, 601, 0.6],
+          [566, 450, 0.8]
+        ].map(([bx, by, bs], i) => (
+          <Bloom key={i} x={bx} y={by} s={bs} />
+        ))}
+
+        {/* Bienen, fliegen in kleinen Schleifen zwischen den Blumen umher */}
+        <Bee x={400} y={420} s={1} />
+        <Bee x={760} y={440} s={0.9} />
+
+        <Butterfly x={400} y={330} s={1.05} c="#7ec3ff" />
+        <Butterfly x={750} y={290} s={0.8} c="#ffb1c9" />
+
         {/* ---------- Region: Zahlenwald ---------- */}
         {/* zarte grüne Kronen-Abdunklung – wirkt wie Schatten unter dichtem Blätterdach */}
-        <ellipse cx="500" cy="230" rx="680" ry="270" fill="#1f4a2c" opacity="0.1" filter="url(#soft)" />
+        <ellipse cx="1500" cy="230" rx="680" ry="270" fill="#1f4a2c" opacity="0.1" filter="url(#soft)" />
 
         {/* hintere Baumreihe: klein, dunkler, nah am Horizont – zieht den Wald nach hinten */}
-        <Pine x={30} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
-        <Tree x={100} y={398} s={0.42} dark />
-        <Pine x={265} y={402} s={0.48} c="#2e6e3c" cd="#1f5c33" />
-        <Tree x={560} y={400} s={0.46} dark />
-        <Pine x={655} y={392} s={0.5} c="#2e6e3c" cd="#1f5c33" />
-        <Tree x={780} y={415} s={0.48} dark />
-        <Pine x={975} y={432} s={0.55} c="#2e6e3c" cd="#1f5c33" />
+        <Pine x={1030} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={1100} y={398} s={0.42} dark />
+        <Pine x={1265} y={402} s={0.48} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={1560} y={400} s={0.46} dark />
+        <Pine x={1655} y={392} s={0.5} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={1780} y={415} s={0.48} dark />
+        <Pine x={1975} y={432} s={0.55} c="#2e6e3c" cd="#1f5c33" />
 
         {/* mittlere Baumreihe, entlang der bereits vorhandenen Weg-Aussparungen */}
-        <Tree x={120} y={505} s={1.2} />
-        <Tree x={330} y={452} s={0.85} dark />
-        <Pine x={520} y={500} s={0.8} />
-        <Tree x={700} y={458} s={0.8} />
-        <Pine x={905} y={520} s={0.95} />
+        <Tree x={1120} y={505} s={1.2} />
+        <Tree x={1330} y={452} s={0.85} dark />
+        <Pine x={1520} y={500} s={0.8} />
+        <Tree x={1700} y={458} s={0.8} />
+        <Pine x={1905} y={520} s={0.95} />
 
         {/* vordere, größere Baumreihe – rahmt die Szene und macht sie dicht */}
-        <Pine x={55} y={560} s={0.95} />
-        <Tree x={460} y={545} s={0.95} dark />
-        <Pine x={565} y={565} s={0.8} />
-        <Tree x={945} y={565} s={1.05} dark />
+        <Pine x={1055} y={560} s={0.95} />
+        <Tree x={1460} y={545} s={0.95} dark />
+        <Pine x={1565} y={565} s={0.8} />
+        <Tree x={1945} y={565} s={1.05} dark />
 
         {/* Waldboden: Farne, Pilze, ein umgestürzter Stamm */}
-        <Fern x={175} y={588} s={1} />
-        <Fern x={355} y={548} s={0.9} />
-        <Fern x={615} y={588} s={1.05} />
-        <Fern x={875} y={562} s={0.9} />
-        <Log x={475} y={592} s={0.85} rot={-6} />
-        <Mushroom x={250} y={560} />
-        <Mushroom x={790} y={572} s={0.8} cap="#e08a3c" />
-        <Mushroom x={920} y={558} s={0.6} cap="#e08a3c" />
+        <Fern x={1175} y={588} s={1} />
+        <Fern x={1355} y={548} s={0.9} />
+        <Fern x={1615} y={588} s={1.05} />
+        <Fern x={1875} y={562} s={0.9} />
+        <Log x={1475} y={592} s={0.85} rot={-6} />
+        <Mushroom x={1250} y={560} />
+        <Mushroom x={1790} y={572} s={0.8} cap="#e08a3c" />
+        <Mushroom x={1920} y={558} s={0.6} cap="#e08a3c" />
 
         {/* Waldtiere */}
-        <Rabbit x={700} y={530} s={0.8} />
-        <Bear x={390} y={575} s={1.05} />
-
-        {/* ---------- Region: Blumenwiese ---------- */}
-        <Tree x={1080} y={470} s={0.8} dark />
-        <Flower x={1180} y={520} s={1.1} c="#ff5c8a" />
-        <Flower x={1320} y={480} s={0.85} c="#b58aff" />
-        <Flower x={1450} y={555} s={1.2} c="#ffd93d" />
-        <Flower x={1580} y={500} s={0.95} c="#ff7bac" />
-        <Flower x={1700} y={545} s={1.1} c="#ff8a5c" />
-        <Flower x={1830} y={490} s={0.85} c="#7ec3ff" />
-        <Flower x={1930} y={560} s={1.15} c="#ffd93d" />
-        <Butterfly x={1400} y={330} s={1.05} c="#7ec3ff" />
-        <Butterfly x={1750} y={290} s={0.8} c="#ffb1c9" />
+        <Rabbit x={1700} y={530} s={0.8} />
+        <Bear x={1390} y={575} s={1.05} />
 
         {/* ---------- Region: Bergwelt ---------- */}
         <Pine x={2100} y={545} s={0.8} />

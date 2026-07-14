@@ -90,13 +90,21 @@ export function Flower({ x, y, s = 1, c = '#ff7bac' }) {
   const sway = (x * 0.41) % 4
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="1" cy="23" rx="7" ry="2.2" fill="#000" opacity="0.12" />
       <path d="M 0 0 L 0 22" stroke="#3d8a49" strokeWidth="3" />
       <path d="M 0 10 Q 9 6 12 0" stroke="#3d8a49" strokeWidth="2.5" fill="none" />
+      <path d="M 0 4 Q 3.4 8 3 13" stroke="#2c6b38" strokeWidth="1.4" fill="none" opacity="0.5" />
       <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
         {[0, 60, 120, 180, 240, 300].map((a) => (
-          <ellipse key={a} cx="0" cy="-9" rx="5.5" ry="9" fill={c} transform={`rotate(${a})`} />
+          <g key={a} transform={`rotate(${a})`}>
+            <ellipse cx="0" cy="-9" rx="5.5" ry="9" fill={c} />
+            {/* Schlagschatten am äußeren/unteren Blattrand, Licht von links oben */}
+            <ellipse cx="1.8" cy="-11.5" rx="2.6" ry="5.5" fill="#000" opacity="0.16" filter="url(#edge)" />
+            <ellipse cx="-1.6" cy="-6" rx="2" ry="3.8" fill="#fff" opacity="0.3" filter="url(#edge)" />
+          </g>
         ))}
         <circle cx="0" cy="0" r="6" fill="#ffd93d" />
+        <circle cx="1.6" cy="1.6" r="2.8" fill="#c9861c" opacity="0.4" filter="url(#edge)" />
         <circle cx="-1.8" cy="-1.8" r="2.2" fill="#ffe97a" />
       </g>
     </g>

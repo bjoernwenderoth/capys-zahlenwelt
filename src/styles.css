@@ -1424,6 +1424,32 @@ body {
   50% { opacity: 0.8; transform: translateX(10px); }
 }
 
+.pano-bee {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-bee-fly 6s ease-in-out infinite;
+}
+
+@keyframes pano-bee-fly {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(16px, -12px); }
+  40% { transform: translate(30px, 3px); }
+  60% { transform: translate(15px, 16px); }
+  80% { transform: translate(-8px, 5px); }
+  100% { transform: translate(0, 0); }
+}
+
+.pano-bee-wing {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-bee-wing 0.16s ease-in-out infinite alternate;
+}
+
+@keyframes pano-bee-wing {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(0.5); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pano-cloud,
   .pano-glow,
@@ -1431,7 +1457,9 @@ body {
   .pano-flutter,
   .pano-twinkle,
   .pano-pulse,
-  .pano-shimmer {
+  .pano-shimmer,
+  .pano-bee,
+  .pano-bee-wing {
     animation: none;
   }
 }
