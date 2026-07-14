@@ -623,39 +623,6 @@ body {
   height: 100%;
 }
 
-/* Weg durch die Welt */
-.world-road {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.world-road path {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-}
-
-.road-outline {
-  stroke: #a8834f;
-  stroke-width: 30px;
-  opacity: 0.9;
-}
-
-.road-fill {
-  stroke: #ecd9a8;
-  stroke-width: 22px;
-}
-
-.road-dash {
-  stroke: #fff;
-  stroke-width: 4px;
-  stroke-dasharray: 2 14;
-  opacity: 0.9;
-}
-
 /* Weltbanner: feststehende Anzeige der gerade sichtbaren Welt.
    Liegt außerhalb des scrollenden Panoramas, bewegt sich also nicht mit,
    wenn man auf der Karte nach links/rechts scrollt. */

@@ -23,18 +23,20 @@ export function worldUnlocked(index, progress) {
 }
 
 // Level-Stationen auf dem Boden jeder Szene (Koordinaten im 1000×600-Raum).
-// Der Weg schlängelt sich durch den begehbaren Bereich der Landschaft:
-// höher = weiter hinten (kleiner), tiefer = weiter vorne (größer).
-// Die Punkte sind bewusst an den Baum-/Tannen-Positionen in Panorama.jsx
-// vorbeigeführt (daneben statt durch die Baumkrone), damit Weg und Knoten
-// nicht über die Deko hinweglaufen, sondern sich in die Szene einfügen.
+// Der Weg schlängelt sich durch den begehbaren Bereich der Landschaft – aber
+// NUR über die beiden vorderen Boden-Ebenen (mittlerer + vorderer Boden in
+// Panorama.jsx, y ≈ 430–580). Er bleibt bewusst unterhalb der fernen
+// Hügel-/Baumlinie am Horizont, statt darüber hinauszuragen. Bäume & Co.
+// werden in Panorama.jsx INNERHALB des Bodens, aber VOR dem Weg gezeichnet
+// (siehe roadLayer), Deko darf den Weg also überlappen/verdecken – er muss
+// ihr nicht mehr geometrisch ausweichen.
 export const WORLD_NODES = {
-  wald: [[200, 460], [400, 385], [620, 490], [850, 405]],
-  wiese: [[160, 455], [280, 380], [490, 500], [700, 390], [900, 480]],
-  berge: [[50, 555], [280, 502], [490, 560], [740, 495], [850, 555]],
-  see: [[180, 565], [280, 496], [490, 556], [700, 496], [900, 540]],
-  nacht: [[90, 520], [280, 455], [490, 545], [700, 460], [940, 538]],
-  schloss: [[150, 540], [500, 508], [850, 545]]
+  wald: [[190, 470], [420, 438], [640, 500], [860, 448]],
+  wiese: [[150, 470], [300, 436], [480, 505], [660, 442], [900, 478]],
+  berge: [[60, 560], [260, 500], [470, 565], [700, 505], [860, 550]],
+  see: [[170, 560], [300, 500], [480, 558], [680, 502], [900, 545]],
+  nacht: [[80, 525], [300, 462], [470, 548], [680, 468], [940, 535]],
+  schloss: [[140, 545], [500, 505], [860, 548]]
 }
 
 // Alle Level in Spielreihenfolge und ihre Positionen auf der großen Karte
@@ -66,23 +68,36 @@ function catmull(p0, p1, p2, p3, t) {
   ]
 }
 
+// Sanftes, handgezeichnet wirkendes Schlängeln quer zur Laufrichtung –
+// pro Segment leicht anders (Frequenz/Phase hängen vom Segmentindex ab),
+// damit der Weg nicht wie eine gleichförmige Sinuskurve wirkt. Läuft an
+// beiden Segment-Enden auf 0 aus, damit die Level-Knoten exakt auf dem
+// Weg liegen bleiben.
+function handDrawnWiggle(i, t) {
+  const phase = i * 2.7 + 1.3
+  const f1 = 1.5 + (i % 3) * 0.4
+  const f2 = 2.6 + (i % 2) * 0.6
+  const envelope = Math.sin(Math.PI * t)
+  return envelope * (11 * Math.sin(f1 * Math.PI * t + phase) + 5 * Math.sin(f2 * Math.PI * t + phase * 1.7))
+}
+
 // Punkte eines Kurvenabschnitts (Segment i: von pts[i] nach pts[i+1])
 export function sampleSegment(pts, i, n = 30) {
   const p0 = pts[Math.max(0, i - 1)]
   const p1 = pts[i]
   const p2 = pts[i + 1]
   const p3 = pts[Math.min(pts.length - 1, i + 2)]
-  const out = []
-  for (let k = 0; k <= n; k++) out.push(catmull(p0, p1, p2, p3, k / n))
-  return out
-}
-
-export function samplePath(pts, perSeg = 16) {
-  const out = []
-  for (let i = 0; i < pts.length - 1; i++) {
-    const seg = sampleSegment(pts, i, perSeg)
-    out.push(...(i === 0 ? seg : seg.slice(1)))
-  }
+  const raw = []
+  for (let k = 0; k <= n; k++) raw.push(catmull(p0, p1, p2, p3, k / n))
+  const out = raw.map((pt, k) => {
+    const prev = raw[Math.max(0, k - 1)]
+    const next = raw[Math.min(raw.length - 1, k + 1)]
+    const dx = next[0] - prev[0]
+    const dy = next[1] - prev[1]
+    const len = Math.hypot(dx, dy) || 1
+    const w = handDrawnWiggle(i, k / n)
+    return [pt[0] + (-dy / len) * w, pt[1] + (dx / len) * w]
+  })
   return out
 }
 
@@ -91,39 +106,4 @@ export function samplePath(pts, perSeg = 16) {
 // Weltgrenzen exakt gleich groß sind und nahtlos übergehen.
 export function depthNorm(y) {
   return Math.min(1, Math.max(0, (y - 380) / 200))
-}
-
-// Perspektivisches Weg-Band: hinten schmal, vorne breit
-export function ribbonPaths(nodes, exitX = 1002) {
-  const samples = samplePath(extendedPoints(nodes, exitX))
-  const half = (y, f = 1) => (13 + 19 * depthNorm(y)) * f
-
-  function toPath(f) {
-    const left = []
-    const right = []
-    for (let i = 0; i < samples.length; i++) {
-      const cur = samples[i]
-      const prev = samples[Math.max(0, i - 1)]
-      const next = samples[Math.min(samples.length - 1, i + 1)]
-      const dx = next[0] - prev[0]
-      const dy = next[1] - prev[1]
-      const len = Math.hypot(dx, dy) || 1
-      const h = half(cur[1], f)
-      // Normale zur Laufrichtung: eine Seite links, eine rechts vom Weg
-      const nx = (-dy / len) * h
-      const ny = (dx / len) * h
-      left.push([cur[0] + nx, cur[1] + ny])
-      right.push([cur[0] - nx, cur[1] - ny])
-    }
-    right.reverse()
-    return (
-      'M ' +
-      left.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L ') +
-      ' L ' +
-      right.map((p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L ') +
-      ' Z'
-    )
-  }
-
-  return { outer: toPath(1), inner: toPath(0.68), center: samples }
 }

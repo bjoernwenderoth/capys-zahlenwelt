@@ -400,7 +400,7 @@ function SharedDefs() {
   )
 }
 
-export default function Panorama() {
+export default function Panorama({ roadLayer } = {}) {
   return (
     <div className="panorama-scene" aria-hidden="true">
       <SharedDefs />
@@ -501,6 +501,11 @@ export default function Panorama() {
         />
         {/* dezente Maserung, bricht die glatten Verläufe auf */}
         <rect x="0" y="410" width="6000" height="190" filter="url(#grain)" opacity="0.5" style={{ mixBlendMode: 'overlay' }} />
+
+        {/* Weg: liegt auf dem Boden, aber UNTER der gesamten Deko (Bäume,
+            Büsche, Tiere …), damit die Deko realistisch vor/neben dem Weg
+            steht statt dass der Weg über Baumkronen gemalt wird. */}
+        {roadLayer}
 
         {/* ---------- Region: Blumenwiese ---------- */}
         {/* warmer Sonnenfleck – hebt die Wiese wie ein Lichtstreifen von der übrigen Karte ab */}
