@@ -25,6 +25,10 @@ const WELCOME = [
 
 const KIND_ICON = { review: '🔁', final: '👑' }
 
+// Temporär deaktiviert, während die Welten gestaltet werden.
+// Zum Reaktivieren einfach wieder auf true setzen.
+const FOG_ENABLED = false
+
 // Weg und Punkte einmal für die gesamte Karte berechnen
 const EXIT_X = MAP_WIDTH + 2
 const PTS = extendedPoints(GLOBAL_NODES, EXIT_X)
@@ -426,7 +430,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
           {/* Nebel über noch nicht erreichten Regionen:
               ein Teaser-Nebel über der nächsten Welt und EIN durchgehender
               dichter Nebel über allem danach (keine Kanten zwischen Zonen) */}
-          {(() => {
+          {FOG_ENABLED && (() => {
             const teaserIdx = firstOpenWorld + 1
             const denseStart = firstOpenWorld + 2
             const R = 100 / WORLDS.length
