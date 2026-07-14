@@ -476,10 +476,6 @@ body {
   transform: translateX(calc(var(--scroll, 0px) * 0.018));
 }
 
-.pano-layer-front {
-  transform: translateX(calc(var(--scroll, 0px) * -0.018));
-}
-
 /* Nebel über gesperrten Regionen der Karte */
 .fog-zone {
   position: absolute;

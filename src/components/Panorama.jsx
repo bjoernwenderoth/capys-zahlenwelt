@@ -3,10 +3,10 @@
 // Weg verbindet alle Level. Themen-Deko markiert die Regionen:
 // Wald → Blumenwiese → Berge → Sonnensee → Sternenhimmel → Königsschloss
 //
-// Fünf Tiefenebenen (Himmel, ferne Hügel, Wolken, Hauptebene mit dem Weg,
-// nahe Vordergrund-Deko) bewegen sich beim Scrollen minimal unterschiedlich
-// schnell (siehe --scroll in Path.jsx), dazu kommen dezente Animationen
-// (Treiben, Glitzern, Wiegen) für einen lebendigeren, weniger flachen Look.
+// Vier Tiefenebenen (Himmel, ferne Hügel, Wolken, Hauptebene mit dem Weg)
+// bewegen sich beim Scrollen minimal unterschiedlich schnell (siehe --scroll
+// in Path.jsx), dazu kommen dezente Animationen (Treiben, Glitzern, Wiegen)
+// für einen lebendigeren, weniger flachen Look.
 
 import { Cloud, Sun, Tree, Pine, Flower, Butterfly, Star, Mountain } from './Scenes.jsx'
 
@@ -18,6 +18,40 @@ function Mushroom({ x, y, s = 1, cap = '#e05252' }) {
       <path d="M -16 -6 A 16 12 0 0 1 16 -6 Z" fill={cap} />
       <circle cx="-7" cy="-12" r="3" fill="#fff" />
       <circle cx="6" cy="-10" r="2.4" fill="#fff" />
+    </g>
+  )
+}
+
+// Farn für den Waldboden – mehrere Wedel fächern sich vom Ansatzpunkt auf
+function Fern({ x, y, s = 1, c = '#2e6e3c' }) {
+  const delay = (x * 0.31) % 4
+  const frond = (angle, len) => {
+    const rad = (angle * Math.PI) / 180
+    const ex = Math.sin(rad) * len
+    const ey = -Math.cos(rad) * len
+    return `M 0 2 Q ${(ex * 0.35).toFixed(1)} ${(ey * 0.5).toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`
+  }
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <g className="pano-sway" style={{ animationDelay: `-${delay}s` }}>
+        {[-42, -20, 0, 20, 42].map((a) => (
+          <path key={a} d={frond(a, 28 - Math.abs(a) * 0.18)} stroke={c} strokeWidth="5" fill="none" strokeLinecap="round" />
+        ))}
+      </g>
+    </g>
+  )
+}
+
+// Umgestürzter Baumstamm – Waldboden-Deko, unterstreicht den "gewachsenen" Wald
+function Log({ x, y, s = 1, rot = 0 }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+      <ellipse cx="0" cy="10" rx="52" ry="8" fill="#000" opacity="0.15" />
+      <rect x="-50" y="-8" width="100" height="16" rx="8" fill="#8a5a35" />
+      <rect x="-50" y="-9" width="100" height="5" rx="2.5" fill="#a97a4d" opacity="0.6" />
+      <ellipse cx="-50" cy="0" rx="8" ry="8" fill="#6e4527" />
+      <ellipse cx="-50" cy="0" rx="5" ry="5" fill="#c9a874" />
+      <path d="M -18 -6 q 4 -3 8 0 M 4 -5 q 4 -3 8 0 M 24 -6 q 4 -3 8 0" stroke="#6e4527" strokeWidth="2" fill="none" opacity="0.5" />
     </g>
   )
 }
@@ -86,21 +120,6 @@ function Castle({ x, y, s = 1 }) {
       <rect x="-30" y="-52" width="60" height="52" rx="28" fill="none" stroke="#6e4527" strokeWidth="5" />
       <path d="M 0 -50 L 0 0" stroke="#6e4527" strokeWidth="3" />
       <path d="M -18 0 L 18 0 L 40 40 L -40 40 Z" fill="#e8d5ae" />
-    </g>
-  )
-}
-
-// Grasbüschel für den nächsten Vordergrund – rein dekorativ, ohne Bezug
-// zu Weg/Knoten-Koordinaten, wiegt sich leicht im Wind
-function GrassTuft({ x, y, s = 1, c = '#3d8a49' }) {
-  const delay = (x * 0.23) % 4
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <g className="pano-sway" style={{ animationDelay: `-${delay}s` }}>
-        <path d="M -10 0 Q -12 -20 -3 -30" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M 0 0 Q -1 -26 0 -34" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M 10 0 Q 12 -18 4 -28" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
-      </g>
     </g>
   )
 }
@@ -266,6 +285,26 @@ export default function Panorama() {
           <Mountain x={2120} y={460} w={460} h={230} c="#aac8e6" cd="#93b6da" />
           <Mountain x={2850} y={460} w={420} h={200} c="#aac8e6" cd="#93b6da" />
         </g>
+
+        {/* ---------- Zahlenwald: dichte Baumkronen-Silhouette am Horizont –
+             gibt dem Wald Tiefe, als reiche er weit nach hinten ---------- */}
+        <g filter="url(#far)" opacity="0.5">
+          <path
+            d="M -60 460 Q -10 350 40 400 Q 80 330 130 395 Q 175 320 225 392 Q 270 335 320 398
+               Q 365 325 415 393 Q 460 340 510 400 Q 555 330 605 395 Q 650 338 700 398
+               Q 745 325 795 392 Q 840 335 890 400 Q 935 345 985 405 Q 1015 360 1050 420
+               L 1050 470 L -60 470 Z"
+            fill="#1f5c33"
+          />
+        </g>
+        <g filter="url(#far)" opacity="0.65">
+          <path
+            d="M -60 480 Q 0 400 60 440 Q 110 380 170 435 Q 220 390 280 438 Q 330 385 390 436
+               Q 440 395 500 438 Q 550 390 610 436 Q 660 398 720 438 Q 770 390 830 436
+               Q 880 400 940 438 Q 980 405 1020 440 L 1020 490 L -60 490 Z"
+            fill="#2e7a44"
+          />
+        </g>
       </svg>
 
       {/* ---------- Ebene 3: Wolken (treiben unabhängig, eigenes Tempo) ---------- */}
@@ -304,13 +343,40 @@ export default function Panorama() {
         <rect x="0" y="410" width="6000" height="190" filter="url(#grain)" opacity="0.5" style={{ mixBlendMode: 'overlay' }} />
 
         {/* ---------- Region: Zahlenwald ---------- */}
+        {/* zarte grüne Kronen-Abdunklung – wirkt wie Schatten unter dichtem Blätterdach */}
+        <ellipse cx="500" cy="230" rx="680" ry="270" fill="#1f4a2c" opacity="0.1" filter="url(#soft)" />
+
+        {/* hintere Baumreihe: klein, dunkler, nah am Horizont – zieht den Wald nach hinten */}
+        <Pine x={30} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={100} y={398} s={0.42} dark />
+        <Pine x={265} y={402} s={0.48} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={560} y={400} s={0.46} dark />
+        <Pine x={655} y={392} s={0.5} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={780} y={415} s={0.48} dark />
+        <Pine x={975} y={432} s={0.55} c="#2e6e3c" cd="#1f5c33" />
+
+        {/* mittlere Baumreihe, entlang der bereits vorhandenen Weg-Aussparungen */}
         <Tree x={120} y={505} s={1.2} />
         <Tree x={330} y={452} s={0.85} dark />
         <Pine x={520} y={500} s={0.8} />
         <Tree x={700} y={458} s={0.8} />
         <Pine x={905} y={520} s={0.95} />
+
+        {/* vordere, größere Baumreihe – rahmt die Szene und macht sie dicht */}
+        <Pine x={55} y={560} s={0.95} />
+        <Tree x={460} y={545} s={0.95} dark />
+        <Pine x={565} y={565} s={0.8} />
+        <Tree x={945} y={565} s={1.05} dark />
+
+        {/* Waldboden: Farne, Pilze, ein umgestürzter Stamm */}
+        <Fern x={175} y={588} s={1} />
+        <Fern x={355} y={548} s={0.9} />
+        <Fern x={615} y={588} s={1.05} />
+        <Fern x={875} y={562} s={0.9} />
+        <Log x={475} y={592} s={0.85} rot={-6} />
         <Mushroom x={250} y={560} />
         <Mushroom x={790} y={572} s={0.8} cap="#e08a3c" />
+        <Mushroom x={920} y={558} s={0.6} cap="#e08a3c" />
 
         {/* ---------- Region: Blumenwiese ---------- */}
         <Tree x={1080} y={470} s={0.8} dark />
@@ -375,20 +441,6 @@ export default function Panorama() {
         <Flower x={5130} y={555} s={1.05} c="#ff7bac" />
         <Flower x={5860} y={560} s={1.0} c="#ffd93d" />
         <Flower x={5960} y={520} s={0.85} c="#b58aff" />
-      </svg>
-
-      {/* ---------- Ebene 5: nächster Vordergrund – Gras direkt am unteren
-           Rand, rein dekorativ (kein Bezug zu Weg-Koordinaten) ---------- */}
-      <svg className="pano-layer pano-layer-front" viewBox="0 0 6000 600" preserveAspectRatio="none">
-        {[160, 470, 830, 1220, 1620, 2050, 2480, 2950, 3260, 3680, 4080, 4460, 4820, 5220, 5680, 5960].map((x, i) => (
-          <GrassTuft
-            key={x}
-            x={x}
-            y={594}
-            s={0.9 + (i % 3) * 0.15}
-            c={x >= 4080 && x < 4950 ? '#0e1a36' : x >= 3180 && x < 3980 ? '#3f9c53' : '#3d8a49'}
-          />
-        ))}
       </svg>
     </div>
   )
