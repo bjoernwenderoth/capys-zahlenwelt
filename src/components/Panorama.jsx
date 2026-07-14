@@ -114,6 +114,50 @@ function Rabbit({ x, y, s = 1 }) {
   )
 }
 
+function Bear({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="11" rx="23" ry="5" fill="#000" opacity="0.15" />
+
+      {/* Körper, kräftig-rund, Licht links oben → Schatten rechts unten */}
+      <path d="M -18 15 Q -22 -8 -10 -15 Q 0 -19 10 -15 Q 22 -8 18 15 Q 18 19 0 20 Q -18 19 -18 15 Z" fill="url(#bear-grad)" />
+
+      {/* Pfoten, kräftig */}
+      <ellipse cx="-7" cy="16" rx="5" ry="3.6" fill="#4a3626" />
+      <ellipse cx="7" cy="16" rx="5" ry="3.6" fill="#4a3626" />
+
+      {/* helleres Brustfell */}
+      <ellipse cx="0" cy="8" rx="9" ry="8" fill="#c9a06a" />
+
+      {/* Ein durchgehender Schlagschatten über Körper UND Brustfell hinweg */}
+      <path d="M 10 -15 Q 22 -8 18 15 Q 18 19 0 20 Q 6 11 8 -1 Q 9 -8 10 -15 Z" fill="#5c3f22" opacity="0.25" filter="url(#edge)" />
+
+      {/* Ohren: klein, rund, mit eigenem Mulden-Schatten */}
+      <circle cx="-9" cy="-30" r="5.5" fill="url(#bear-grad)" />
+      <circle cx="-8.5" cy="-29" r="3" fill="#6b4a2e" opacity="0.6" filter="url(#edge)" />
+      <circle cx="9" cy="-30" r="5.5" fill="url(#bear-grad)" />
+      <circle cx="8.5" cy="-29" r="3" fill="#6b4a2e" opacity="0.6" filter="url(#edge)" />
+
+      {/* Kopf, überdeckt die Ohren-Basis */}
+      <ellipse cx="0" cy="-20" rx="13" ry="12" fill="url(#bear-grad)" />
+      {/* Schlagschatten am Kopf, rechte/untere Wange */}
+      <path d="M 7 -13 Q 12 -18 11 -25 Q 12 -18 9 -12 Q 4 -9 -2 -9 Q 4 -10 7 -13 Z" fill="#4a3320" opacity="0.35" filter="url(#edge)" />
+
+      {/* Rundliche, helle Schnauze mit eigenem kleinen Schatten */}
+      <ellipse cx="0" cy="-14" rx="7.5" ry="6" fill="#c9a06a" />
+      <ellipse cx="2.5" cy="-12.5" rx="3.4" ry="2.4" fill="#a37c4d" opacity="0.4" filter="url(#edge)" />
+
+      {/* Augen (klein, eng beieinander) & große runde Nase */}
+      <circle cx="-4" cy="-21" r="1.4" fill="#2b2320" />
+      <circle cx="4" cy="-21" r="1.4" fill="#2b2320" />
+      <circle cx="-3.4" cy="-21.6" r="0.5" fill="#fff" />
+      <circle cx="4.6" cy="-21.6" r="0.5" fill="#fff" />
+      <ellipse cx="0" cy="-15" rx="2.6" ry="2" fill="#2b2320" />
+      <ellipse cx="-0.8" cy="-15.6" rx="0.6" ry="0.4" fill="#fff" opacity="0.5" />
+    </g>
+  )
+}
+
 function Boat({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
@@ -286,6 +330,11 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#cfa77a" />
           <stop offset="1" stopColor="#a9825a" />
         </linearGradient>
+        <linearGradient id="bear-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#a97c52" />
+          <stop offset="0.55" stopColor="#8a5a35" />
+          <stop offset="1" stopColor="#6b4a2e" />
+        </linearGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
           <stop offset="0" stopColor="#c9e0f5" />
           <stop offset="1" stopColor="#aac8e6" />
@@ -443,6 +492,7 @@ export default function Panorama() {
 
         {/* Waldtiere */}
         <Rabbit x={700} y={530} s={0.8} />
+        <Bear x={390} y={575} s={1.05} />
 
         {/* ---------- Region: Blumenwiese ---------- */}
         <Tree x={1080} y={470} s={0.8} dark />
