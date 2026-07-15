@@ -1417,6 +1417,17 @@ body {
   100% { transform: scaleY(0.5); }
 }
 
+.pano-soar {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pano-soar 3.2s ease-in-out infinite;
+}
+
+@keyframes pano-soar {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(10px, -9px) rotate(-4deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pano-cloud,
   .pano-glow,
@@ -1426,7 +1437,8 @@ body {
   .pano-pulse,
   .pano-shimmer,
   .pano-bee,
-  .pano-bee-wing {
+  .pano-bee-wing,
+  .pano-soar {
     animation: none;
   }
 }
