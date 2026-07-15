@@ -377,6 +377,106 @@ function Fish({ x, y, s = 1, flip = false }) {
   )
 }
 
+// Fels – Streu-Deko für den Bergpfad, Licht links oben → Schatten rechts unten
+function Rock({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="10" rx="20" ry="5" fill="#000" opacity="0.15" />
+      <path d="M -18 8 Q -22 -8 -6 -14 Q 4 -20 14 -12 Q 22 -6 18 8 Q 0 14 -18 8 Z" fill="url(#rock-grad)" />
+      <path d="M 8 -14 Q 22 -6 18 8 Q 8 12 2 10 Q 10 2 10 -6 Q 10 -11 8 -14 Z" fill="#465a68" opacity="0.4" filter="url(#edge)" />
+      <path d="M -14 -8 Q -8 -14 0 -13" stroke="#fff" strokeWidth="2" opacity="0.3" fill="none" strokeLinecap="round" />
+    </g>
+  )
+}
+
+// Steinmann – gestapelte Felsbrocken, markiert den Bergpfad
+function Cairn({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="2" rx="16" ry="4" fill="#000" opacity="0.15" />
+      <ellipse cx="0" cy="0" rx="15" ry="8" fill="url(#rock-grad)" />
+      <ellipse cx="3" cy="1" rx="6" ry="3.4" fill="#465a68" opacity="0.35" filter="url(#edge)" />
+      <ellipse cx="0" cy="-9" rx="11" ry="6" fill="url(#rock-grad)" />
+      <ellipse cx="2" cy="-8" rx="4.4" ry="2.6" fill="#465a68" opacity="0.35" filter="url(#edge)" />
+      <ellipse cx="0" cy="-17" rx="7" ry="4.4" fill="url(#rock-grad)" />
+      <ellipse cx="1.5" cy="-16" rx="2.6" ry="1.8" fill="#465a68" opacity="0.35" filter="url(#edge)" />
+    </g>
+  )
+}
+
+// Alpenblume (Edelweiß-artig) – fusselig-weiße Blätter statt glatter Blütenblätter
+function AlpineFlower({ x, y, s = 1 }) {
+  const sway = (x * 0.41) % 4
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <path d="M 0 0 L 0 9" stroke="#7a9c5a" strokeWidth="2" />
+      <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
+        {[0, 60, 120, 180, 240, 300].map((a) => (
+          <ellipse key={a} cx="0" cy="-3.6" rx="2.2" ry="3.6" fill="#f2ede0" transform={`rotate(${a})`} />
+        ))}
+        <path d="M 1 -1.4 Q 3 0 2.4 2 Q 0.6 2.6 -0.6 1.8 Q 0.2 0.4 1 -1.4 Z" fill="#c9c2ac" opacity="0.35" filter="url(#edge)" />
+        <circle cx="0" cy="0" r="1.6" fill="#ffd93d" />
+      </g>
+    </g>
+  )
+}
+
+// Steinbock – steht still auf dem Fels, aufgebaut wie die anderen Waldtiere
+// (Körper → Kopf → Hörner → Gesicht), mit Verlauf & weichem Schlagschatten
+function Goat({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="14" rx="19" ry="4.2" fill="#000" opacity="0.15" />
+
+      {/* Beine & Hufe */}
+      <rect x="-11" y="0" width="4" height="14" rx="2" fill="#e8e0d0" />
+      <rect x="7" y="0" width="4" height="14" rx="2" fill="#e8e0d0" />
+      <ellipse cx="-9" cy="14" rx="2.6" ry="1.6" fill="#3a332b" />
+      <ellipse cx="9" cy="14" rx="2.6" ry="1.6" fill="#3a332b" />
+
+      {/* Schwänzchen */}
+      <ellipse cx="-17" cy="0" rx="3" ry="2.2" fill="#e8e0d0" />
+
+      {/* Körper, Licht links oben → Schatten rechts unten */}
+      <path d="M -16 2 Q -18 -10 -6 -13 Q 6 -16 15 -8 Q 19 -2 15 4 Q 15 8 0 9 Q -16 8 -16 2 Z" fill="url(#goat-grad)" />
+      <path d="M 8 -13 Q 19 -2 15 4 Q 15 8 0 9 Q 6 3 8 -4 Q 9 -9 8 -13 Z" fill="#a89c86" opacity="0.35" filter="url(#edge)" />
+
+      {/* Hörner, geschwungen nach hinten */}
+      <path d="M 14 -19 Q 12 -27 17 -31" stroke="#8a7a62" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+      <path d="M 18 -19 Q 18 -27 23 -30" stroke="#8a7a62" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+
+      {/* Kopf, überdeckt die Hornansätze */}
+      <ellipse cx="17" cy="-13" rx="7.5" ry="7" fill="url(#goat-grad)" />
+      <path d="M 21 -18 Q 25 -16 24 -10 Q 22 -13 19 -14 Z" fill="#a89c86" opacity="0.4" filter="url(#edge)" />
+
+      {/* Ohren */}
+      <path d="M 12 -16 Q 8 -18 8 -14 Q 11 -12 14 -13 Z" fill="#e8e0d0" />
+
+      {/* Schnauze & Gesicht */}
+      <ellipse cx="22" cy="-10" rx="3.6" ry="3" fill="#f4efe4" />
+      <circle cx="19" cy="-14" r="1.3" fill="#2b2320" />
+      <circle cx="18.4" cy="-14.5" r="0.4" fill="#fff" />
+      <ellipse cx="23" cy="-9.5" rx="1" ry="0.8" fill="#3a332b" />
+    </g>
+  )
+}
+
+// Adler – zieht große, ruhige Kreise hoch über den Bergen
+function Eagle({ x, y, s = 1 }) {
+  const delay = (x * 0.37 + y * 0.21) % 6
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <g className="pano-soar" style={{ animationDelay: `-${delay}s` }}>
+        <path d="M -22 0 Q -10 -14 0 -2 Q 10 -14 22 0 Q 10 -4 0 2 Q -10 -4 -22 0 Z" fill="#4a3626" />
+        <path d="M -22 0 Q -10 -8 0 -2" stroke="#6b4a2e" strokeWidth="1.6" fill="none" opacity="0.6" />
+        <path d="M 22 0 Q 10 -8 0 -2" stroke="#6b4a2e" strokeWidth="1.6" fill="none" opacity="0.6" />
+        <ellipse cx="0" cy="-1" rx="3" ry="2" fill="#e8dcc0" />
+      </g>
+    </g>
+  )
+}
+
+// Wasserfall – kaskadiert eine Bergflanke hinab in ein kleines Becken
 function Castle({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
@@ -553,6 +653,16 @@ function SharedDefs() {
           <stop offset="0" stopColor="#f2895c" />
           <stop offset="0.55" stopColor="#e2703f" />
           <stop offset="1" stopColor="#c9502e" />
+        </linearGradient>
+        <linearGradient id="rock-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#c3d0d6" />
+          <stop offset="0.55" stopColor="#94a6b0" />
+          <stop offset="1" stopColor="#6b7a86" />
+        </linearGradient>
+        <linearGradient id="goat-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#f4efe4" />
+          <stop offset="0.55" stopColor="#d9d0bc" />
+          <stop offset="1" stopColor="#b8a888" />
         </linearGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
           <stop offset="0" stopColor="#c9e0f5" />
@@ -775,11 +885,49 @@ export default function Panorama({ roadLayer } = {}) {
         <Bear x={1390} y={575} s={1.05} />
 
         {/* ---------- Region: Bergwelt ---------- */}
+        {/* Kiefern in mehreren Reihen, unterschiedlich groß für Tiefe */}
         <Pine x={2100} y={545} s={0.8} />
         <Pine x={2430} y={525} s={0.6} />
         <Pine x={2650} y={555} s={0.85} />
         <Pine x={2920} y={540} s={0.7} />
-        <path d="M 2560 160 q 14 -12 28 0 q 14 -12 28 0" stroke="#3a4a5c" strokeWidth="4" fill="none" strokeLinecap="round" />
+        <Pine x={2050} y={588} s={0.6} />
+        <Pine x={2200} y={568} s={0.7} />
+        <Pine x={2320} y={592} s={0.55} />
+        <Pine x={2550} y={582} s={0.75} />
+        <Pine x={2780} y={565} s={0.65} />
+        <Pine x={2870} y={592} s={0.7} />
+        <Pine x={2980} y={562} s={0.6} />
+
+        {/* Felsbrocken & Steinmänner säumen den Bergpfad */}
+        <Rock x={2150} y={596} s={1} />
+        <Rock x={2350} y={556} s={0.7} />
+        <Rock x={2500} y={593} s={0.85} />
+        <Rock x={2620} y={572} s={0.6} />
+        <Rock x={2750} y={596} s={0.95} />
+        <Rock x={2900} y={559} s={0.65} />
+        <Cairn x={2400} y={586} s={0.75} />
+        <Cairn x={2830} y={576} s={0.7} />
+
+        {/* Alpenblumen zwischen den Felsen */}
+        <AlpineFlower x={2080} y={600} s={0.8} />
+        <AlpineFlower x={2180} y={548} s={0.7} />
+        <AlpineFlower x={2280} y={585} s={0.9} />
+        <AlpineFlower x={2380} y={610} s={0.75} />
+        <AlpineFlower x={2480} y={555} s={0.8} />
+        <AlpineFlower x={2580} y={600} s={0.7} />
+        <AlpineFlower x={2680} y={548} s={0.85} />
+        <AlpineFlower x={2780} y={608} s={0.75} />
+        <AlpineFlower x={2880} y={540} s={0.8} />
+        <AlpineFlower x={2960} y={598} s={0.7} />
+
+        {/* Steinböcke stehen still auf den Felsen */}
+        <Goat x={2250} y={548} s={0.85} />
+        <Goat x={2720} y={560} s={0.75} />
+
+        {/* Adler ziehen ruhige Kreise hoch über den Gipfeln */}
+        <Eagle x={2200} y={170} s={1} />
+        <Eagle x={2650} y={140} s={0.9} />
+        <Eagle x={2900} y={190} s={0.8} />
 
         {/* ---------- Region: Sonnensee ---------- */}
         {/* warmer Glanzstreifen auf dem Wasser, wie Sonnenlicht auf der Oberfläche */}
