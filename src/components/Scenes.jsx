@@ -148,34 +148,94 @@ const MOUNTAIN_GRAD = {
 }
 
 export function Mountain({ x, y, w, h, c = '#7fa8cf', cd = '#5f88b3', snow = true }) {
-  const rid = (dx, dy) => `${(x + w * dx).toFixed(1)},${(y - h * dy).toFixed(1)}`
-  const peakX = x
-  const peakY = y - h
   const fill = MOUNTAIN_GRAD[c] ? `url(#${MOUNTAIN_GRAD[c]})` : c
+  const mountainPath = `M ${-w / 2} 0 L ${-w * 0.38} ${-h * 0.25} L ${-w * 0.29} ${-h * 0.43}
+    L ${-w * 0.2} ${-h * 0.5} L ${-w * 0.11} ${-h * 0.8} L ${-w * 0.045} ${-h * 0.88}
+    L 0 ${-h} L ${w * 0.055} ${-h * 0.86} L ${w * 0.13} ${-h * 0.73}
+    L ${w * 0.2} ${-h * 0.58} L ${w * 0.32} ${-h * 0.4} L ${w / 2} 0 Z`
   return (
-    <g>
+    <g transform={`translate(${x} ${y})`}>
+      {/* Grundkörper mit kleinen Vorgipfeln und einer unregelmäßigen Gratlinie. */}
       <path
-        d={`M ${x - w / 2} ${y} L ${rid(-0.3, 0.42)} L ${rid(-0.1, 0.78)} L ${peakX} ${peakY} L ${rid(0.14, 0.7)} L ${rid(0.32, 0.4)} L ${x + w / 2} ${y} Z`}
+        d={mountainPath}
         fill={fill}
+        stroke={fill}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* Große Felsflächen: Licht fällt konsequent von links oben ein. */}
+      <path
+        d={`M 0 ${-h} L ${-w * 0.045} ${-h * 0.88} L ${-w * 0.11} ${-h * 0.8}
+            L ${-w * 0.2} ${-h * 0.5} L ${-w * 0.38} ${-h * 0.25} L ${-w / 2} 0
+            L ${-w * 0.14} ${-h * 0.12} L ${-w * 0.055} ${-h * 0.52} Z`}
+        fill="#fff" opacity="0.11" filter="url(#edge)"
       />
       <path
-        d={`M ${peakX} ${peakY} L ${rid(0.14, 0.7)} L ${rid(0.32, 0.4)} L ${x + w / 2} ${y} L ${rid(0.08, 0)} Z`}
-        fill={cd}
-        opacity="0.9"
+        d={`M 0 ${-h} L ${w * 0.055} ${-h * 0.86} L ${w * 0.13} ${-h * 0.73}
+            L ${w * 0.2} ${-h * 0.58} L ${w * 0.32} ${-h * 0.4} L ${w / 2} 0
+            L ${w * 0.08} 0 L ${w * 0.035} ${-h * 0.42} Z`}
+        fill={cd} opacity="0.7" filter="url(#edge)"
+      />
+      <path
+        d={`M ${w * 0.035} ${-h * 0.42} L ${w * 0.13} ${-h * 0.73} L ${w * 0.2} ${-h * 0.58}
+            L ${w * 0.12} ${-h * 0.28} L ${w * 0.28} ${-h * 0.08} L ${w * 0.08} 0 Z`}
+        fill="#58738b" opacity="0.13" filter="url(#edge)"
+      />
+      {/* Die klare Bergsilhouette liegt hinter dem Schnee: So bleibt der
+          Felsrand präzise, ohne am verschneiten Gipfel durchzuscheinen. */}
+      <path
+        d={mountainPath}
+        fill="none"
+        stroke={fill}
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
       />
       {snow && (
-        <path
-          d={`M ${rid(-0.05, 0.87)} L ${peakX} ${peakY} L ${rid(0.05, 0.87)} L ${rid(0.024, 0.82)} L ${rid(-0.024, 0.82)} Z`}
-          fill="#fff"
-        />
+        <g>
+          <path
+            d={`M ${-w * 0.105} ${-h * 0.79} L ${-w * 0.045} ${-h * 0.88} L 0 ${-h}
+                L ${w * 0.055} ${-h * 0.86} L ${w * 0.12} ${-h * 0.74}
+                Q ${w * 0.095} ${-h * 0.755} ${w * 0.075} ${-h * 0.77}
+                Q ${w * 0.058} ${-h * 0.735} ${w * 0.045} ${-h * 0.68}
+                Q ${w * 0.028} ${-h * 0.735} ${w * 0.012} ${-h * 0.78}
+                Q ${-w * 0.006} ${-h * 0.735} ${-w * 0.025} ${-h * 0.7}
+                Q ${-w * 0.04} ${-h * 0.755} ${-w * 0.055} ${-h * 0.78}
+                Q ${-w * 0.08} ${-h * 0.765} ${-w * 0.105} ${-h * 0.79} Z`}
+            fill="#e8f1f7"
+            opacity="0.94"
+            stroke="#e8f1f7"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+          <path
+            d={`M 0 ${-h} L ${w * 0.055} ${-h * 0.86} L ${w * 0.12} ${-h * 0.74}
+                Q ${w * 0.095} ${-h * 0.755} ${w * 0.075} ${-h * 0.77}
+                Q ${w * 0.058} ${-h * 0.735} ${w * 0.045} ${-h * 0.68}
+                Q ${w * 0.028} ${-h * 0.735} ${w * 0.012} ${-h * 0.78} Z`}
+            fill="#b9cedd" opacity="0.58" filter="url(#edge)"
+          />
+          <path
+            d={`M ${-w * 0.065} ${-h * 0.84} L ${-w * 0.018} ${-h * 0.94}`}
+            stroke="#f7fbff" strokeWidth="3" opacity="0.38" strokeLinecap="round" filter="url(#edge)"
+          />
+        </g>
       )}
+      {/* Geröllrinnen, Felsbänder und sonnenbeschienene Kanten. */}
       <path
-        d={`M ${rid(-0.18, 0.3)} l 10 20 M ${rid(-0.03, 0.16)} l 8 18 M ${rid(0.22, 0.22)} l -8 16`}
-        stroke={cd}
-        strokeWidth="3"
-        opacity="0.3"
+        d={`M ${-w * 0.11} ${-h * 0.72} L ${-w * 0.16} ${-h * 0.55} L ${-w * 0.13} ${-h * 0.39}
+            M ${-w * 0.25} ${-h * 0.4} L ${-w * 0.18} ${-h * 0.34} L ${-w * 0.21} ${-h * 0.22}
+            M ${w * 0.13} ${-h * 0.56} L ${w * 0.09} ${-h * 0.39} L ${w * 0.16} ${-h * 0.25}
+            M ${w * 0.25} ${-h * 0.34} L ${w * 0.2} ${-h * 0.2} L ${w * 0.27} ${-h * 0.1}`}
+        stroke="#49677f" strokeWidth="3" opacity="0.2"
         strokeLinecap="round"
         filter="url(#edge)"
+      />
+      <path
+        d={`M ${-w * 0.31} ${-h * 0.31} L ${-w * 0.23} ${-h * 0.42}
+            M ${-w * 0.18} ${-h * 0.55} L ${-w * 0.12} ${-h * 0.7}
+            M ${w * 0.2} ${-h * 0.18} L ${w * 0.3} ${-h * 0.29}`}
+        stroke="#fff" strokeWidth="3.5" opacity="0.16" strokeLinecap="round" filter="url(#edge)"
       />
     </g>
   )
@@ -213,6 +273,15 @@ function Defs() {
       </linearGradient>
       <linearGradient id="wiese-grad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="#8ed36c" /><stop offset="1" stopColor="#5cb04a" />
+      </linearGradient>
+      <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.5" y2="1">
+        <stop offset="0" stopColor="#d9eafa" /><stop offset="0.5" stopColor="#bcd6ed" /><stop offset="1" stopColor="#9ebfdd" />
+      </linearGradient>
+      <linearGradient id="mtn-grad-mid" x1="0" y1="0" x2="0.65" y2="1">
+        <stop offset="0" stopColor="#b3d0e9" /><stop offset="0.48" stopColor="#83acd1" /><stop offset="1" stopColor="#688fb6" />
+      </linearGradient>
+      <linearGradient id="mtn-grad-near" x1="0" y1="0" x2="0.7" y2="1">
+        <stop offset="0" stopColor="#8ba8c3" /><stop offset="0.5" stopColor="#607f9f" /><stop offset="1" stopColor="#405d7b" />
       </linearGradient>
     </defs>
   )

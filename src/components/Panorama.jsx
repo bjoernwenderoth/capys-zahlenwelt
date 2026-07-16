@@ -664,17 +664,20 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#d9d0bc" />
           <stop offset="1" stopColor="#b8a888" />
         </linearGradient>
-        <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0" stopColor="#c9e0f5" />
-          <stop offset="1" stopColor="#aac8e6" />
+        <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.5" y2="1">
+          <stop offset="0" stopColor="#d9eafa" />
+          <stop offset="0.5" stopColor="#bcd6ed" />
+          <stop offset="1" stopColor="#9ebfdd" />
         </linearGradient>
-        <linearGradient id="mtn-grad-mid" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0" stopColor="#9dc0e0" />
-          <stop offset="1" stopColor="#7fa8cf" />
+        <linearGradient id="mtn-grad-mid" x1="0" y1="0" x2="0.65" y2="1">
+          <stop offset="0" stopColor="#b3d0e9" />
+          <stop offset="0.48" stopColor="#83acd1" />
+          <stop offset="1" stopColor="#688fb6" />
         </linearGradient>
-        <linearGradient id="mtn-grad-near" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0" stopColor="#7595b8" />
-          <stop offset="1" stopColor="#57779c" />
+        <linearGradient id="mtn-grad-near" x1="0" y1="0" x2="0.7" y2="1">
+          <stop offset="0" stopColor="#8ba8c3" />
+          <stop offset="0.5" stopColor="#607f9f" />
+          <stop offset="1" stopColor="#405d7b" />
         </linearGradient>
       </defs>
     </svg>
