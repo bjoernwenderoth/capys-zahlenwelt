@@ -204,15 +204,28 @@ function Bear({ x, y, s = 1 }) {
 function Boat({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0" cy="30" rx="42" ry="6" fill="#0c3d5e" opacity="0.25" />
+      {/* Wasserlage und gebrochene Spiegelung unter dem Rumpf. */}
+      <ellipse cx="0" cy="31" rx="46" ry="5.5" fill="#0c3d5e" opacity="0.2" filter="url(#edge)" />
+      <path d="M -50 34 Q -24 30 0 34 Q 24 38 50 33" stroke="#b9e8f5" strokeWidth="2" fill="none" opacity="0.48" strokeLinecap="round" />
+      <path d="M -28 41 Q 0 45 28 40 M -17 49 Q 0 52 18 48" stroke="#287da8" strokeWidth="2.2" fill="none" opacity="0.28" strokeLinecap="round" />
+      <path d="M 0 33 Q 3 41 0 49" stroke="#e8f7fb" strokeWidth="2" fill="none" opacity="0.2" filter="url(#edge)" />
+
       <path d="M -46 0 Q 0 26 46 0 L 34 16 Q 0 30 -34 16 Z" fill="url(#boat-grad)" />
       <path d="M -46 0 Q 0 26 46 0 L 40 8 Q 0 26 -40 8 Z" fill="#8a3e14" />
       {/* Schlagschatten am Rumpf, Licht kommt von links oben wie bei den Tieren */}
       <path d="M 10 8 Q 30 12 34 16 Q 0 30 -34 16 Q -4 20 10 8 Z" fill="#5c2a0e" opacity="0.3" filter="url(#edge)" />
-      <rect x="-2" y="-70" width="4" height="70" fill="#6e4527" />
-      <path d="M 2 -68 L 44 -6 L 2 -6 Z" fill="#fff" />
-      <path d="M 2 -68 L 44 -6 L 20 -6 Z" fill="#e8edf2" />
-      <path d="M -2 -60 L -36 -6 L -2 -6 Z" fill="#ff8a5c" />
+      <path d="M -40 8 Q 0 27 40 8" stroke="#f5a46c" strokeWidth="2" fill="none" opacity="0.55" />
+      <path d="M -28 17 Q 0 27 27 17" stroke="#5c2a0e" strokeWidth="1.2" fill="none" opacity="0.45" />
+
+      <rect x="-2" y="-70" width="4" height="71" rx="1" fill="#6e4527" />
+      <path d="M -0.5 -68 L -0.5 -2" stroke="#b98752" strokeWidth="1" opacity="0.7" />
+      {/* leicht gewölbte Segel, Nähte und dünne Takelage */}
+      <path d="M 2 -68 Q 29 -47 44 -6 Q 23 -10 2 -6 Z" fill="#fff" />
+      <path d="M 2 -68 Q 29 -47 44 -6 Q 30 -11 20 -18 Q 14 -43 2 -68 Z" fill="#dbe7ee" opacity="0.72" />
+      <path d="M -2 -60 Q -25 -38 -36 -6 Q -19 -10 -2 -6 Z" fill="#ff8a5c" />
+      <path d="M -2 -60 Q -11 -34 -12 -9 Q -7 -7 -2 -6 Z" fill="#d95845" opacity="0.48" />
+      <path d="M 3 -66 L 43 -5 M -3 -58 L -35 -5" stroke="#6e4527" strokeWidth="0.9" fill="none" opacity="0.55" />
+      <path d="M 6 -46 Q 21 -35 31 -17" stroke="#b6cbd7" strokeWidth="0.8" fill="none" opacity="0.6" />
       <path d="M 2 -70 L 14 -74 L 2 -78 Z" fill="#e05252" />
     </g>
   )
@@ -251,6 +264,8 @@ function PalmFrond({ angle, length, droop = 18, shade = 0 }) {
         stroke="#276d3d"
         strokeWidth="1.8"
         fill="none"
+        opacity="0.9"
+        filter="url(#palm-detail-soft)"
         strokeLinecap="round"
       />
       {ribs.map((t, i) => {
@@ -258,7 +273,7 @@ function PalmFrond({ angle, length, droop = 18, shade = 0 }) {
         const py = bezierPoint(1, -7, droop - 5, droop, t)
         const ribLength = 2.4 + Math.sin(t * Math.PI) * 2.2
         return (
-          <g key={t}>
+          <g key={t} opacity="0.9" filter="url(#palm-detail-soft)">
             <path
               d={`M ${px} ${py} q ${ribLength * 0.35} ${-ribLength * 0.55} ${ribLength * 0.78} ${-ribLength}`}
               stroke="#59b968"
@@ -282,7 +297,8 @@ function PalmFrond({ angle, length, droop = 18, shade = 0 }) {
         stroke="#8bd77b"
         strokeWidth="0.9"
         fill="none"
-        opacity="0.52"
+        opacity="0.48"
+        filter="url(#palm-detail-soft)"
         strokeLinecap="round"
       />
     </g>
@@ -297,7 +313,7 @@ function Palm({ x, y, s = 1 }) {
       {/* Leicht geneigter, nach oben dünner werdender Stamm. */}
       <path d="M -8 1 C -5 -31 2 -67 18 -94 L 29 -90 C 15 -60 10 -28 9 1 Z" fill="url(#palm-grad)" />
       <path d="M 6 0 C 7 -34 13 -67 25 -92 L 29 -90 C 16 -59 12 -27 9 1 Z" fill="#603a25" opacity="0.5" filter="url(#edge)" />
-      <path d="M -1 -5 C 2 -35 9 -67 21 -90" stroke="#e1b27a" strokeWidth="1.1" fill="none" opacity="0.46" strokeLinecap="round" />
+      <path d="M -1 -5 C 2 -35 9 -67 21 -90" stroke="#e1b27a" strokeWidth="1.1" fill="none" opacity="0.42" filter="url(#palm-detail-soft)" strokeLinecap="round" />
 
       {/* Alte Blattansätze ergeben die typischen unregelmäßigen Stammringe. */}
       {[
@@ -313,7 +329,8 @@ function Palm({ x, y, s = 1 }) {
           stroke="#674128"
           strokeWidth="1.15"
           fill="none"
-          opacity="0.55"
+          opacity="0.5"
+          filter="url(#palm-detail-soft)"
           strokeLinecap="round"
         />
       ))}
@@ -334,8 +351,8 @@ function Palm({ x, y, s = 1 }) {
         <circle cx="-5" cy="5" r="6" fill="url(#coconut-grad)" />
         <circle cx="7" cy="7" r="5.5" fill="url(#coconut-grad)" />
         <circle cx="1" cy="12" r="5" fill="url(#coconut-grad)" />
-        <circle cx="-7" cy="3" r="1.6" fill="#e5c08a" opacity="0.65" />
-        <circle cx="5" cy="5" r="1.4" fill="#e5c08a" opacity="0.55" />
+        <circle cx="-7" cy="3" r="1.6" fill="#e5c08a" opacity="0.6" filter="url(#palm-detail-soft)" />
+        <circle cx="5" cy="5" r="1.4" fill="#e5c08a" opacity="0.5" filter="url(#palm-detail-soft)" />
       </g>
     </g>
   )
@@ -346,24 +363,29 @@ function Palm({ x, y, s = 1 }) {
 function Crab({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0" cy="8" rx="15" ry="3.6" fill="#000" opacity="0.15" />
+      <ellipse cx="1" cy="8" rx="17" ry="3.8" fill="#000" opacity="0.14" filter="url(#edge)" />
 
-      {/* Beine, je 2 pro Seite */}
-      <path d="M -9 3 Q -17 5 -21 1 M -9 5 Q -18 9 -22 7" stroke="#c9502e" strokeWidth="2.1" fill="none" strokeLinecap="round" />
-      <path d="M 9 3 Q 17 5 21 1 M 9 5 Q 18 9 22 7" stroke="#c9502e" strokeWidth="2.1" fill="none" strokeLinecap="round" />
+      {/* Drei gegliederte Laufbeine pro Seite. */}
+      <path d="M -9 0 Q -15 1 -20 -3 L -23 -1 M -10 3 Q -17 5 -22 3 L -25 5 M -9 5 Q -16 9 -21 9 L -23 11" stroke="#bd4829" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M 9 0 Q 15 1 20 -3 L 23 -1 M 10 3 Q 17 5 22 3 L 25 5 M 9 5 Q 16 9 21 9 L 23 11" stroke="#bd4829" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Scheren */}
       <path d="M -12 -1 Q -21 -6 -19 -14 Q -15 -10 -9 -8 Z" fill="#e2703f" />
       <circle cx="-19" cy="-13" r="3.4" fill="#e2703f" />
       <ellipse cx="-20" cy="-14" rx="1.4" ry="1.8" fill="#a83c1e" opacity="0.4" filter="url(#edge)" />
+      <path d="M -22 -14 Q -19 -11 -16 -14" stroke="#a83c1e" strokeWidth="1" fill="none" opacity="0.55" />
       <path d="M 12 -1 Q 21 -6 19 -14 Q 15 -10 9 -8 Z" fill="#e2703f" />
       <circle cx="19" cy="-13" r="3.4" fill="#e2703f" />
       <ellipse cx="20" cy="-14" rx="1.4" ry="1.8" fill="#a83c1e" opacity="0.4" filter="url(#edge)" />
+      <path d="M 16 -14 Q 19 -11 22 -14" stroke="#a83c1e" strokeWidth="1" fill="none" opacity="0.55" />
 
       {/* Panzer, Licht links oben → Schatten rechts unten */}
       <ellipse cx="0" cy="-2" rx="13" ry="9" fill="url(#crab-grad)" />
       <path d="M 6 -8 Q 12 -4 11 3 Q 12 -3 8 -8 Z" fill="#a83c1e" opacity="0.35" filter="url(#edge)" />
       <ellipse cx="-3" cy="-5" rx="3.6" ry="2.4" fill="#f2a583" opacity="0.5" />
+      <path d="M -8 1 Q 0 5 8 1 M -7 -5 Q 0 -2 7 -5" stroke="#a83c1e" strokeWidth="0.9" fill="none" opacity="0.35" strokeLinecap="round" />
+      <circle cx="-7" cy="-1" r="0.8" fill="#ffd0b8" opacity="0.6" />
+      <circle cx="5" cy="1" r="0.65" fill="#8f321c" opacity="0.45" />
 
       {/* Augen auf Stielen */}
       <path d="M -4 -9 Q -5 -13 -4 -15 M 4 -9 Q 5 -13 4 -15" stroke="#c9502e" strokeWidth="1.4" fill="none" />
@@ -389,27 +411,33 @@ function Seagull({ x, y, s = 1 }) {
 }
 
 // Muschel – einfache Streu-Deko für den Sandstrand
-function Shell({ x, y, s = 1, c = '#ffb199' }) {
+function Shell({ x, y, s = 1, c = '#ffb199', rot = 0 }) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0.6" cy="6" rx="8" ry="2" fill="#000" opacity="0.12" />
-      <path d="M -9 4 Q -10 -6 0 -9 Q 10 -6 9 4 Q 0 8 -9 4 Z" fill={c} />
-      <path d="M 0 -9 L -1 4 M -5 -7 L -4 4 M 5 -7 L 4 4" stroke="#fff" strokeWidth="1" opacity="0.5" />
-      <path d="M 4 -2 Q 9 0 9 4 Q 2 7 -1 6 Q 3 3 4 -2 Z" fill="#000" opacity="0.14" filter="url(#edge)" />
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+      <ellipse cx="0.8" cy="6.5" rx="9.5" ry="2.2" fill="#000" opacity="0.11" filter="url(#edge)" />
+      {/* Gefächerte, leicht asymmetrische Schale mit verdicktem Schlossrand. */}
+      <path d="M -10 4 Q -10 -3 -6 -7 Q -2 -11 1 -10 Q 7 -8 10 3 Q 6 7 0 7 Q -6 7 -10 4 Z" fill={c} />
+      <path d="M 1 -10 Q 7 -8 10 3 Q 7 7 1 7 Q 5 2 4 -4 Q 4 -8 1 -10 Z" fill="#b75f54" opacity="0.2" filter="url(#edge)" />
+      <path d="M -8 3 Q 0 6 9 3" stroke="#a85f55" strokeWidth="1.4" fill="none" opacity="0.45" strokeLinecap="round" />
+      {[-6, -3, 0, 3, 6].map((sx) => (
+        <path key={sx} d={`M ${sx * 0.12} -8 Q ${sx} -2 ${sx} 4`} stroke="#fff7e8" strokeWidth="0.75" fill="none" opacity="0.58" strokeLinecap="round" />
+      ))}
+      <path d="M -6 -5 Q -3 -9 0 -9" stroke="#fff" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" />
     </g>
   )
 }
 
 // Seestern – liegt flach im Sand
-function Starfish({ x, y, s = 1, c = '#ff8a5c' }) {
+function Starfish({ x, y, s = 1, c = '#ff8a5c', rot = 0 }) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0.6" cy="7" rx="9" ry="2" fill="#000" opacity="0.12" />
-      <path d="M 0 -11 Q 3 -4 10 -3 Q 5 2 6 9 Q 0 5 -6 9 Q -5 2 -10 -3 Q -3 -4 0 -11 Z" fill={c} />
-      <path d="M 3 -3 Q 6 2 5 8 Q 1 4 3 -3 Z" fill="#c9603a" opacity="0.35" filter="url(#edge)" />
-      <circle cx="-3" cy="-3" r="1" fill="#fff" opacity="0.4" />
-      <circle cx="0" cy="0" r="1.4" fill="#fff" opacity="0.4" />
-      <circle cx="4" cy="1" r="1" fill="#fff" opacity="0.4" />
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+      <ellipse cx="1" cy="7" rx="10" ry="2.4" fill="#000" opacity="0.11" filter="url(#edge)" />
+      <path d="M 0 -11 C 3 -9 2 -5 3 -3 C 6 -3 9 -5 11 -2 C 10 1 7 2 5 3 C 7 6 8 9 5 11 C 2 9 1 6 0 5 C -2 7 -4 10 -7 9 C -8 6 -5 3 -4 2 C -7 1 -10 0 -10 -3 C -7 -5 -4 -4 -2 -3 C -2 -7 -2 -10 0 -11 Z" fill={c} />
+      <path d="M 2 -3 Q 6 0 5 9 Q 2 7 0 4 Q 2 1 2 -3 Z" fill="#b94f32" opacity="0.28" filter="url(#edge)" />
+      <path d="M -1 -8 Q 0 -4 0 1 M -7 -2 Q -3 -1 0 1" stroke="#ffd2bc" strokeWidth="0.8" fill="none" opacity="0.55" strokeLinecap="round" />
+      {[[-3, -3], [0, 0], [4, 1], [-2, 4], [2, 5]].map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r={i === 1 ? 1 : 0.65} fill="#ffe0cc" opacity="0.56" />
+      ))}
     </g>
   )
 }
@@ -425,9 +453,17 @@ function DuneGrass({ x, y, s = 1 }) {
   }
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="3" rx="10" ry="2.7" fill="#b78d52" opacity="0.2" />
       <g className="pano-sway" style={{ animationDelay: `-${delay}s` }}>
-        {[-28, -9, 9, 28].map((a) => (
-          <path key={a} d={blade(a, 17 - Math.abs(a) * 0.15)} stroke="#9caf4f" strokeWidth="3" fill="none" strokeLinecap="round" />
+        {[-38, -24, -10, 4, 17, 31, 43].map((a, i) => (
+          <path
+            key={a}
+            d={blade(a, 16 + (i % 3) * 2.5 - Math.abs(a) * 0.08)}
+            stroke={i % 2 ? '#819744' : '#a9b85b'}
+            strokeWidth={i % 3 === 0 ? 1.5 : 1.9}
+            fill="none"
+            strokeLinecap="round"
+          />
         ))}
       </g>
     </g>
@@ -438,16 +474,25 @@ function DuneGrass({ x, y, s = 1 }) {
 function Sandcastle({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0" cy="15" rx="26" ry="5" fill="#000" opacity="0.15" />
-      <path d="M -22 13 Q -24 -3 -10 -7 Q -6 -13 0 -11 Q 6 -13 10 -7 Q 24 -3 22 13 Q 0 17 -22 13 Z" fill="#e8c08a" />
-      <path d="M 10 -7 Q 24 -3 22 13 Q 12 15 4 14 Q 12 5 10 -7 Z" fill="#c9985e" opacity="0.5" filter="url(#edge)" />
-      <rect x="-16" y="5" width="6" height="8" rx="1" fill="#c9985e" />
-      <rect x="10" y="5" width="6" height="8" rx="1" fill="#c9985e" />
-      <circle cx="-3" cy="1" r="3" fill="#c9985e" />
-      <circle cx="3" cy="1" r="3" fill="#c9985e" />
-      <path d="M -18 6 q 3 -2 6 0 M 8 6 q 3 -2 6 0" stroke="#a97c4a" strokeWidth="1.2" fill="none" opacity="0.6" />
-      <rect x="-1" y="-19" width="2" height="9" fill="#8a5a35" />
-      <path d="M 1 -19 L 9 -16 L 1 -13 Z" fill="#ff5c5c" />
+      <ellipse cx="1" cy="16" rx="30" ry="6" fill="#000" opacity="0.13" filter="url(#edge)" />
+      <path d="M -30 14 Q -20 8 -12 12 Q 0 8 12 12 Q 22 8 30 15 Q 12 20 -8 18 Q -22 19 -30 14 Z" fill="#d9ad70" opacity="0.75" />
+
+      {/* Zwei Seitentürme und ein höherer Mittelbau mit echten Zinnen. */}
+      <path d="M -25 14 L -25 -3 L -21 -3 L -21 -8 L -16 -8 L -16 -3 L -11 -3 L -11 -8 L -6 -8 L -6 -3 L -4 -3 L -4 14 Z" fill="url(#sandcastle-grad)" />
+      <path d="M 4 14 L 4 -3 L 7 -3 L 7 -8 L 12 -8 L 12 -3 L 17 -3 L 17 -8 L 22 -8 L 22 -3 L 25 -3 L 25 14 Z" fill="url(#sandcastle-grad)" />
+      <path d="M -12 14 L -12 -11 L -8 -11 L -8 -16 L -3 -16 L -3 -11 L 2 -11 L 2 -16 L 7 -16 L 7 -11 L 11 -11 L 11 14 Z" fill="url(#sandcastle-grad)" />
+      <path d="M 5 -15 Q 11 -8 10 14 L 25 14 L 25 -3 Q 19 -7 17 -4 L 17 -8 L 12 -8 L 12 -3 L 7 -3 L 7 -8 L 4 -8 Z" fill="#a9773f" opacity="0.22" filter="url(#edge)" />
+
+      {/* Tor, Fenster und angedeutete verdichtete Sandschichten. */}
+      <path d="M -4 14 L -4 7 A 4 4 0 0 1 4 7 L 4 14 Z" fill="#9f6f3f" opacity="0.78" />
+      <path d="M -19 4 A 2.5 2.5 0 0 1 -14 4 L -14 8 L -19 8 Z M 11 4 A 2.5 2.5 0 0 1 16 4 L 16 8 L 11 8 Z" fill="#ac7944" opacity="0.7" />
+      <path d="M -23 0 L -6 0 M 5 0 L 22 0 M -10 -7 L 9 -7 M -22 10 L -8 10 M 8 10 L 22 10" stroke="#fff0c9" strokeWidth="0.8" fill="none" opacity="0.5" strokeLinecap="round" />
+      <circle cx="-18" cy="-4" r="0.8" fill="#fff0c9" opacity="0.7" />
+      <circle cx="8" cy="-9" r="0.7" fill="#9f6f3f" opacity="0.4" />
+
+      <path d="M 0 -16 L 0 -29" stroke="#795031" strokeWidth="1.5" />
+      <path d="M 1 -29 Q 8 -27 12 -23 Q 6 -22 1 -24 Z" fill="#ff665f" />
+      <path d="M 2 -28 Q 7 -27 9 -25" stroke="#ffaaa0" strokeWidth="0.8" fill="none" opacity="0.8" />
     </g>
   )
 }
@@ -472,14 +517,81 @@ function Umbrella({ x, y, s = 1, c = '#ff5c5c' }) {
   )
 }
 
-// Springender Fisch – kleiner Bogen über der Wasseroberfläche
-function Fish({ x, y, s = 1, flip = false }) {
+// Eimer und Schaufel lockern größere freie Sandflächen auf.
+function BeachToys({ x, y, s = 1, flip = false }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
-      <path d="M -10 0 Q -4 -8 8 -4 Q 12 0 8 4 Q -4 8 -10 0 Z" fill="#7ec3ff" />
-      <path d="M -10 0 Q -4 -5 3 -2 Q -3 2 -10 0 Z" fill="#5aa7e8" opacity="0.6" />
-      <path d="M 8 -4 L 15 -7 L 12 0 L 15 7 L 8 4 Z" fill="#5aa7e8" />
-      <circle cx="-5" cy="-1" r="1.2" fill="#2b2320" />
+      <ellipse cx="0" cy="9" rx="19" ry="4" fill="#000" opacity="0.12" filter="url(#edge)" />
+      <path d="M -10 -7 Q 0 -14 10 -7" stroke="#477ca2" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M -12 -6 L -9 8 Q 0 12 9 8 L 12 -6 Z" fill="url(#bucket-grad)" />
+      <ellipse cx="0" cy="-6" rx="12" ry="3.8" fill="#4f9fd1" />
+      <ellipse cx="0" cy="-6" rx="8.5" ry="2.2" fill="#366f94" opacity="0.65" />
+      <path d="M 14 7 L 22 -12" stroke="#8a5a35" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M 20 -11 Q 25 -16 29 -12 L 25 -4 Q 21 -5 20 -11 Z" fill="#ff775f" />
+      <path d="M 22 -12 Q 25 -13 27 -11" stroke="#ffb09d" strokeWidth="0.9" fill="none" />
+    </g>
+  )
+}
+
+// Kleine Mulden, Kiesel und Sandkörner verhindern große sterile Leerflächen.
+function BeachMarks({ x, y, s = 1, rot = 0 }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity="0.55">
+      <path d="M -15 1 Q -10 -2 -5 1 M 3 -3 Q 8 -6 13 -3" stroke="#b98e57" strokeWidth="1" fill="none" strokeLinecap="round" />
+      <ellipse cx="-10" cy="5" rx="2.8" ry="1.4" fill="#d5b178" />
+      <ellipse cx="8" cy="3" rx="2.2" ry="1.2" fill="#a98761" />
+      <circle cx="0" cy="5" r="1" fill="#f5dfb3" />
+      <circle cx="15" cy="1" r="0.8" fill="#c59a61" />
+    </g>
+  )
+}
+
+// Fisch knapp über der Wasseroberfläche – Spritzer und Ringe verankern ihn im See.
+function Fish({ x, y, s = 1, flip = false, rot = 0 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
+      {/* Wasserringe bleiben direkt unter dem Fisch und nicht auf dem Strand. */}
+      <path d="M -22 10 Q -11 6 0 10 Q 11 14 22 10" stroke="#c9f1fb" strokeWidth="1.6" fill="none" opacity="0.72" strokeLinecap="round" />
+      <path d="M -14 15 Q 0 19 14 15" stroke="#2387b8" strokeWidth="1.4" fill="none" opacity="0.4" strokeLinecap="round" />
+      <path d="M -9 7 Q -12 1 -9 -2 M 8 7 Q 12 2 10 -1" stroke="#e5faff" strokeWidth="1.4" fill="none" opacity="0.75" strokeLinecap="round" />
+      <circle cx="-12" cy="-4" r="1.4" fill="#dff8ff" opacity="0.75" />
+      <circle cx="12" cy="-3" r="1" fill="#dff8ff" opacity="0.7" />
+
+      <g transform={`rotate(${rot})`}>
+        <path d="M -11 0 Q -5 -9 7 -6 Q 13 -3 12 2 Q 8 8 -3 7 Q -8 6 -11 0 Z" fill="url(#fish-grad)" />
+        <path d="M 11 -3 L 18 -8 L 16 0 L 19 7 L 11 4 Q 13 1 11 -3 Z" fill="#2787bd" />
+        <path d="M -1 -7 Q 3 -13 7 -6 Z" fill="#4fb8df" />
+        <path d="M 1 3 Q 5 9 8 4 Z" fill="#1f78ac" opacity="0.72" />
+        <path d="M -10 -1 Q -4 -6 3 -5" stroke="#a9ecf7" strokeWidth="1.4" fill="none" opacity="0.75" strokeLinecap="round" />
+        <path d="M -4 -5 Q -1 0 -4 5" stroke="#237aa9" strokeWidth="0.9" fill="none" opacity="0.6" />
+        <path d="M 1 -3 Q 4 -1 6 2 M 4 -4 Q 7 -2 8 0" stroke="#d0f3f8" strokeWidth="0.7" fill="none" opacity="0.5" />
+        <circle cx="-6.5" cy="-2" r="1.45" fill="#17384b" />
+        <circle cx="-7" cy="-2.5" r="0.48" fill="#fff" />
+      </g>
+    </g>
+  )
+}
+
+// Kleiner Schwimmring mit echter Öffnung und Kontaktwellen auf dem Wasser.
+function SwimRing({ x, y, s = 1, rot = 0 }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+      <ellipse cx="1" cy="6" rx="24" ry="5" fill="#0b5f8d" opacity="0.2" filter="url(#edge)" />
+      <path d="M -29 8 Q 0 13 29 8 M -21 14 Q 0 17 21 13" stroke="#bdebf5" strokeWidth="1.5" fill="none" opacity="0.52" strokeLinecap="round" />
+
+      {/* Die zweite Ellipse wird durch evenodd wirklich ausgespart; dadurch
+          bleibt das Wasser in der Mitte sichtbar. */}
+      <path
+        d="M -20 0 A 20 9 0 1 0 20 0 A 20 9 0 1 0 -20 0 Z
+           M -9 0 A 9 4 0 1 1 9 0 A 9 4 0 1 1 -9 0 Z"
+        fill="url(#swim-ring-grad)"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+      <path d="M -19 1 A 19 8 0 0 0 19 1" stroke="#bd3f42" strokeWidth="2.4" fill="none" opacity="0.46" strokeLinecap="round" />
+      <path d="M -15 -4 Q 0 -10 15 -4" stroke="#ffd3bd" strokeWidth="1.6" fill="none" opacity="0.72" strokeLinecap="round" />
+      <path d="M -10 -7 L -5 -3 M 10 -7 L 5 -3 M -18 -2 L -9 -1 M 18 -2 L 9 -1" stroke="#fff1df" strokeWidth="1.2" opacity="0.68" strokeLinecap="round" />
+      <ellipse cx="-9" cy="-4" rx="4" ry="1.5" fill="#fff" opacity="0.24" filter="url(#palm-detail-soft)" />
     </g>
   )
 }
@@ -651,6 +763,10 @@ function SharedDefs() {
         <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="1.4" />
         </filter>
+        {/* Sehr kleine Weichzeichnung nur für Palmadern und Stammstruktur. */}
+        <filter id="palm-detail-soft" x="-12%" y="-12%" width="124%" height="124%">
+          <feGaussianBlur stdDeviation="0.28" />
+        </filter>
         {/* Nur für die Uferflächen: etwas breiter als "edge", damit Sand,
             Böschung und Wasser ohne sichtbare Konturringe ineinanderlaufen. */}
         <filter id="lake-edge" x="-8%" y="-35%" width="116%" height="170%">
@@ -719,9 +835,11 @@ function SharedDefs() {
           <stop offset="0.90" stopColor="#4f8f45" />
           <stop offset="1.00" stopColor="#66b053" />
         </linearGradient>
-        <linearGradient id="pan-wasser" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#57bdf0" />
-          <stop offset="1" stopColor="#1d7fbd" />
+        <linearGradient id="pan-wasser" gradientUnits="userSpaceOnUse" x1="3200" y1="375" x2="3820" y2="440">
+          <stop offset="0" stopColor="#70d2ee" />
+          <stop offset="0.42" stopColor="#3aadd9" />
+          <stop offset="0.78" stopColor="#2388bd" />
+          <stop offset="1" stopColor="#176895" />
         </linearGradient>
         {/* Am rechten Seeufer fällt bereits das kühlere Licht der Nachtwelt
             ein; der Übergang beginnt spät und bleibt auf der Sonnenseite warm. */}
@@ -780,6 +898,26 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#81512f" />
           <stop offset="1" stopColor="#4e3020" />
         </radialGradient>
+        <linearGradient id="sandcastle-grad" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#f5d79d" />
+          <stop offset="0.55" stopColor="#dfb675" />
+          <stop offset="1" stopColor="#bd874c" />
+        </linearGradient>
+        <linearGradient id="bucket-grad" x1="0.15" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#83c9ee" />
+          <stop offset="0.6" stopColor="#4f9fd1" />
+          <stop offset="1" stopColor="#2e769f" />
+        </linearGradient>
+        <linearGradient id="fish-grad" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#92e0ed" />
+          <stop offset="0.48" stopColor="#48b6db" />
+          <stop offset="1" stopColor="#1d79ad" />
+        </linearGradient>
+        <linearGradient id="swim-ring-grad" x1="0.15" y1="0" x2="0.85" y2="1">
+          <stop offset="0" stopColor="#ffb076" />
+          <stop offset="0.42" stopColor="#ff7164" />
+          <stop offset="1" stopColor="#dc4651" />
+        </linearGradient>
         <linearGradient id="boat-grad" x1="0.15" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#d97a3e" />
           <stop offset="0.55" stopColor="#b3541e" />
@@ -1114,57 +1252,102 @@ export default function Panorama({ roadLayer } = {}) {
           fill="url(#pan-wasser)"
           filter="url(#lake-edge)"
         />
-        {/* warmer Glanzstreifen auf dem Wasser, wie Sonnenlicht auf der Oberfläche */}
-        <path d="M 3305 402 C 3410 387 3600 387 3775 404 C 3650 399 3440 410 3305 402 Z" fill="#fff8d9" opacity="0.2" filter="url(#soft)" />
-        <path d="M 3176 418 C 3330 432 3660 438 3826 418" fill="none" stroke="#e9d59d" strokeWidth="2" opacity="0.18" strokeLinecap="round" filter="url(#edge)" />
-        <ellipse className="pano-shimmer" cx="3620" cy="402" rx="64" ry="6" fill="#fff" opacity="0.3" />
-        {[3220, 3380, 3540, 3680].map((x, i) => (
-          <path
-            key={i}
-            className="pano-shimmer"
-            style={{ animationDelay: `-${i * 0.6}s` }}
-            d={`M ${x} ${406 + (i % 2) * 12} q 14 -8 28 0 q 14 -8 28 0`}
-            stroke="#bfe9ff"
-            strokeWidth="4"
-            fill="none"
-            strokeLinecap="round"
-            opacity="0.7"
-          />
+        {/* Tiefere Vorderkante und eine feine, helle Linie dort, wo das
+            Wasser auf den flachen Sand ausläuft. */}
+        <path
+          d="M 3148 410 C 3240 418 3355 427 3485 426 C 3600 424 3740 420 3852 410
+             C 3822 422 3770 428 3703 429 C 3633 437 3560 433 3486 436
+             C 3414 438 3342 432 3275 428 C 3218 426 3168 421 3133 414 Z"
+          fill="#0d699d"
+          opacity="0.15"
+        />
+        <path
+          d="M 3138 414 C 3180 421 3220 426 3275 428 C 3342 432 3414 438 3486 436
+             C 3560 433 3633 437 3703 429 C 3774 428 3828 422 3864 414"
+          fill="none"
+          stroke="#c6edf3"
+          strokeWidth="1.6"
+          opacity="0.48"
+          strokeLinecap="round"
+          filter="url(#edge)"
+        />
+
+        {/* Gebrochene Himmels- und Sonnenreflexe statt einer einzigen weißen Fläche. */}
+        <path d="M 3290 397 C 3400 385 3550 385 3775 401 C 3635 396 3435 407 3290 397 Z" fill="#fff8d9" opacity="0.16" filter="url(#soft)" />
+        <path d="M 3550 389 Q 3620 383 3690 391 M 3570 399 Q 3630 394 3680 400 M 3590 409 Q 3630 406 3665 410" stroke="#fffbe7" strokeWidth="3" fill="none" opacity="0.22" strokeLinecap="round" filter="url(#edge)" />
+
+        {[
+          [3195, 405, 42, 0.48],
+          [3290, 392, 30, 0.38],
+          [3428, 419, 48, 0.5],
+          [3520, 388, 32, 0.34],
+          [3665, 414, 44, 0.46],
+          [3785, 402, 34, 0.42]
+        ].map(([x, y, width, opacity], i) => (
+          <g key={x} className="pano-shimmer" style={{ animationDelay: `-${i * 0.45}s` }} opacity={opacity}>
+            <path d={`M ${x - width / 2} ${y} Q ${x} ${y - 3} ${x + width / 2} ${y}`} stroke="#c9f1fb" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+            <path d={`M ${x - width * 0.3} ${y + 5} Q ${x} ${y + 2.5} ${x + width * 0.3} ${y + 5}`} stroke="#267eae" strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.5" />
+          </g>
         ))}
 
-        {/* kleines Segelboot weiter hinten auf dem See, gibt Tiefe */}
-        <Boat x={3370} y={394} s={0.4} />
-        <Boat x={3500} y={408} s={0.75} />
-        <Fish x={3260} y={432} s={0.8} />
-        <Fish x={3730} y={426} s={0.7} flip />
+        {/* Das kleine Boot liegt weiter hinten und höher; das größere näher
+            an der vorderen Wasserkante. Beide Spiegelungen enden im See. */}
+        <Boat x={3395} y={395} s={0.36} />
+        <Boat x={3550} y={401} s={0.65} />
+
+        {/* Die Fische sitzen sichtbar innerhalb der blauen Wasserfläche. */}
+        <Fish x={3238} y={400} s={0.74} rot={-8} />
+        <Fish x={3765} y={399} s={0.68} rot={-6} flip />
+
+        {/* Freier Bereich zwischen Fisch und Boot: kleiner Schwimmring. */}
+        <SwimRing x={3315} y={410} s={0.62} rot={-4} />
 
         {/* Möwen, gleiten über dem See */}
         <Seagull x={3200} y={345} s={1} />
         <Seagull x={3550} y={328} s={0.85} />
         <Seagull x={3820} y={358} s={0.9} />
 
-        {/* Palmen rahmen den Strand */}
-        <Palm x={3125} y={545} s={0.95} />
-        <Palm x={3960} y={568} s={0.75} />
-        <Palm x={3090} y={598} s={0.55} />
+        {/* Palmen bilden einen lockeren Rahmen; die kleinere Palme steht näher
+            am Wasser und schafft eine zusätzliche Tiefenstufe. */}
+        <Palm x={3085} y={548} s={0.95} />
+        <Palm x={3970} y={566} s={0.75} />
+        <Palm x={3878} y={486} s={0.48} />
 
-        {/* Strand-Deko: Sonnenschirm mit Handtuch, Sandburg, Krabben */}
-        <Umbrella x={3780} y={575} s={0.72} />
-        <Sandcastle x={3250} y={582} s={0.8} />
-        <Crab x={3400} y={594} s={0.9} />
-        <Crab x={3680} y={577} s={0.7} />
+        {/* Größere Strandobjekte stehen mit Abstand zueinander in den freien
+            Bereichen zwischen den Levelstationen. */}
+        <Sandcastle x={3225} y={558} s={0.82} />
+        <BeachToys x={3545} y={590} s={0.78} />
+        <Umbrella x={3800} y={552} s={0.72} />
+        <Crab x={3385} y={535} s={0.72} />
+        <Crab x={3705} y={586} s={0.66} />
 
-        {/* Dünengras, Muscheln & Seesterne verteilen sich am Ufer */}
-        <DuneGrass x={3050} y={578} s={0.9} />
-        <DuneGrass x={3195} y={600} s={0.8} />
-        <DuneGrass x={3615} y={600} s={0.85} />
-        <DuneGrass x={3915} y={583} s={0.8} />
-        <Shell x={3155} y={562} s={0.8} c="#ffb199" />
-        <Shell x={3480} y={598} s={0.7} c="#ffd9a3" />
-        <Shell x={3750} y={548} s={0.75} c="#f4dfa4" />
-        <Shell x={3985} y={597} s={0.65} c="#ffb199" />
-        <Starfish x={3320} y={562} s={0.8} c="#ff8a5c" />
-        <Starfish x={3600} y={592} s={0.75} c="#ffb199" />
+        {/* Vegetation und Fundstücke verteilen sich von der Wasserkante bis
+            in den Vordergrund statt in einer einzigen unteren Reihe. */}
+        <DuneGrass x={3040} y={505} s={0.72} />
+        <DuneGrass x={3150} y={598} s={0.82} />
+        <DuneGrass x={3515} y={474} s={0.62} />
+        <DuneGrass x={3625} y={600} s={0.86} />
+        <DuneGrass x={3940} y={505} s={0.7} />
+
+        <Shell x={3115} y={482} s={0.6} rot={-14} c="#ffb199" />
+        <Shell x={3305} y={594} s={0.75} rot={9} c="#ffd9a3" />
+        <Shell x={3440} y={475} s={0.58} rot={-8} c="#f4c6a4" />
+        <Shell x={3590} y={566} s={0.68} rot={15} c="#f4dfa4" />
+        <Shell x={3755} y={535} s={0.7} rot={-12} c="#ffb199" />
+        <Shell x={3955} y={596} s={0.62} rot={8} c="#ffd9a3" />
+
+        <Starfish x={3270} y={532} s={0.66} rot={-18} c="#ff8a5c" />
+        <Starfish x={3485} y={596} s={0.76} rot={14} c="#ff9d78" />
+        <Starfish x={3650} y={472} s={0.56} rot={-9} c="#ffb199" />
+        <Starfish x={3900} y={558} s={0.68} rot={22} c="#ff8a5c" />
+
+        {/* Dezente Sandspuren füllen nur die großen Zwischenräume. */}
+        <BeachMarks x={3075} y={580} s={0.9} rot={-8} />
+        <BeachMarks x={3345} y={472} s={0.72} rot={12} />
+        <BeachMarks x={3425} y={570} s={0.9} rot={-15} />
+        <BeachMarks x={3560} y={505} s={0.78} rot={8} />
+        <BeachMarks x={3725} y={472} s={0.68} rot={-5} />
+        <BeachMarks x={3860} y={600} s={0.85} rot={14} />
 
         {/* ---------- Region: Sternenhimmel ---------- */}
         <Pine x={4150} y={510} s={0.85} c="#0e1a36" cd="#0a1428" />
