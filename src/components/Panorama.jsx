@@ -888,6 +888,22 @@ export default function Panorama({ roadLayer } = {}) {
         <Bear x={1390} y={575} s={1.05} />
 
         {/* ---------- Region: Bergwelt ---------- */}
+        {/* zweite, höher gelegene Bodenebene: kleinere Vegetation und Geröll
+            lassen die Bergwelt bis an den Fuß der Gipfel belebt wirken */}
+        <Pine x={2075} y={444} s={0.42} c="#3b7650" cd="#285c3b" />
+        <Rock x={2185} y={448} s={0.48} />
+        <AlpineFlower x={2240} y={444} s={0.58} />
+        <Goat x={2295} y={456} s={0.5} />
+        <Pine x={2370} y={463} s={0.46} c="#3b7650" cd="#285c3b" />
+        <Cairn x={2460} y={455} s={0.52} />
+        <AlpineFlower x={2535} y={448} s={0.55} />
+        <Rock x={2635} y={447} s={0.5} />
+        <Goat x={2685} y={452} s={0.46} />
+        <Pine x={2745} y={458} s={0.44} c="#3b7650" cd="#285c3b" />
+        <Cairn x={2835} y={449} s={0.48} />
+        <AlpineFlower x={2910} y={443} s={0.58} />
+        <Pine x={2980} y={452} s={0.4} c="#3b7650" cd="#285c3b" />
+
         {/* Kiefern in mehreren Reihen, unterschiedlich groß für Tiefe */}
         <Pine x={2100} y={545} s={0.8} />
         <Pine x={2430} y={525} s={0.6} />
