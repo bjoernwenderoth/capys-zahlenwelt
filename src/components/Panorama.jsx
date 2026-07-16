@@ -544,6 +544,11 @@ function SharedDefs() {
         <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="1.4" />
         </filter>
+        {/* Nur für die Uferflächen: etwas breiter als "edge", damit Sand,
+            Böschung und Wasser ohne sichtbare Konturringe ineinanderlaufen. */}
+        <filter id="lake-edge" x="-8%" y="-35%" width="116%" height="170%">
+          <feGaussianBlur stdDeviation="1.25" />
+        </filter>
         {/* dezente Maserung für Boden/Berge – bricht die flachen Verläufe auf */}
         <filter id="grain" x="0" y="0" width="100%" height="100%">
           <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" stitchTiles="stitch" result="n" />
@@ -610,6 +615,20 @@ function SharedDefs() {
         <linearGradient id="pan-wasser" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#57bdf0" />
           <stop offset="1" stopColor="#1d7fbd" />
+        </linearGradient>
+        {/* Am rechten Seeufer fällt bereits das kühlere Licht der Nachtwelt
+            ein; der Übergang beginnt spät und bleibt auf der Sonnenseite warm. */}
+        <linearGradient id="lake-bank" gradientUnits="userSpaceOnUse" x1="3130" y1="0" x2="3870" y2="0">
+          <stop offset="0" stopColor="#dfc991" />
+          <stop offset="0.62" stopColor="#dfc991" />
+          <stop offset="0.84" stopColor="#b9aa84" />
+          <stop offset="1" stopColor="#8b826f" />
+        </linearGradient>
+        <linearGradient id="lake-sand" gradientUnits="userSpaceOnUse" x1="3130" y1="0" x2="3870" y2="0">
+          <stop offset="0" stopColor="#efdaa0" />
+          <stop offset="0.6" stopColor="#efdaa0" />
+          <stop offset="0.82" stopColor="#c9ba91" />
+          <stop offset="1" stopColor="#978f7b" />
         </linearGradient>
 
         {/* Licht (links oben, hell) → Schatten (rechts unten, dunkel) –
@@ -780,16 +799,15 @@ export default function Panorama({ roadLayer } = {}) {
             Sonnensee herum weit nach unten ausschlug (Kontrollpunkte bis
             y≈600) – dadurch wirkte der See dort wie freischwebend. Jede
             Kurve bekommt jetzt ihren eigenen, begrenzten Kontrollpunkt.
-            Rund um den See folgen beide Boden-Kurven exakt seiner Ellipse
-            (gleiches rx/ry/Zentrum wie der Wasser-Ellipse weiter unten) –
-            See und Boden sind dadurch eine einzige, nahtlose Form statt
-            zweier überlagerter Formen mit Weichzeichner dazwischen. */}
+            Rund um den See folgen beide Boden-Kurven seiner unregelmäßigen
+            Uferlinie. So entsteht eine echte Aussparung im Gelände, in die
+            Strand und Wasser weiter unten bündig eingesetzt werden. */}
         <path
-          d="M 0 440 Q 250 417 500 435 Q 750 407 1000 425 Q 1250 407 1500 445 Q 1750 402 2000 420 Q 2250 402 2500 445 Q 2750 412 3000 430 Q 3065 422 3130 414 A 370 44 0 0 1 3870 414 Q 3935 419.5 4000 425 Q 4250 407 4500 445 Q 4750 407 5000 425 Q 5250 407 5500 445 Q 5750 412 6000 430 L 6000 600 L 0 600 Z"
+          d="M 0 440 Q 250 417 500 435 Q 750 407 1000 425 Q 1250 407 1500 445 Q 1750 402 2000 420 Q 2250 402 2500 445 Q 2750 412 3000 430 Q 3065 422 3130 414 C 3185 391 3250 381 3320 382 C 3395 367 3470 374 3535 377 C 3610 367 3690 379 3760 387 C 3825 388 3858 399 3870 414 Q 3935 419.5 4000 425 Q 4250 407 4500 445 Q 4750 407 5000 425 Q 5250 407 5500 445 Q 5750 412 6000 430 L 6000 600 L 0 600 Z"
           fill="url(#pan-mid)"
         />
         <path
-          d="M 0 505 Q 300 486 600 500 Q 900 481 1200 495 Q 1500 481 1800 505 Q 2100 478 2400 492 Q 2700 478 3000 505 Q 3065 460 3130 414 A 370 44 0 0 0 3870 414 Q 4035 460 4200 505 Q 4500 478 4800 492 Q 5100 478 5400 505 Q 5700 484 6000 498 L 6000 600 L 0 600 Z"
+          d="M 0 505 Q 300 486 600 500 Q 900 481 1200 495 Q 1500 481 1800 505 Q 2100 478 2400 492 Q 2700 478 3000 505 Q 3065 460 3130 414 C 3152 427 3195 436 3260 439 C 3330 444 3405 452 3485 450 C 3560 448 3640 453 3715 442 C 3790 440 3848 431 3870 414 Q 4035 460 4200 505 Q 4500 478 4800 492 Q 5100 478 5400 505 Q 5700 484 6000 498 L 6000 600 L 0 600 Z"
           fill="url(#pan-front)"
         />
         {/* dezente Maserung, bricht die glatten Verläufe auf */}
@@ -949,11 +967,29 @@ export default function Panorama({ roadLayer } = {}) {
         <Eagle x={2900} y={190} s={0.8} />
 
         {/* ---------- Region: Sonnensee ---------- */}
+        {/* Unregelmäßige, gestaffelte Uferzonen betten den See ins Gelände ein.
+            Der dunkle Außenrand liegt nur an der nahen Kante und wirkt wie
+            eine flache Böschung statt wie ein Schlagschatten unter einer Scheibe. */}
+        <path
+          d="M 3130 414 C 3185 391 3250 381 3320 382 C 3395 367 3470 374 3535 377 C 3610 367 3690 379 3760 387 C 3825 388 3858 399 3870 414 C 3848 431 3790 440 3715 442 C 3640 453 3560 448 3485 450 C 3405 452 3330 444 3260 439 C 3195 436 3152 427 3130 414 Z"
+          fill="url(#lake-bank)"
+          opacity="0.42"
+          filter="url(#lake-edge)"
+        />
+        <path
+          d="M 3142 413 C 3194 394 3260 385 3325 386 C 3398 373 3468 379 3536 381 C 3608 373 3682 383 3754 390 C 3812 391 3848 401 3858 413 C 3837 425 3782 433 3709 435 C 3636 445 3560 440 3485 443 C 3408 445 3335 438 3266 433 C 3207 431 3161 423 3142 413 Z"
+          fill="url(#lake-sand)"
+          opacity="0.72"
+          filter="url(#lake-edge)"
+        />
+        <path
+          d="M 3133 414 C 3187 392 3251 382 3321 383 C 3395 368 3470 375 3535 378 C 3610 368 3690 380 3759 388 C 3823 389 3856 400 3868 414 C 3828 422 3774 428 3703 429 C 3633 437 3560 433 3486 436 C 3414 438 3342 432 3275 428 C 3218 426 3168 421 3133 414 Z"
+          fill="url(#pan-wasser)"
+          filter="url(#lake-edge)"
+        />
         {/* warmer Glanzstreifen auf dem Wasser, wie Sonnenlicht auf der Oberfläche */}
-        <ellipse cx="3500" cy="401" rx="300" ry="22" fill="#fff8d9" opacity="0.2" filter="url(#soft)" />
-
-        <ellipse cx="3500" cy="414" rx="370" ry="44" fill="url(#pan-wasser)" />
-        <ellipse cx="3500" cy="414" rx="370" ry="44" fill="none" stroke="#f4dfa4" strokeWidth="5" opacity="0.65" />
+        <path d="M 3305 402 C 3410 387 3600 387 3775 404 C 3650 399 3440 410 3305 402 Z" fill="#fff8d9" opacity="0.2" filter="url(#soft)" />
+        <path d="M 3176 418 C 3330 432 3660 438 3826 418" fill="none" stroke="#e9d59d" strokeWidth="2" opacity="0.18" strokeLinecap="round" filter="url(#edge)" />
         <ellipse className="pano-shimmer" cx="3620" cy="402" rx="64" ry="6" fill="#fff" opacity="0.3" />
         {[3220, 3380, 3540, 3680].map((x, i) => (
           <path
