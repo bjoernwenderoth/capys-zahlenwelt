@@ -218,18 +218,125 @@ function Boat({ x, y, s = 1 }) {
   )
 }
 
+function PalmFrond({ angle, length, droop = 18, shade = 0 }) {
+  const ribs = [0.24, 0.36, 0.48, 0.6, 0.72, 0.82]
+  const bezierPoint = (start, control1, control2, end, t) => {
+    const inverse = 1 - t
+    return inverse ** 3 * start
+      + 3 * inverse ** 2 * t * control1
+      + 3 * inverse * t ** 2 * control2
+      + t ** 3 * end
+  }
+
+  return (
+    <g transform={`rotate(${angle})`}>
+      {/* Geschlossene, spitz zulaufende Silhouette statt einer dicken runden Linie. */}
+      <path
+        d={`M 0 -3 C ${length * 0.3} -13 ${length * 0.72} ${droop - 12} ${length} ${droop}
+            C ${length * 0.7} ${droop + 2} ${length * 0.28} 7 0 4 Z`}
+        fill="url(#palm-leaf-grad)"
+      />
+      {/* Die unteren/rechten Wedel zeigen mehr von ihrer kühleren Unterseite. */}
+      <path
+        d={`M 2 1 C ${length * 0.38} 1 ${length * 0.73} ${droop + 1} ${length} ${droop}
+            C ${length * 0.68} ${droop + 5} ${length * 0.3} 9 2 5 Z`}
+        fill="#185f3c"
+        opacity={0.3 + shade}
+        filter="url(#edge)"
+      />
+
+      {/* Mittelrippe und einzelne, abwechselnd geneigte Blattfiedern. */}
+      <path
+        d={`M 1 1 C ${length * 0.32} -7 ${length * 0.7} ${droop - 5} ${length} ${droop}`}
+        stroke="#276d3d"
+        strokeWidth="1.8"
+        fill="none"
+        strokeLinecap="round"
+      />
+      {ribs.map((t, i) => {
+        const px = bezierPoint(1, length * 0.32, length * 0.7, length, t)
+        const py = bezierPoint(1, -7, droop - 5, droop, t)
+        const ribLength = 2.4 + Math.sin(t * Math.PI) * 2.2
+        return (
+          <g key={t}>
+            <path
+              d={`M ${px} ${py} q ${ribLength * 0.35} ${-ribLength * 0.55} ${ribLength * 0.78} ${-ribLength}`}
+              stroke="#59b968"
+              strokeWidth="1.1"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d={`M ${px} ${py + 0.5} q ${ribLength * 0.34} ${ribLength * 0.5} ${ribLength * 0.72} ${ribLength * 0.9}`}
+              stroke={i > 3 ? '#246f43' : '#31894b'}
+              strokeWidth="1.15"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </g>
+        )
+      })}
+      {/* Schmale Sonnenkante entlang der linken/oberen Blattfläche. */}
+      <path
+        d={`M 6 -1 C ${length * 0.3} -6 ${length * 0.62} ${droop - 7} ${length * 0.84} ${droop - 3}`}
+        stroke="#8bd77b"
+        strokeWidth="0.9"
+        fill="none"
+        opacity="0.52"
+        strokeLinecap="round"
+      />
+    </g>
+  )
+}
+
 function Palm({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="10" cy="6" rx="42" ry="8" fill="#000" opacity="0.15" />
-      <path d="M -6 0 Q -2 -60 18 -92 L 26 -88 Q 8 -58 8 0 Z" fill="url(#palm-grad)" />
-      <path d="M 8 -30 Q 12 -60 24 -89 L 26 -88 Q 12 -56 12 -28 Z" fill="#7a4d2b" opacity="0.7" filter="url(#edge)" />
-      {[[-60, -18], [-38, -40], [4, -46], [42, -34], [58, -10]].map(([dx, dy], i) => (
-        <path key={i} d={`M 22 -90 Q ${22 + dx * 0.6} ${-95 + dy * 0.6} ${22 + dx} ${-90 + dy}`} stroke="#3f9c53" strokeWidth="10" fill="none" strokeLinecap="round" />
+      <ellipse cx="12" cy="6" rx="44" ry="8" fill="#000" opacity="0.16" filter="url(#edge)" />
+
+      {/* Leicht geneigter, nach oben dünner werdender Stamm. */}
+      <path d="M -8 1 C -5 -31 2 -67 18 -94 L 29 -90 C 15 -60 10 -28 9 1 Z" fill="url(#palm-grad)" />
+      <path d="M 6 0 C 7 -34 13 -67 25 -92 L 29 -90 C 16 -59 12 -27 9 1 Z" fill="#603a25" opacity="0.5" filter="url(#edge)" />
+      <path d="M -1 -5 C 2 -35 9 -67 21 -90" stroke="#e1b27a" strokeWidth="1.1" fill="none" opacity="0.46" strokeLinecap="round" />
+
+      {/* Alte Blattansätze ergeben die typischen unregelmäßigen Stammringe. */}
+      {[
+        { y: -14, x1: -4, x2: 8 },
+        { y: -29, x1: -2, x2: 10 },
+        { y: -44, x1: 1, x2: 13 },
+        { y: -59, x1: 5, x2: 16 },
+        { y: -73, x1: 10, x2: 20 }
+      ].map(({ y, x1, x2 }) => (
+        <path
+          key={y}
+          d={`M ${x1} ${y} Q ${(x1 + x2) / 2} ${y + 3} ${x2} ${y + 0.8}`}
+          stroke="#674128"
+          strokeWidth="1.15"
+          fill="none"
+          opacity="0.55"
+          strokeLinecap="round"
+        />
       ))}
-      <circle cx="16" cy="-84" r="6" fill="#8a5a35" />
-      <circle cx="28" cy="-80" r="5" fill="#8a5a35" />
-      <circle cx="14.5" cy="-85.5" r="2" fill="#c9a874" opacity="0.6" />
+
+      <g transform="translate(23 -92)">
+        <g>
+          <PalmFrond angle={-174} length={76} droop={18} />
+          <PalmFrond angle={-145} length={76} droop={12} />
+          <PalmFrond angle={-112} length={70} droop={8} />
+          <PalmFrond angle={-78} length={72} droop={9} />
+          <PalmFrond angle={-43} length={78} droop={13} shade={0.04} />
+          <PalmFrond angle={-8} length={76} droop={20} shade={0.08} />
+          <PalmFrond angle={22} length={66} droop={24} shade={0.13} />
+        </g>
+
+        {/* Blattkrone und Kokosnüsse liegen vor den Wedelansätzen. */}
+        <ellipse cx="0" cy="2" rx="10" ry="7" fill="#397f43" />
+        <circle cx="-5" cy="5" r="6" fill="url(#coconut-grad)" />
+        <circle cx="7" cy="7" r="5.5" fill="url(#coconut-grad)" />
+        <circle cx="1" cy="12" r="5" fill="url(#coconut-grad)" />
+        <circle cx="-7" cy="3" r="1.6" fill="#e5c08a" opacity="0.65" />
+        <circle cx="5" cy="5" r="1.4" fill="#e5c08a" opacity="0.55" />
+      </g>
     </g>
   )
 }
@@ -663,6 +770,16 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#9c6b3f" />
           <stop offset="1" stopColor="#7a4d2b" />
         </linearGradient>
+        <linearGradient id="palm-leaf-grad" x1="0" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#76c96d" />
+          <stop offset="0.45" stopColor="#3f9c53" />
+          <stop offset="1" stopColor="#226b42" />
+        </linearGradient>
+        <radialGradient id="coconut-grad" cx="0.3" cy="0.25" r="0.8">
+          <stop offset="0" stopColor="#b98752" />
+          <stop offset="0.55" stopColor="#81512f" />
+          <stop offset="1" stopColor="#4e3020" />
+        </radialGradient>
         <linearGradient id="boat-grad" x1="0.15" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#d97a3e" />
           <stop offset="0.55" stopColor="#b3541e" />
@@ -764,7 +881,7 @@ export default function Panorama({ roadLayer } = {}) {
           <path
             d="M 940 480 Q 1000 400 1060 440 Q 1110 380 1170 435 Q 1220 390 1280 438 Q 1330 385 1390 436
                Q 1440 395 1500 438 Q 1550 390 1610 436 Q 1660 398 1720 438 Q 1770 390 1830 436
-               Q 1880 400 1940 438 Q 1980 405 2020 440 L 2020 490 L 940 490 Z"
+               Q 1840 400 1900 438 Q 1920 415 1940 440 L 1940 490 L 940 490 Z"
             fill="#2e7a44"
           />
         </g>
@@ -774,11 +891,11 @@ export default function Panorama({ roadLayer } = {}) {
       <svg className="pano-layer pano-layer-clouds" viewBox="0 0 6000 600" preserveAspectRatio="none">
         <Cloud x={700} y={80} s={0.8} o={0.8} />
         <Cloud x={1250} y={110} s={0.9} />
-        <Cloud x={1750} y={60} s={0.65} o={0.8} />
+        <Cloud x={1700} y={60} s={0.65} o={0.8} />
         <Cloud x={2400} y={90} s={0.8} />
-        <Cloud x={2900} y={140} s={0.6} o={0.8} />
-        <Cloud x={3350} y={75} s={0.85} />
-        <Cloud x={3800} y={120} s={0.6} o={0.8} />
+        <Cloud x={2820} y={140} s={0.6} o={0.8} />
+        <Cloud x={3400} y={75} s={0.85} />
+        <Cloud x={3740} y={120} s={0.6} o={0.8} />
         <Cloud x={5150} y={190} s={0.9} />
         <Cloud x={5800} y={90} s={0.7} />
       </svg>
@@ -813,6 +930,16 @@ export default function Panorama({ roadLayer } = {}) {
         {/* dezente Maserung, bricht die glatten Verläufe auf */}
         <rect x="0" y="410" width="6000" height="190" filter="url(#grain)" opacity="0.5" style={{ mixBlendMode: 'overlay' }} />
 
+        {/* Breite, ruhige Lichtungen verbinden die Welten. Himmel, Boden und
+            Weg bleiben durchgehend, während die Themen-Deko an den Grenzen
+            bewusst etwas mehr Abstand bekommt. */}
+        {[1000, 2000, 3000, 4000, 5000].map((x) => (
+          <g key={x}>
+            <ellipse cx={x} cy="474" rx="118" ry="54" fill="#fff7d6" opacity="0.09" filter="url(#soft)" />
+            <ellipse cx={x} cy="548" rx="128" ry="42" fill="#fff" opacity="0.055" filter="url(#soft)" />
+          </g>
+        ))}
+
         {/* Weg: liegt auf dem Boden, aber UNTER der gesamten Deko (Bäume,
             Büsche, Tiere …), damit die Deko realistisch vor/neben dem Weg
             steht statt dass der Weg über Baumkronen gemalt wird. */}
@@ -829,7 +956,7 @@ export default function Panorama({ roadLayer } = {}) {
         <Flower x={580} y={500} s={0.95} c="#ff7bac" />
         <Flower x={700} y={545} s={1.1} c="#ff8a5c" />
         <Flower x={830} y={490} s={0.85} c="#7ec3ff" />
-        <Flower x={930} y={560} s={1.15} c="#ffd93d" />
+        <Flower x={890} y={560} s={1.15} c="#ffd93d" />
 
         {/* dichte Streu aus kleinen Gänseblümchen zwischen den großen Blüten – unregelmäßig
              verteilt (Mindestabstand zueinander & zu den großen Blüten) statt im Raster */}
@@ -870,26 +997,26 @@ export default function Panorama({ roadLayer } = {}) {
         <ellipse cx="1500" cy="230" rx="680" ry="270" fill="#1f4a2c" opacity="0.1" filter="url(#soft)" />
 
         {/* hintere Baumreihe: klein, dunkler, nah am Horizont – zieht den Wald nach hinten */}
-        <Pine x={1030} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
-        <Tree x={1100} y={398} s={0.42} dark />
+        <Pine x={1090} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
+        <Tree x={1140} y={398} s={0.42} dark />
         <Pine x={1265} y={402} s={0.48} c="#2e6e3c" cd="#1f5c33" />
         <Tree x={1560} y={400} s={0.46} dark />
         <Pine x={1655} y={392} s={0.5} c="#2e6e3c" cd="#1f5c33" />
         <Tree x={1780} y={415} s={0.48} dark />
-        <Pine x={1975} y={432} s={0.55} c="#2e6e3c" cd="#1f5c33" />
+        <Pine x={1925} y={432} s={0.55} c="#2e6e3c" cd="#1f5c33" />
 
         {/* mittlere Baumreihe, entlang der bereits vorhandenen Weg-Aussparungen */}
-        <Tree x={1120} y={505} s={1.2} />
+        <Tree x={1160} y={505} s={1.2} />
         <Tree x={1330} y={452} s={0.85} dark />
         <Pine x={1520} y={500} s={0.8} />
         <Tree x={1700} y={458} s={0.8} />
-        <Pine x={1905} y={520} s={0.95} />
+        <Pine x={1870} y={520} s={0.95} />
 
         {/* vordere, größere Baumreihe – rahmt die Szene und macht sie dicht */}
-        <Pine x={1055} y={560} s={0.95} />
+        <Pine x={1110} y={560} s={0.95} />
         <Tree x={1460} y={545} s={0.95} dark />
         <Pine x={1565} y={565} s={0.8} />
-        <Tree x={1945} y={565} s={1.05} dark />
+        <Tree x={1900} y={565} s={1.05} dark />
 
         {/* Waldboden: Farne, Pilze, ein umgestürzter Stamm */}
         <Fern x={1175} y={588} s={1} />
@@ -899,7 +1026,7 @@ export default function Panorama({ roadLayer } = {}) {
         <Log x={1475} y={592} s={0.85} rot={-6} />
         <Mushroom x={1250} y={560} />
         <Mushroom x={1790} y={572} s={0.8} cap="#e08a3c" />
-        <Mushroom x={1920} y={558} s={0.6} cap="#e08a3c" />
+        <Mushroom x={1880} y={558} s={0.6} cap="#e08a3c" />
 
         {/* Waldtiere */}
         <Rabbit x={1700} y={530} s={0.8} />
@@ -908,7 +1035,7 @@ export default function Panorama({ roadLayer } = {}) {
         {/* ---------- Region: Bergwelt ---------- */}
         {/* zweite, höher gelegene Bodenebene: kleinere Vegetation und Geröll
             lassen die Bergwelt bis an den Fuß der Gipfel belebt wirken */}
-        <Pine x={2075} y={444} s={0.42} c="#3b7650" cd="#285c3b" />
+        <Pine x={2115} y={444} s={0.42} c="#3b7650" cd="#285c3b" />
         <Rock x={2185} y={448} s={0.48} />
         <AlpineFlower x={2240} y={444} s={0.58} />
         <Goat x={2295} y={456} s={0.5} />
@@ -920,7 +1047,7 @@ export default function Panorama({ roadLayer } = {}) {
         <Pine x={2745} y={458} s={0.44} c="#3b7650" cd="#285c3b" />
         <Cairn x={2835} y={449} s={0.48} />
         <AlpineFlower x={2910} y={443} s={0.58} />
-        <Pine x={2980} y={452} s={0.4} c="#3b7650" cd="#285c3b" />
+        <Pine x={2935} y={452} s={0.4} c="#3b7650" cd="#285c3b" />
 
         {/* Kiefern in mehreren Reihen, unterschiedlich groß für Tiefe */}
         <Pine x={2100} y={545} s={0.8} />
@@ -933,7 +1060,7 @@ export default function Panorama({ roadLayer } = {}) {
         <Pine x={2550} y={582} s={0.75} />
         <Pine x={2780} y={565} s={0.65} />
         <Pine x={2870} y={592} s={0.7} />
-        <Pine x={2980} y={562} s={0.6} />
+        <Pine x={2930} y={562} s={0.6} />
 
         {/* Felsbrocken & Steinmänner säumen den Bergpfad */}
         <Rock x={2150} y={596} s={1} />
@@ -955,7 +1082,7 @@ export default function Panorama({ roadLayer } = {}) {
         <AlpineFlower x={2680} y={548} s={0.85} />
         <AlpineFlower x={2780} y={608} s={0.75} />
         <AlpineFlower x={2880} y={540} s={0.8} />
-        <AlpineFlower x={2960} y={598} s={0.7} />
+        <AlpineFlower x={2925} y={598} s={0.7} />
 
         {/* Steinböcke stehen still auf den Felsen */}
         <Goat x={2250} y={548} s={0.85} />
@@ -1017,9 +1144,9 @@ export default function Panorama({ roadLayer } = {}) {
         <Seagull x={3820} y={358} s={0.9} />
 
         {/* Palmen rahmen den Strand */}
-        <Palm x={3090} y={545} s={0.95} />
+        <Palm x={3125} y={545} s={0.95} />
         <Palm x={3960} y={568} s={0.75} />
-        <Palm x={3025} y={598} s={0.55} />
+        <Palm x={3090} y={598} s={0.55} />
 
         {/* Strand-Deko: Sonnenschirm mit Handtuch, Sandburg, Krabben */}
         <Umbrella x={3780} y={575} s={0.72} />
