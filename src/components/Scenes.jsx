@@ -61,7 +61,7 @@ export function Tree({ x, y, s = 1, dark = false }) {
 }
 
 // Tanne: geschwungene, organische Zweig-Etagen statt spitzer Dreiecke
-export function Pine({ x, y, s = 1, c = '#2f7a44', cd = '#226034' }) {
+export function Pine({ x, y, s = 1, c = '#2f7a44', cd = '#226034', hi = '#4f9c63', trunk = '#7a4d2b' }) {
   const sway = (x * 0.31) % 3
   const tier = (top, ty, half) =>
     `M 0 ${top} Q ${(half * 0.62).toFixed(1)} ${((top + ty) / 2).toFixed(1)} ${half} ${ty} ` +
@@ -69,7 +69,7 @@ export function Pine({ x, y, s = 1, c = '#2f7a44', cd = '#226034' }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <ellipse cx="0" cy="3" rx="24" ry="6" fill="#000" opacity="0.15" />
-      <rect x="-4" y="-12" width="8" height="14" fill="#7a4d2b" />
+      <rect x="-4" y="-12" width="8" height="14" fill={trunk} />
       <g className="pano-sway" style={{ animationDelay: `-${sway}s` }}>
         <path d={tier(-95, -55, 22)} fill={c} />
         <path d={tier(-70, -30, 28)} fill={c} />
@@ -80,7 +80,7 @@ export function Pine({ x, y, s = 1, c = '#2f7a44', cd = '#226034' }) {
           opacity="0.85"
           filter="url(#edge)"
         />
-        <path d="M 0 -95 L -8 -80 L 0 -78 Z" fill="#4f9c63" />
+        <path d="M 0 -95 L -8 -80 L 0 -78 Z" fill={hi} />
       </g>
     </g>
   )

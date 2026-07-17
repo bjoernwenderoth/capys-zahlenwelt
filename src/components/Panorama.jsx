@@ -808,6 +808,81 @@ function Castle({ x, y, s = 1 }) {
   )
 }
 
+// Kleine Sternwarte als Wahrzeichen der Nachtwelt. Die helle Mondkante liegt
+// konsequent links oben, alle rechten Flächen sind kühler und dunkler.
+function Observatory({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="9" rx="92" ry="15" fill="#071127" opacity="0.48" filter="url(#edge)" />
+      <ellipse cx="-12" cy="4" rx="76" ry="10" fill="#9ec8e8" opacity="0.12" filter="url(#soft)" />
+
+      {/* gemauerter Sockel mit runder, statt kastenförmiger Silhouette */}
+      <path d="M -54 4 L -48 -82 Q 0 -105 48 -82 L 54 4 Z" fill="url(#observatory-wall)" />
+      <path d="M 8 -96 Q 48 -91 48 -82 L 54 4 L 9 4 Z" fill="#17284b" opacity="0.6" filter="url(#edge)" />
+      <path d="M -43 -71 Q -8 -88 29 -77" stroke="#b9d5e8" strokeWidth="3" opacity="0.28" fill="none" />
+      {[[-36, -54], [-10, -64], [20, -52], [38, -27], [-27, -21], [2, -32]].map(([bx, by], i) => (
+        <path key={i} d={`M ${bx - 9} ${by} Q ${bx} ${by - 3} ${bx + 9} ${by}`} stroke="#829ab2" strokeWidth="2" opacity="0.22" fill="none" />
+      ))}
+
+      {/* Kuppel mit segmentierter Metallhaut und kräftigem Mondreflex */}
+      <path d="M -58 -78 Q -46 -137 0 -143 Q 47 -137 58 -78 Z" fill="url(#observatory-dome)" />
+      <path d="M 2 -142 Q 45 -134 58 -78 L 7 -78 Z" fill="#172b55" opacity="0.58" filter="url(#edge)" />
+      <path d="M -43 -91 Q -32 -126 -4 -134" stroke="#dff4ff" strokeWidth="5" opacity="0.48" fill="none" strokeLinecap="round" filter="url(#edge)" />
+      <path d="M -58 -78 L 58 -78" stroke="#0c1934" strokeWidth="7" />
+      <path d="M -51 -81 L 51 -81" stroke="#8cb3d2" strokeWidth="2" opacity="0.65" />
+      <path d="M 0 -142 L 0 -80 M -34 -121 Q -17 -102 -16 -80 M 34 -121 Q 17 -102 16 -80" stroke="#0e1d3c" strokeWidth="2" opacity="0.55" fill="none" />
+
+      {/* geöffnetes Beobachtungsfenster und Teleskop */}
+      <path d="M -8 -143 Q 6 -148 19 -140 L 10 -82 L -4 -82 Z" fill="#081124" />
+      <g transform="translate(3 -119) rotate(-32)">
+        <rect x="-7" y="-49" width="14" height="65" rx="6" fill="url(#telescope-grad)" />
+        <rect x="-10" y="-53" width="20" height="12" rx="4" fill="#a9c8dc" />
+        <path d="M -6 -48 L -6 8" stroke="#e6f6ff" strokeWidth="2" opacity="0.46" />
+        <circle cx="0" cy="-48" r="5" fill="#bcecff" opacity="0.8" />
+      </g>
+
+      {/* warme Tür schafft einen gut lesbaren Mittelpunkt im dunklen Boden */}
+      <path d="M -17 4 L -17 -39 Q 0 -56 17 -39 L 17 4 Z" fill="#091329" stroke="#728ba6" strokeWidth="3" />
+      <path d="M -11 4 L -11 -35 Q 0 -46 11 -35 L 11 4 Z" fill="url(#door-glow)" />
+      <circle cx="7" cy="-16" r="1.8" fill="#fff2a8" />
+      <path d="M -26 5 L 26 5" stroke="#b3cbe0" strokeWidth="3" opacity="0.48" />
+    </g>
+  )
+}
+
+function MoonRock({ x, y, s = 1, flip = false }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
+      <ellipse cx="2" cy="4" rx="31" ry="7" fill="#061020" opacity="0.38" />
+      <path d="M -30 2 Q -25 -22 -9 -29 Q 8 -34 28 -9 L 31 3 Z" fill="url(#moon-rock)" />
+      <path d="M 4 -30 Q 21 -25 28 -9 L 31 3 L 8 2 Q 15 -10 4 -30 Z" fill="#243b61" opacity="0.62" filter="url(#edge)" />
+      <path d="M -20 -10 Q -11 -22 -2 -24" stroke="#d4e9f5" strokeWidth="3" opacity="0.35" fill="none" strokeLinecap="round" />
+      <path d="M -12 -8 L -2 -13 L 7 -9 M 10 -18 L 18 -11" stroke="#101f3c" strokeWidth="2" opacity="0.5" fill="none" />
+    </g>
+  )
+}
+
+function ShootingStar({ x, y, s = 1, rot = 0 }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
+      {/* breiter Lichtschleier und darin ein schmaler, heller Meteor-Schweif */}
+      <path d="M 2 1 C 31 3 67 11 111 26 C 72 18 36 14 0 8 Z" fill="url(#shooting-tail-glow)" filter="url(#soft)" opacity="0.55" />
+      <path d="M 2 1 C 34 5 70 13 111 26 C 68 20 31 14 0 8 Z" fill="url(#shooting-tail)" />
+      <path d="M 4 4 C 35 7 66 14 94 22" stroke="#fff" strokeWidth="2.2" opacity="0.84" fill="none" strokeLinecap="round" />
+
+      {/* glühender Kopf mit kleiner, unregelmäßiger Sternform */}
+      <circle cx="0" cy="4" r="14" fill="#dff5ff" opacity="0.25" filter="url(#soft)" />
+      <path d="M 0 -5 L 2.5 1.3 L 9 4 L 2.7 6.4 L 0 13 L -2.5 6.5 L -8 4 L -2.4 1.4 Z" fill="#fffdf0" />
+      <circle cx="-1.5" cy="2.5" r="2.2" fill="#fff" />
+
+      {/* kleine glühende Splitter lösen sich vom Schweif */}
+      <circle cx="42" cy="17" r="1.5" fill="#d8efff" opacity="0.72" />
+      <circle cx="62" cy="7" r="1.1" fill="#fff7c7" opacity="0.58" />
+      <circle cx="78" cy="24" r="0.9" fill="#c7e4ff" opacity="0.48" />
+    </g>
+  )
+}
+
 function SharedDefs() {
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
@@ -862,13 +937,44 @@ function SharedDefs() {
           <stop offset="0.18" stopColor="#7ecbff" />
           <stop offset="0.38" stopColor="#5aa7e8" />
           <stop offset="0.55" stopColor="#8fd3ff" />
-          <stop offset="0.59" stopColor="#8fd3ff" />
-          <stop offset="0.69" stopColor="#28457f" />
-          <stop offset="0.75" stopColor="#0f2049" />
+          <stop offset="0.58" stopColor="#8fd3ff" />
+          <stop offset="0.61" stopColor="#718fbd" />
+          <stop offset="0.64" stopColor="#465f96" />
+          <stop offset="0.67" stopColor="#203968" />
+          <stop offset="0.70" stopColor="#0f2049" />
           <stop offset="0.78" stopColor="#0f2049" />
           <stop offset="0.85" stopColor="#3d4a86" />
           <stop offset="0.95" stopColor="#ffb1c9" />
           <stop offset="1.00" stopColor="#ffd9a3" />
+        </linearGradient>
+        <radialGradient id="observatory-wall" cx="0.22" cy="0.12" r="0.95">
+          <stop offset="0" stopColor="#9ab8cd" />
+          <stop offset="0.5" stopColor="#536d8b" />
+          <stop offset="1" stopColor="#263a5d" />
+        </radialGradient>
+        <linearGradient id="observatory-dome" x1="0.12" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#b5d4e6" />
+          <stop offset="0.38" stopColor="#6688a9" />
+          <stop offset="1" stopColor="#243d69" />
+        </linearGradient>
+        <linearGradient id="telescope-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#d6e7ef" /><stop offset="0.45" stopColor="#6f91aa" /><stop offset="1" stopColor="#2b4561" />
+        </linearGradient>
+        <radialGradient id="door-glow" cx="0.4" cy="0.35" r="0.8">
+          <stop offset="0" stopColor="#fff7bd" /><stop offset="0.45" stopColor="#ffd766" /><stop offset="1" stopColor="#d8882e" />
+        </radialGradient>
+        <linearGradient id="moon-rock" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#819bb3" /><stop offset="0.5" stopColor="#4d6785" /><stop offset="1" stopColor="#243956" />
+        </linearGradient>
+        <linearGradient id="shooting-tail" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.96" />
+          <stop offset="0.28" stopColor="#dff4ff" stopOpacity="0.72" />
+          <stop offset="0.7" stopColor="#9fc9ff" stopOpacity="0.25" />
+          <stop offset="1" stopColor="#9fc9ff" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="shooting-tail-glow" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#e9f8ff" stopOpacity="0.72" />
+          <stop offset="1" stopColor="#8abfff" stopOpacity="0" />
         </linearGradient>
         {/* ferne Hügelkette */}
         <linearGradient id="pan-far" x1="0" y1="0" x2="1" y2="0">
@@ -893,6 +999,7 @@ function SharedDefs() {
           <stop offset="0.72" stopColor="#20355f" />
           <stop offset="0.78" stopColor="#152548" />
           <stop offset="0.80" stopColor="#152548" />
+          <stop offset="0.84" stopColor="#152548" />
           <stop offset="0.90" stopColor="#5f9e54" />
           <stop offset="1.00" stopColor="#78c25e" />
         </linearGradient>
@@ -906,6 +1013,7 @@ function SharedDefs() {
           <stop offset="0.72" stopColor="#122040" />
           <stop offset="0.78" stopColor="#0e1a36" />
           <stop offset="0.80" stopColor="#0e1a36" />
+          <stop offset="0.84" stopColor="#0e1a36" />
           <stop offset="0.90" stopColor="#4f8f45" />
           <stop offset="1.00" stopColor="#66b053" />
         </linearGradient>
@@ -1047,18 +1155,23 @@ export default function Panorama({ roadLayer } = {}) {
         <rect x="-400" width="6800" height="600" fill="url(#pan-sky)" />
 
         <Sun x={400} y={95} r={38} />
-        <circle cx="4560" cy="115" r="95" fill="#fff8d9" opacity="0.18" filter="url(#soft)" />
-        <circle cx="4560" cy="115" r="52" fill="#f5ecc8" />
-        <circle cx="4540" cy="100" r="10" fill="#e3d7ac" />
-        <circle cx="4578" cy="133" r="7" fill="#e3d7ac" />
+        {/* Mond als klare Lichtquelle und vertikale Achse über der Sternwarte */}
+        <circle cx="4560" cy="115" r="116" fill="#dff3ff" opacity="0.16" filter="url(#soft)" />
+        <circle cx="4560" cy="115" r="55" fill="#f5ecc8" />
+        <path d="M 4568 61 A 55 55 0 0 1 4611 135 A 55 55 0 0 1 4572 168 Q 4591 137 4584 103 Q 4580 78 4568 61 Z" fill="#c9c5ad" opacity="0.52" filter="url(#edge)" />
+        <ellipse cx="4538" cy="97" rx="11" ry="8" fill="#d8d1b5" />
+        <ellipse cx="4578" cy="132" rx="8" ry="6" fill="#d3ccb0" />
+        <ellipse cx="4548" cy="141" rx="6" ry="4" fill="#e2d9bd" />
+        <path d="M 4528 82 Q 4543 68 4561 66" stroke="#fffdec" strokeWidth="5" opacity="0.48" fill="none" strokeLinecap="round" />
         <Sun x={5280} y={110} r={34} />
 
-        {[[4180, 70, 0.9], [4260, 150, 0.6], [4360, 50, 1], [4450, 120, 0.7], [4650, 200, 0.6],
-          [4720, 60, 0.9], [4800, 140, 0.7], [4880, 90, 0.8], [4420, 230, 0.5], [4250, 260, 0.4]].map(([x, y, o], i) => (
+        {[[4070, 185, 0.45], [4125, 105, 0.7], [4180, 70, 0.9], [4260, 150, 0.6], [4360, 50, 1], [4450, 120, 0.7], [4650, 200, 0.6],
+          [4720, 60, 0.9], [4800, 140, 0.7], [4880, 90, 0.8], [4950, 175, 0.55], [4420, 230, 0.5], [4250, 260, 0.4], [4775, 260, 0.5]].map(([x, y, o], i) => (
           <Star key={i} x={x} y={y} s={0.5 + o * 0.7} o={o} />
         ))}
-        <path d="M 4200 90 L 4280 140" stroke="#fff" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
-        <Star x={4195} y={87} s={1.2} />
+        <ShootingStar x={4195} y={87} s={0.92} rot={18} />
+        {/* Milchstraßen-Schleier: hell genug zur Abgrenzung, aber hinter den Sternen */}
+        <path d="M 4050 255 Q 4330 115 4600 205 Q 4810 275 5010 105" stroke="#b8c8ff" strokeWidth="52" opacity="0.055" fill="none" filter="url(#soft)" />
 
         <g opacity="0.8">
           {['#ff5c5c', '#ff9d3c', '#ffd93d', '#58cc02', '#1cb0f6', '#b58aff'].map((c, i) => {
@@ -1101,6 +1214,11 @@ export default function Panorama({ roadLayer } = {}) {
                Q 1840 400 1900 438 Q 1920 415 1940 440 L 1940 490 L 940 490 Z"
             fill="#2e7a44"
           />
+        </g>
+        {/* Eigenständige, gestaffelte Silhouette der Nachtwelt */}
+        <g filter="url(#far)">
+          <path d="M 3970 455 Q 4090 370 4200 420 Q 4330 330 4460 408 Q 4580 315 4720 405 Q 4850 350 5030 438 L 5030 500 L 3970 500 Z" fill="#172c55" opacity="0.72" />
+          <path d="M 4020 472 Q 4160 410 4290 448 Q 4430 385 4580 449 Q 4740 390 4975 468 L 4975 510 L 4020 510 Z" fill="#263f70" opacity="0.48" />
         </g>
       </svg>
 
@@ -1433,13 +1551,32 @@ export default function Panorama({ roadLayer } = {}) {
         <BeachMarks x={3860} y={600} s={0.85} rot={14} />
 
         {/* ---------- Region: Sternenhimmel ---------- */}
-        <Pine x={4150} y={510} s={0.85} c="#0e1a36" cd="#0a1428" />
-        <Pine x={4480} y={495} s={0.6} c="#152548" cd="#0e1a36" />
-        <Pine x={4880} y={515} s={0.8} c="#0e1a36" cd="#0a1428" />
+        {/* Mondlicht hebt die Welt als eigene Insel aus dem dunklen Boden. */}
+        <ellipse cx="4560" cy="445" rx="520" ry="112" fill="#8ec9e8" opacity="0.12" filter="url(#soft)" />
+        <ellipse cx="4560" cy="520" rx="390" ry="72" fill="#b9e9f5" opacity="0.1" filter="url(#soft)" />
+
+        {/* hintere, bläulichere Reihe; vorne dunklere Rahmenbäume */}
+        <Pine x={4070} y={446} s={0.46} c="#36567b" cd="#203b62" hi="#7699b8" trunk="#34465c" />
+        <Pine x={4225} y={455} s={0.52} c="#35577b" cd="#1d385e" hi="#718fad" trunk="#304258" />
+        <Pine x={4370} y={438} s={0.4} c="#426689" cd="#29476d" hi="#83a4bf" trunk="#3b5067" />
+        <Pine x={4750} y={442} s={0.45} c="#3d6084" cd="#233f68" hi="#7c9db9" trunk="#384b62" />
+        <Pine x={4910} y={455} s={0.5} c="#35577b" cd="#1d385e" hi="#718fad" trunk="#304258" />
+        <Pine x={4150} y={510} s={0.85} c="#172b4d" cd="#09152d" hi="#456888" trunk="#26364a" />
+        <Pine x={4330} y={565} s={0.72} c="#1c3559" cd="#0b1933" hi="#4d7090" trunk="#293a50" />
+        <Pine x={4845} y={566} s={0.72} c="#193052" cd="#0a172f" hi="#496c8c" trunk="#27384d" />
+        <Pine x={4980} y={515} s={0.84} c="#142946" cd="#081429" hi="#416481" trunk="#233348" />
+
+        <MoonRock x={4075} y={558} s={0.85} />
+        <MoonRock x={4260} y={590} s={0.62} flip />
+        <MoonRock x={4860} y={592} s={0.72} />
+        <MoonRock x={4990} y={568} s={0.62} flip />
+
+        <Observatory x={4560} y={470} s={0.82} />
         {[[4240, 480], [4420, 545], [4610, 500], [4760, 555], [4930, 570]].map(([x, y], i) => (
           <g key={i} className="pano-pulse" style={{ animationDelay: `-${i * 0.4}s` }}>
-            <circle cx={x} cy={y} r="9" fill="#ffe97a" opacity="0.25" filter="url(#soft)" />
-            <circle cx={x} cy={y} r="3" fill="#ffe97a" />
+            <circle cx={x} cy={y} r="12" fill="#ffe97a" opacity="0.28" filter="url(#soft)" />
+            <circle cx={x} cy={y} r="3.2" fill="#fff2a8" />
+            <circle cx={x - 1} cy={y - 1} r="1" fill="#fff" opacity="0.85" />
           </g>
         ))}
 
