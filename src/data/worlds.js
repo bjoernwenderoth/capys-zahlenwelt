@@ -18,8 +18,9 @@ export function worldDone(world, progress) {
   return world.levels.every((lv) => (progress[lv.id] || 0) > 0)
 }
 
-// Temporär: alle Welten sichtbar/entsperrt, während die Welten gestaltet
-// werden. Zum Reaktivieren der normalen Freischaltung einfach false setzen.
+// TODO: Temporär: alle Welten sichtbar/entsperrt, während die Welten gestaltet
+// werden. Zum Reaktivieren der normalen Freischaltung (nur die nächsten Level
+// sichtbar, Rest im Nebel) einfach false setzen.
 export const SHOW_ALL_WORLDS = true
 
 export function worldUnlocked(index, progress) {

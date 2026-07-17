@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { usePortrait } from '../utils/useOrientation.js'
 
 const GREETINGS = [
   'Da bist du ja wieder, {name}! 🎉',
@@ -11,16 +12,7 @@ const GREETINGS = [
 
 export default function Start({ profile, muted, onStart, onToggleMute, onSwitchProfile }) {
   const [showSettings, setShowSettings] = useState(false)
-  const [portrait, setPortrait] = useState(
-    () => window.matchMedia('(orientation: portrait)').matches
-  )
-
-  useEffect(() => {
-    const mq = window.matchMedia('(orientation: portrait)')
-    const fn = (e) => setPortrait(e.matches)
-    mq.addEventListener('change', fn)
-    return () => mq.removeEventListener('change', fn)
-  }, [])
+  const portrait = usePortrait()
 
   // Zufällige Begrüßung – bei jedem Seitenaufruf anders
   const greeting = useMemo(() => {

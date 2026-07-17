@@ -827,111 +827,6 @@ function CrownPlanter({ x, y, s = 1, c = '#f18aaf' }) {
   )
 }
 
-function LegacyRoyalTreasure({ x, y, s = 1 }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="3" cy="10" rx="72" ry="15" fill="#253528" opacity="0.3" filter="url(#edge)" />
-      <ellipse className="pano-pulse" cx="0" cy="-35" rx="88" ry="76" fill="#ffe16b" opacity="0.16" filter="url(#soft)" />
-
-      {/* Großer geöffneter Deckel klar hinter dem Inhalt. */}
-      <path d="M -62 -37 L -58 -69 Q -50 -103 0 -107 Q 50 -103 58 -69 L 62 -37 Z"
-        fill="url(#treasure-wood)" stroke="#4f2d1b" strokeWidth="5" />
-      <path d="M -49 -42 L -46 -68 Q -38 -91 0 -94 Q 38 -91 46 -68 L 49 -42 Z" fill="#38252d" />
-      <path d="M -58 -68 Q 0 -55 58 -68 M -50 -91 Q 0 -79 50 -91"
-        stroke="url(#treasure-gold)" strokeWidth="6" fill="none" />
-      <path d="M -43 -84 Q -26 -98 -5 -99" stroke="#eeb06b" strokeWidth="4" opacity="0.45" fill="none" strokeLinecap="round" />
-
-      {/* Hoher, eindeutig sichtbarer Goldhaufen. */}
-      <path d="M -55 -35 Q -40 -64 -20 -55 Q -4 -75 14 -56 Q 38 -68 56 -34 Z" fill="#d99e27" />
-      {[-48, -36, -24, -12, 0, 12, 24, 36, 48].map((cx, i) => (
-        <g key={cx} transform={`translate(${cx} ${-37 - (i % 3) * 8}) rotate(${i % 2 ? 9 : -7})`}>
-          <ellipse rx="11" ry="5" fill="url(#treasure-gold)" stroke="#976718" strokeWidth="1.4" />
-          <path d="M -6 -1 H 6" stroke="#fff3a5" strokeWidth="1.3" opacity="0.7" />
-        </g>
-      ))}
-
-      {/* Drei große facettierte Diamanten ragen aus dem Gold. */}
-      <g transform="translate(-25 -65)">
-        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-blue)" stroke="#2f7fa2" strokeWidth="1.6" />
-        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#e8fbff" strokeWidth="1" opacity="0.7" fill="none" />
-      </g>
-      <g transform="translate(12 -73) scale(1.18)">
-        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-clear)" stroke="#6aa7c5" strokeWidth="1.6" />
-        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#fff" strokeWidth="1" opacity="0.82" fill="none" />
-      </g>
-      <g transform="translate(39 -57) scale(.82)">
-        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-pink)" stroke="#a84571" strokeWidth="1.6" />
-        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#fff0f7" strokeWidth="1" opacity="0.72" fill="none" />
-      </g>
-
-      {/* Massiver rechteckiger Truhenkörper im Vordergrund. */}
-      <path d="M -64 -38 H 64 L 58 14 Q 0 25 -58 14 Z" fill="url(#treasure-wood)" stroke="#4f2d1b" strokeWidth="5" />
-      <path d="M 10 -38 H 64 L 58 14 Q 34 20 10 21 Z" fill="#542f20" opacity="0.48" />
-      <path d="M -62 -29 H 62 M -60 3 Q 0 14 60 3" stroke="url(#treasure-gold)" strokeWidth="7" fill="none" />
-      <path d="M -52 -22 V 8 M 52 -22 V 8" stroke="#f0c253" strokeWidth="5" opacity="0.9" />
-      <path d="M -10 -35 H 10 L 13 -3 Q 0 9 -13 -3 Z" fill="url(#treasure-gold)" stroke="#815b18" strokeWidth="2" />
-      <circle cx="0" cy="-15" r="4" fill="#51371f" />
-      <path d="M 0 -11 V -5" stroke="#51371f" strokeWidth="3" strokeLinecap="round" />
-      <path d="M -54 -34 Q -25 -27 1 -30" stroke="#f3b875" strokeWidth="3" opacity="0.5" fill="none" />
-
-      {[-70, -56, 56, 70].map((mx, i) => (
-        <ellipse key={mx} cx={mx} cy={10 + (i % 2) * 5} rx="10" ry="4.5" fill="url(#treasure-gold)" stroke="#946619" strokeWidth="1.2" />
-      ))}
-      <Star x={-55} y={-74} s={0.8} o={0.9} />
-      <Star x={53} y={-59} s={0.66} o={0.85} />
-    </g>
-  )
-}
-
-function RoyalTreasure({ x, y, s = 1 }) {
-  const coins = [
-    [-30, -32, -8], [-17, -37, 7], [-3, -34, -5], [12, -39, 9], [27, -33, -6]
-  ]
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="5" cy="9" rx="50" ry="10" fill="#263629" opacity="0.27" filter="url(#edge)" />
-
-      {/* Geöffneter Deckel: einfache, kräftige Silhouette. */}
-      <path d="M -45 -31 L -43 -55 Q -38 -78 0 -82 Q 38 -78 43 -55 L 45 -31 Z"
-        fill="url(#treasure-wood)" stroke="#55321f" strokeWidth="4" />
-      <path d="M -36 -34 L -34 -54 Q -28 -68 0 -71 Q 28 -68 34 -54 L 36 -34 Z" fill="#3c2930" />
-      <path d="M -43 -54 Q 0 -45 43 -54" stroke="url(#treasure-gold)" strokeWidth="5" fill="none" />
-      <path d="M -34 -67 Q -19 -77 -2 -77" stroke="#efb16e" strokeWidth="3" opacity="0.42" fill="none" strokeLinecap="round" />
-
-      {/* Wenige Münzen bleiben auch in kleiner Darstellung klar lesbar. */}
-      {coins.map(([cx, cy, rot]) => (
-        <g key={cx} transform={`translate(${cx} ${cy}) rotate(${rot})`}>
-          <ellipse rx="9" ry="4" fill="url(#treasure-gold)" stroke="#98691c" strokeWidth="1.2" />
-          <path d="M -4 -1 H 4" stroke="#fff0a0" strokeWidth="1" opacity="0.7" />
-        </g>
-      ))}
-
-      {/* Zwei große Diamanten statt vieler kleiner, unruhiger Edelsteine. */}
-      <g transform="translate(-14 -53) scale(.82)">
-        <path d="M -12 0 L -6 -10 H 7 L 13 0 L 0 19 Z" fill="url(#diamond-clear)" stroke="#5795b6" strokeWidth="1.5" />
-        <path d="M -12 0 H 13 M -6 -10 L 0 19 L 7 -10" stroke="#fff" strokeWidth="1" opacity="0.75" fill="none" />
-      </g>
-      <g transform="translate(18 -49) scale(.72)">
-        <path d="M -12 0 L -6 -10 H 7 L 13 0 L 0 19 Z" fill="url(#diamond-blue)" stroke="#2d789c" strokeWidth="1.5" />
-        <path d="M -12 0 H 13 M -6 -10 L 0 19 L 7 -10" stroke="#ecfdff" strokeWidth="1" opacity="0.7" fill="none" />
-      </g>
-
-      {/* Kompakter Truhenkörper mit drei klaren Goldbeschlägen. */}
-      <path d="M -47 -31 H 47 L 43 10 Q 0 18 -43 10 Z" fill="url(#treasure-wood)" stroke="#55321f" strokeWidth="4" />
-      <path d="M 8 -31 H 47 L 43 10 Q 25 14 8 15 Z" fill="#583321" opacity="0.4" />
-      <path d="M -45 -23 H 45 M -44 3 Q 0 11 44 3" stroke="url(#treasure-gold)" strokeWidth="5" fill="none" />
-      <path d="M -38 -22 V 7 M 38 -22 V 7" stroke="#d8aa3c" strokeWidth="4" />
-      <path d="M -8 -28 H 8 L 10 -4 Q 0 5 -10 -4 Z" fill="url(#treasure-gold)" stroke="#80591a" strokeWidth="1.8" />
-      <circle cx="0" cy="-13" r="3" fill="#50351f" />
-      <path d="M -38 -27 Q -18 -22 0 -24" stroke="#f0b372" strokeWidth="2.5" opacity="0.45" fill="none" />
-
-      <ellipse cx="-48" cy="9" rx="8" ry="3.5" fill="#e4b23b" stroke="#97691c" strokeWidth="1" />
-      <ellipse cx="51" cy="11" rx="8" ry="3.5" fill="#e4b23b" stroke="#97691c" strokeWidth="1" />
-      <Star x={37} y={-56} s={0.48} o={0.72} />
-    </g>
-  )
-}
-
 function CastleApproach({ x, y, s = 1, path = true, greenery = true }) {
   const bushes = [
     [-48, 27, 0.66], [48, 27, 0.66],
@@ -1506,21 +1401,6 @@ function SharedDefs() {
         </linearGradient>
         <linearGradient id="royal-planter" x1="0.1" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#ffe28a" /><stop offset="0.5" stopColor="#c99a3f" /><stop offset="1" stopColor="#7e5c28" />
-        </linearGradient>
-        <linearGradient id="treasure-wood" x1="0.08" y1="0" x2="0.92" y2="1">
-          <stop offset="0" stopColor="#e29a55" /><stop offset="0.5" stopColor="#9b552d" /><stop offset="1" stopColor="#512c1c" />
-        </linearGradient>
-        <linearGradient id="treasure-gold" x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0" stopColor="#fff3a6" /><stop offset="0.45" stopColor="#e2b63f" /><stop offset="1" stopColor="#8c621a" />
-        </linearGradient>
-        <linearGradient id="diamond-clear" x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0" stopColor="#fff" /><stop offset="0.35" stopColor="#c9f4ff" /><stop offset="0.7" stopColor="#83cce8" /><stop offset="1" stopColor="#5294bb" />
-        </linearGradient>
-        <linearGradient id="diamond-blue" x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0" stopColor="#d9fbff" /><stop offset="0.4" stopColor="#65d3ed" /><stop offset="1" stopColor="#267da7" />
-        </linearGradient>
-        <linearGradient id="diamond-pink" x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0" stopColor="#ffe5f1" /><stop offset="0.42" stopColor="#ef83ae" /><stop offset="1" stopColor="#a43f70" />
         </linearGradient>
         <linearGradient id="castle-approach" x1="0.1" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#f4e6c8" /><stop offset="0.52" stopColor="#d3bb93" /><stop offset="1" stopColor="#a58c69" />
