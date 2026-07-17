@@ -181,6 +181,11 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   // die beim seitlichen Scrollen nicht mitwandert)
   const [viewWorldIdx, setViewWorldIdx] = useState(currentWorldIdx)
 
+  // Nur die sichtbare Welt + ihre direkten Nachbarn bekommen ihre Deko
+  // tatsächlich gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl
+  // laufender CSS-Animationen unabhängig von der Gesamtzahl der Welten klein.
+  const activeWorldWindow = [Math.max(0, viewWorldIdx - 1), Math.min(WORLDS.length - 1, viewWorldIdx + 1)]
+
   useEffect(() => {
     if (currentRef.current) {
       currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
@@ -296,7 +301,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
               und Deko), damit Bäume & Co. realistisch VOR dem Weg stehen statt
               dass der Weg über Baumkronen gemalt wird. Der braune Belag ist
               bewusst weg – nur die Punkte markieren den Streckenverlauf. */}
-          <Panorama roadLayer={<SegmentDots progress={progress} />} />
+          <Panorama roadLayer={<SegmentDots progress={progress} />} activeWorldWindow={activeWorldWindow} />
 
           {/* unsichtbare Marker an der Startposition jeder Welt – dienen
               nur dazu, beim Scrollen zu erkennen, welche Welt gerade sichtbar ist */}
