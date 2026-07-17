@@ -57,20 +57,24 @@ export function Bee({ x, y, s = 1 }) {
   )
 }
 
+// Gemeinsame Kurve für Farnwedel/Grashalme: vom Ansatzpunkt (0,2) aus radial
+// nach außen gebogen. `curve` steuert, wie stark die Biegung zur Spitze hin
+// einsetzt (Fern biegt stärker als das schmalere DuneGrass).
+function radialBladePath(angle, len, curve) {
+  const rad = (angle * Math.PI) / 180
+  const ex = Math.sin(rad) * len
+  const ey = -Math.cos(rad) * len
+  return `M 0 2 Q ${(ex * curve).toFixed(1)} ${(ey * 0.5).toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`
+}
+
 // Farn für den Waldboden – mehrere Wedel fächern sich vom Ansatzpunkt auf
 export function Fern({ x, y, s = 1, c = '#2e6e3c' }) {
   const delay = (x * 0.31) % 4
-  const frond = (angle, len) => {
-    const rad = (angle * Math.PI) / 180
-    const ex = Math.sin(rad) * len
-    const ey = -Math.cos(rad) * len
-    return `M 0 2 Q ${(ex * 0.35).toFixed(1)} ${(ey * 0.5).toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`
-  }
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <g className="pano-sway" style={{ animationDelay: `-${delay}s` }}>
         {[-42, -20, 0, 20, 42].map((a) => (
-          <path key={a} d={frond(a, 28 - Math.abs(a) * 0.18)} stroke={c} strokeWidth="5" fill="none" strokeLinecap="round" />
+          <path key={a} d={radialBladePath(a, 28 - Math.abs(a) * 0.18, 0.35)} stroke={c} strokeWidth="5" fill="none" strokeLinecap="round" />
         ))}
       </g>
     </g>
@@ -437,12 +441,6 @@ export function Starfish({ x, y, s = 1, c = '#ff8a5c', rot = 0 }) {
 // Dünengras – wie Fern, aber kürzer/sandiger, für die Strandkante
 export function DuneGrass({ x, y, s = 1 }) {
   const delay = (x * 0.31) % 4
-  const blade = (angle, len) => {
-    const rad = (angle * Math.PI) / 180
-    const ex = Math.sin(rad) * len
-    const ey = -Math.cos(rad) * len
-    return `M 0 2 Q ${(ex * 0.3).toFixed(1)} ${(ey * 0.5).toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`
-  }
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <ellipse cx="0" cy="3" rx="10" ry="2.7" fill="#b78d52" opacity="0.2" />
@@ -450,7 +448,7 @@ export function DuneGrass({ x, y, s = 1 }) {
         {[-38, -24, -10, 4, 17, 31, 43].map((a, i) => (
           <path
             key={a}
-            d={blade(a, 16 + (i % 3) * 2.5 - Math.abs(a) * 0.08)}
+            d={radialBladePath(a, 16 + (i % 3) * 2.5 - Math.abs(a) * 0.08, 0.3)}
             stroke={i % 2 ? '#819744' : '#a9b85b'}
             strokeWidth={i % 3 === 0 ? 1.5 : 1.9}
             fill="none"
@@ -855,6 +853,68 @@ export function CastleApproach({ x, y, s = 1, path = true, greenery = true }) {
   )
 }
 
+// Ein Seitenturm des Schlosses (Körper/Dach/Fenster/Tür/Steinlagen sind bei
+// beiden Türmen und in beiden Bauebenen (hinten/vorne) identisch – nur die
+// vordere Ebene bekommt zusätzlich die Wimpelkette). tx spiegelt links/rechts.
+function CastleTower({ tx, withPennants = false }) {
+  return (
+    <g transform={`translate(${tx} 0)`}>
+      <path d="M -33 0 L -31 -149 Q 0 -157 32 -149 L 34 0 Z" fill="url(#castle-stone)" />
+      <path d="M 8 -154 Q 22 -153 32 -149 L 34 0 L 9 0 Z" fill="#a99982" opacity="0.56" filter="url(#edge)" />
+      <path d="M -42 -148 L 0 -230 L 42 -148 Q 0 -158 -42 -148 Z" fill="url(#castle-roof-blue)" />
+      <path d="M 0 -230 L 42 -148 L 8 -153 Z" fill="#264f7c" opacity="0.62" />
+      {/* Dachschindeln folgen perspektivisch der steilen Dachfläche. */}
+      <path d="M -29 -165 L 0 -222 L 29 -165 M -21 -181 Q 0 -187 21 -181 M -13 -199 Q 0 -203 13 -199"
+        stroke="#b9ddef" strokeWidth="1.25" opacity="0.42" fill="none" />
+      <path d="M -39 -148 Q 0 -157 39 -148" stroke="#183e67" strokeWidth="4" opacity="0.5" fill="none" />
+      <path d="M -29 -153 Q 0 -164 29 -153" stroke="#d9eef6" strokeWidth="3" opacity="0.55" fill="none" />
+      <rect x="-2" y="-258" width="3" height="28" fill="#8a5a35" />
+      <path d="M 1 -258 L 26 -250 L 1 -242 Z" fill="#ff5c5c" />
+      <path d="M -15 -112 Q -6 -130 3 -112 V -92 H -15 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
+      <path d="M -17 -114 Q -6 -134 5 -114" stroke="#514b45" strokeWidth="2" fill="none" opacity="0.55" />
+      <path d="M -6 -127 V -94 M -14 -108 H 2" stroke="#eaf8fb" strokeWidth="1.2" opacity="0.7" />
+      <path d="M -16 -50 Q -2 -74 12 -50 V -13 H -16 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="3" />
+      <path d="M -26 -82 H 27 M -27 -32 H 31" stroke="#aa9a82" strokeWidth="1.5" opacity="0.5" />
+      <path d="M -27 -137 H 26 M -27 -107 H 27 M -28 -67 H 28 M -29 -17 H 31"
+        stroke="#95856f" strokeWidth="1" opacity="0.34" />
+      <path d="M -12 -137 V -123 M 14 -137 V -123 M -18 -82 V -68 M 10 -82 V -68"
+        stroke="#95856f" strokeWidth="1" opacity="0.25" />
+      <path d="M -27 -143 Q -24 -68 -27 -6" stroke="#fffdf2" strokeWidth="2.2" opacity="0.34" fill="none" />
+      {withPennants && (
+        <>
+          <path d="M -27 -78 Q 0 -64 27 -78" stroke="#6d5846" strokeWidth="1.5" fill="none" opacity="0.78" />
+          {[
+            [-20, -74, '#d95762'], [-10, -69, '#f0b94f'], [0, -67, '#4f91bd'],
+            [10, -69, '#a55f98'], [20, -74, '#d95762']
+          ].map(([px, py, c], i) => (
+            <g key={`tower-pennant-${i}`} transform={`translate(${px} ${py})`}>
+              <path d="M -4 0 L 5 0 L 1 11 Z" fill={c} />
+              <path d="M 1 0 L 5 0 L 1 11 Z" fill="#4b3544" opacity="0.22" />
+              <path d="M -3 1 H 3" stroke="#fff" strokeWidth="0.8" opacity="0.35" />
+            </g>
+          ))}
+        </>
+      )}
+    </g>
+  )
+}
+
+// Verbindungsmauer zwischen den Seitentürmen: identische Kontur/Steinlagen,
+// einmal als sichtbarer Hintergrund, einmal (geclippt) vor dem Hauptturm.
+function CastleConnectingWall() {
+  return (
+    <>
+      <path d="M -142 0 L -141 -96 Q 0 -104 141 -96 L 142 0 Z" fill="url(#castle-stone)" />
+      <path d="M 58 -99 Q 104 -100 141 -96 L 142 0 H 58 Z" fill="#aa9a82" opacity="0.44" filter="url(#edge)" />
+      {[-120, -80, -40, 0, 40, 80].map((bx) => (
+        <path key={bx} d={`M ${bx} -96 V -111 H ${bx + 24} V -97 Z`} fill="url(#castle-stone)" />
+      ))}
+      <path d="M -141 -94 Q 0 -102 141 -94" stroke="#756b5d" strokeWidth="4" opacity="0.32" fill="none" />
+      <path d="M -137 -76 H 137 M -138 -49 H 138 M -140 -23 H 140" stroke="#a9977e" strokeWidth="1.5" opacity="0.48" />
+    </>
+  )
+}
+
 // Naturstein-Schloss: unregelmäßige Silhouette, klare Lichtquelle links oben
 // und materialabhängige Schatten statt flacher Farbblöcke.
 export function Castle({ x, y, s = 1 }) {
@@ -863,39 +923,9 @@ export function Castle({ x, y, s = 1 }) {
       <ellipse cx="13" cy="16" rx="214" ry="25" fill="#263827" opacity="0.27" filter="url(#edge)" />
       <path d="M -205 -5 Q 0 -20 205 -5 L 194 20 Q 0 33 -194 20 Z" fill="url(#castle-terrace)" />
       <path d="M -196 9 Q 0 23 196 9" stroke="#8f7e68" strokeWidth="3" fill="none" opacity="0.68" />
-      {[-130, 130].map((tx) => (
-        <g key={tx} transform={`translate(${tx} 0)`}>
-          <path d="M -33 0 L -31 -149 Q 0 -157 32 -149 L 34 0 Z" fill="url(#castle-stone)" />
-          <path d="M 8 -154 Q 22 -153 32 -149 L 34 0 L 9 0 Z" fill="#a99982" opacity="0.56" filter="url(#edge)" />
-          <path d="M -42 -148 L 0 -230 L 42 -148 Q 0 -158 -42 -148 Z" fill="url(#castle-roof-blue)" />
-          <path d="M 0 -230 L 42 -148 L 8 -153 Z" fill="#264f7c" opacity="0.62" />
-          {/* Dachschindeln folgen perspektivisch der steilen Dachfläche. */}
-          <path d="M -29 -165 L 0 -222 L 29 -165 M -21 -181 Q 0 -187 21 -181 M -13 -199 Q 0 -203 13 -199"
-            stroke="#b9ddef" strokeWidth="1.25" opacity="0.42" fill="none" />
-          <path d="M -39 -148 Q 0 -157 39 -148" stroke="#183e67" strokeWidth="4" opacity="0.5" fill="none" />
-          <path d="M -29 -153 Q 0 -164 29 -153" stroke="#d9eef6" strokeWidth="3" opacity="0.55" fill="none" />
-          <rect x="-2" y="-258" width="3" height="28" fill="#8a5a35" />
-          <path d="M 1 -258 L 26 -250 L 1 -242 Z" fill="#ff5c5c" />
-          <path d="M -15 -112 Q -6 -130 3 -112 V -92 H -15 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
-          <path d="M -17 -114 Q -6 -134 5 -114" stroke="#514b45" strokeWidth="2" fill="none" opacity="0.55" />
-          <path d="M -6 -127 V -94 M -14 -108 H 2" stroke="#eaf8fb" strokeWidth="1.2" opacity="0.7" />
-          <path d="M -16 -50 Q -2 -74 12 -50 V -13 H -16 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="3" />
-          <path d="M -26 -82 H 27 M -27 -32 H 31" stroke="#aa9a82" strokeWidth="1.5" opacity="0.5" />
-          <path d="M -27 -137 H 26 M -27 -107 H 27 M -28 -67 H 28 M -29 -17 H 31"
-            stroke="#95856f" strokeWidth="1" opacity="0.34" />
-          <path d="M -12 -137 V -123 M 14 -137 V -123 M -18 -82 V -68 M 10 -82 V -68"
-            stroke="#95856f" strokeWidth="1" opacity="0.25" />
-          <path d="M -27 -143 Q -24 -68 -27 -6" stroke="#fffdf2" strokeWidth="2.2" opacity="0.34" fill="none" />
-        </g>
-      ))}
-      <path d="M -142 0 L -141 -96 Q 0 -104 141 -96 L 142 0 Z" fill="url(#castle-stone)" />
-      <path d="M 58 -99 Q 104 -100 141 -96 L 142 0 H 58 Z" fill="#aa9a82" opacity="0.44" filter="url(#edge)" />
-      {[-120, -80, -40, 0, 40, 80].map((bx) => (
-        <path key={bx} d={`M ${bx} -96 V -111 H ${bx + 24} V -97 Z`} fill="url(#castle-stone)" />
-      ))}
-      <path d="M -141 -94 Q 0 -102 141 -94" stroke="#756b5d" strokeWidth="4" opacity="0.32" fill="none" />
+      {[-130, 130].map((tx) => <CastleTower key={tx} tx={tx} />)}
+      <CastleConnectingWall />
       {/* versetzte Steinlagen, Strebepfeiler und verwitterte Stellen */}
-      <path d="M -137 -76 H 137 M -138 -49 H 138 M -140 -23 H 140" stroke="#a9977e" strokeWidth="1.5" opacity="0.48" />
       {[-108, 108].map((px) => <path key={px} d={`M ${px - 9} 0 L ${px - 5} -92 H ${px + 7} L ${px + 13} 0 Z`} fill="#d8cbb5" opacity="0.72" />)}
       <path d="M -126 -69 l 19 -2 M 68 -37 l 22 1 M -76 -20 l 15 -2" stroke="#8f806c" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
       {/* Schmale Schießscharten liegen tief in der Mauer und werfen eine
@@ -910,39 +940,7 @@ export function Castle({ x, y, s = 1 }) {
       {/* Die Seitentürme werden nach der verbindenden Mittelmauer nochmals
           in der Vordergrundebene aufgebaut. So liegen ihre kompletten
           Baukörper sichtbar vor der Mauer; der Hauptturm folgt danach. */}
-      {[-130, 130].map((tx) => (
-        <g key={`front-${tx}`} transform={`translate(${tx} 0)`}>
-          <path d="M -33 0 L -31 -149 Q 0 -157 32 -149 L 34 0 Z" fill="url(#castle-stone)" />
-          <path d="M 8 -154 Q 22 -153 32 -149 L 34 0 L 9 0 Z" fill="#a99982" opacity="0.56" filter="url(#edge)" />
-          <path d="M -42 -148 L 0 -230 L 42 -148 Q 0 -158 -42 -148 Z" fill="url(#castle-roof-blue)" />
-          <path d="M 0 -230 L 42 -148 L 8 -153 Z" fill="#264f7c" opacity="0.62" />
-          <path d="M -29 -165 L 0 -222 L 29 -165 M -21 -181 Q 0 -187 21 -181 M -13 -199 Q 0 -203 13 -199"
-            stroke="#b9ddef" strokeWidth="1.25" opacity="0.42" fill="none" />
-          <path d="M -39 -148 Q 0 -157 39 -148" stroke="#183e67" strokeWidth="4" opacity="0.5" fill="none" />
-          <path d="M -29 -153 Q 0 -164 29 -153" stroke="#d9eef6" strokeWidth="3" opacity="0.55" fill="none" />
-          <rect x="-2" y="-258" width="3" height="28" fill="#8a5a35" />
-          <path d="M 1 -258 L 26 -250 L 1 -242 Z" fill="#ff5c5c" />
-          <path d="M -15 -112 Q -6 -130 3 -112 V -92 H -15 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
-          <path d="M -17 -114 Q -6 -134 5 -114" stroke="#514b45" strokeWidth="2" fill="none" opacity="0.55" />
-          <path d="M -6 -127 V -94 M -14 -108 H 2" stroke="#eaf8fb" strokeWidth="1.2" opacity="0.7" />
-          <path d="M -16 -50 Q -2 -74 12 -50 V -13 H -16 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="3" />
-          <path d="M -26 -82 H 27 M -27 -32 H 31" stroke="#aa9a82" strokeWidth="1.5" opacity="0.5" />
-          <path d="M -27 -137 H 26 M -27 -107 H 27 M -28 -67 H 28 M -29 -17 H 31" stroke="#95856f" strokeWidth="1" opacity="0.34" />
-          <path d="M -12 -137 V -123 M 14 -137 V -123 M -18 -82 V -68 M 10 -82 V -68" stroke="#95856f" strokeWidth="1" opacity="0.25" />
-          <path d="M -27 -143 Q -24 -68 -27 -6" stroke="#fffdf2" strokeWidth="2.2" opacity="0.34" fill="none" />
-          <path d="M -27 -78 Q 0 -64 27 -78" stroke="#6d5846" strokeWidth="1.5" fill="none" opacity="0.78" />
-          {[
-            [-20, -74, '#d95762'], [-10, -69, '#f0b94f'], [0, -67, '#4f91bd'],
-            [10, -69, '#a55f98'], [20, -74, '#d95762']
-          ].map(([px, py, c], i) => (
-            <g key={`tower-pennant-${i}`} transform={`translate(${px} ${py})`}>
-              <path d="M -4 0 L 5 0 L 1 11 Z" fill={c} />
-              <path d="M 1 0 L 5 0 L 1 11 Z" fill="#4b3544" opacity="0.22" />
-              <path d="M -3 1 H 3" stroke="#fff" strokeWidth="0.8" opacity="0.35" />
-            </g>
-          ))}
-        </g>
-      ))}
+      {[-130, 130].map((tx) => <CastleTower key={`front-${tx}`} tx={tx} withPennants />)}
       {/* Der komplette Hauptturm steht minimal höher; alle zugehörigen
           Details bewegen sich als eine gemeinsame Baugruppe. */}
       <g transform="translate(0 -8)">
@@ -974,13 +972,7 @@ export function Castle({ x, y, s = 1 }) {
       {/* Dieselbe Verbindungsmauer wird im zentralen Ausschnitt vor den
           Hauptturm gelegt. Kontur und Höhe bleiben exakt unverändert. */}
       <g clipPath="url(#castle-center-wall-clip)">
-        <path d="M -142 0 L -141 -96 Q 0 -104 141 -96 L 142 0 Z" fill="url(#castle-stone)" />
-        <path d="M 58 -99 Q 104 -100 141 -96 L 142 0 H 58 Z" fill="#aa9a82" opacity="0.44" filter="url(#edge)" />
-        {[-120, -80, -40, 0, 40, 80].map((bx) => (
-          <path key={`center-wall-${bx}`} d={`M ${bx} -96 V -111 H ${bx + 24} V -97 Z`} fill="url(#castle-stone)" />
-        ))}
-        <path d="M -141 -94 Q 0 -102 141 -94" stroke="#756b5d" strokeWidth="4" opacity="0.32" fill="none" />
-        <path d="M -137 -76 H 137 M -138 -49 H 138 M -140 -23 H 140" stroke="#a9977e" strokeWidth="1.5" opacity="0.48" />
+        <CastleConnectingWall />
       </g>
       <path d="M -33 0 V -47 Q 0 -82 33 -47 V 0 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="5" />
       <path d="M 0 -50 L 0 0" stroke="#6e4527" strokeWidth="3" />
