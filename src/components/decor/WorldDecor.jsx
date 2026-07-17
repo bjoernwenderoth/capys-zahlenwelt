@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { DECOR } from './registry.js'
 
 // Rendert die Deko-Liste einer Welt (siehe src/data/worldDecor/*.js) an ihrer
@@ -6,14 +7,20 @@ import { DECOR } from './registry.js'
 // Hebel: nur die sichtbare Welt + ihre Nachbarn bekommen active=true
 // (siehe Panorama.jsx/Path.jsx).
 export default function WorldDecor({ items, offsetX = 0, active = true }) {
-  if (!active) return null
-  return (
-    <g transform={`translate(${offsetX} 0)`}>
-      {items.map((item, i) => {
+  // items kommt aus den statischen worldDecor-Datendateien (immer dieselbe
+  // Array-Referenz) – ohne useMemo würde jeder Re-Render von Panorama (z. B.
+  // durch Fortschritts-Updates anderswo im Baum) hier erneut alle Sprites
+  // dieser Welt abbilden, auch wenn active=false gar nichts gerendert wird.
+  const sprites = useMemo(
+    () =>
+      items.map((item, i) => {
         const { type, ...props } = item
         const Sprite = DECOR[type]
         return Sprite ? <Sprite key={i} {...props} /> : null
-      })}
-    </g>
+      }),
+    [items]
   )
+
+  if (!active) return null
+  return <g transform={`translate(${offsetX} 0)`}>{sprites}</g>
 }

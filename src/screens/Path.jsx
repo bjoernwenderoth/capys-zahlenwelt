@@ -184,7 +184,13 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
   // Nur die sichtbare Welt + ihre direkten Nachbarn bekommen ihre Deko
   // tatsächlich gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl
   // laufender CSS-Animationen unabhängig von der Gesamtzahl der Welten klein.
-  const activeWorldWindow = [Math.max(0, viewWorldIdx - 1), Math.min(WORLDS.length - 1, viewWorldIdx + 1)]
+  // useMemo verhindert eine neue Array-Identität bei jedem Path-Render (z. B.
+  // durch Fortschritts-Updates), die sonst Panorama ohne echten Grund neu
+  // rendern ließe.
+  const activeWorldWindow = useMemo(
+    () => [Math.max(0, viewWorldIdx - 1), Math.min(WORLDS.length - 1, viewWorldIdx + 1)],
+    [viewWorldIdx]
+  )
 
   useEffect(() => {
     if (currentRef.current) {

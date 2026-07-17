@@ -361,11 +361,13 @@ function SharedDefs() {
   )
 }
 
-// activeWorldWindow = [ersterIndex, letzterIndex] der Welten (0..5, Reihenfolge
-// wie WORLD_DECOR/WORLDS), deren Deko tatsächlich gerendert wird. Welten
+// activeWorldWindow = [ersterIndex, letzterIndex] der Welten (Reihenfolge wie
+// WORLD_DECOR/WORLDS), deren Deko tatsächlich gerendert wird. Welten
 // außerhalb bleiben ohne Deko-DOM und ohne laufende CSS-Animationen – Boden,
 // Weg und Levelknoten bleiben davon unberührt (siehe Path.jsx).
-export default function Panorama({ roadLayer, activeWorldWindow = [0, 5] } = {}) {
+const LAST_WORLD_IDX = WORLD_DECOR.length - 1
+
+export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD_IDX] } = {}) {
   const [activeLo, activeHi] = activeWorldWindow
   const isWorldActive = (i) => i >= activeLo && i <= activeHi
 
@@ -573,7 +575,7 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, 5] } = {})
           preserveAspectRatio="xMidYMid meet"
           style={{ filter: 'saturate(0.72) contrast(0.92) brightness(0.98)' }}
         />
-        <WorldDecor items={SCHLOSS_FOREGROUND.items} offsetX={SCHLOSS_FOREGROUND.offsetX} active={isWorldActive(5)} />
+        <WorldDecor items={SCHLOSS_FOREGROUND.items} offsetX={SCHLOSS_FOREGROUND.offsetX} active={isWorldActive(LAST_WORLD_IDX)} />
       </svg>
     </div>
   )
