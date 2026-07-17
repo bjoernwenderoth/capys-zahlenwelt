@@ -769,41 +769,81 @@ function Eagle({ x, y, s = 1 }) {
   )
 }
 
-// Wasserfall – kaskadiert eine Bergflanke hinab in ein kleines Becken
+// Naturstein-Schloss: unregelmäßige Silhouette, klare Lichtquelle links oben
+// und materialabhängige Schatten statt flacher Farbblöcke.
 function Castle({ x, y, s = 1 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx="0" cy="8" rx="190" ry="18" fill="#000" opacity="0.12" />
+      <ellipse cx="13" cy="16" rx="214" ry="25" fill="#263827" opacity="0.27" filter="url(#edge)" />
+      <path d="M -205 -5 Q 0 -20 205 -5 L 194 20 Q 0 33 -194 20 Z" fill="url(#castle-terrace)" />
+      <path d="M -196 9 Q 0 23 196 9" stroke="#8f7e68" strokeWidth="3" fill="none" opacity="0.68" />
       {[-130, 130].map((tx) => (
         <g key={tx} transform={`translate(${tx} 0)`}>
-          <rect x="-30" y="-150" width="60" height="150" fill="#f3e6d0" />
-          <rect x="8" y="-150" width="22" height="150" fill="#d9c5a5" />
-          <path d="M -38 -150 L 0 -215 L 38 -150 Z" fill="#4a90d9" />
-          <path d="M 0 -215 L 38 -150 L 8 -150 Z" fill="#3572b0" />
-          <rect x="-2" y="-238" width="3" height="26" fill="#8a5a35" />
-          <path d="M 1 -238 L 26 -230 L 1 -222 Z" fill="#ff5c5c" />
-          <circle cx="-6" cy="-110" r="9" fill="#7ec3ff" stroke="#5a7a9c" strokeWidth="2.5" />
-          <rect x="-14" y="-56" width="24" height="40" rx="12" fill="#8a5a35" />
+          <path d="M -33 0 L -31 -149 Q 0 -157 32 -149 L 34 0 Z" fill="url(#castle-stone)" />
+          <path d="M 8 -154 Q 22 -153 32 -149 L 34 0 L 9 0 Z" fill="#a99982" opacity="0.56" filter="url(#edge)" />
+          <path d="M -42 -148 L 0 -230 L 42 -148 Q 0 -158 -42 -148 Z" fill="url(#castle-roof-blue)" />
+          <path d="M 0 -230 L 42 -148 L 8 -153 Z" fill="#264f7c" opacity="0.62" />
+          {/* Dachschindeln folgen perspektivisch der steilen Dachfläche. */}
+          <path d="M -29 -165 L 0 -222 L 29 -165 M -21 -181 Q 0 -187 21 -181 M -13 -199 Q 0 -203 13 -199"
+            stroke="#b9ddef" strokeWidth="1.25" opacity="0.42" fill="none" />
+          <path d="M -39 -148 Q 0 -157 39 -148" stroke="#183e67" strokeWidth="4" opacity="0.5" fill="none" />
+          <path d="M -29 -153 Q 0 -164 29 -153" stroke="#d9eef6" strokeWidth="3" opacity="0.55" fill="none" />
+          <rect x="-2" y="-258" width="3" height="28" fill="#8a5a35" />
+          <path d="M 1 -258 L 26 -250 L 1 -242 Z" fill="#ff5c5c" />
+          <path d="M -15 -112 Q -6 -130 3 -112 V -92 H -15 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
+          <path d="M -17 -114 Q -6 -134 5 -114" stroke="#514b45" strokeWidth="2" fill="none" opacity="0.55" />
+          <path d="M -6 -127 V -94 M -14 -108 H 2" stroke="#eaf8fb" strokeWidth="1.2" opacity="0.7" />
+          <path d="M -16 -50 Q -2 -74 12 -50 V -13 H -16 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="3" />
+          <path d="M -26 -82 H 27 M -27 -32 H 31" stroke="#aa9a82" strokeWidth="1.5" opacity="0.5" />
+          <path d="M -27 -137 H 26 M -27 -107 H 27 M -28 -67 H 28 M -29 -17 H 31"
+            stroke="#95856f" strokeWidth="1" opacity="0.34" />
+          <path d="M -12 -137 V -123 M 14 -137 V -123 M -18 -82 V -68 M 10 -82 V -68"
+            stroke="#95856f" strokeWidth="1" opacity="0.25" />
+          <path d="M -27 -143 Q -24 -68 -27 -6" stroke="#fffdf2" strokeWidth="2.2" opacity="0.34" fill="none" />
         </g>
       ))}
-      <rect x="-140" y="-95" width="280" height="95" fill="#efe0c8" />
-      <rect x="60" y="-95" width="80" height="95" fill="#dcc8a8" />
+      <path d="M -142 0 L -141 -96 Q 0 -104 141 -96 L 142 0 Z" fill="url(#castle-stone)" />
+      <path d="M 58 -99 Q 104 -100 141 -96 L 142 0 H 58 Z" fill="#aa9a82" opacity="0.44" filter="url(#edge)" />
       {[-120, -80, -40, 0, 40, 80].map((bx) => (
-        <rect key={bx} x={bx} y="-107" width="24" height="14" fill="#efe0c8" />
+        <path key={bx} d={`M ${bx} -96 V -111 H ${bx + 24} V -97 Z`} fill="url(#castle-stone)" />
       ))}
-      <rect x="-45" y="-205" width="90" height="115" fill="#f8ecd8" />
-      <rect x="15" y="-205" width="30" height="115" fill="#e0cdad" />
-      <path d="M -55 -205 L 0 -280 L 55 -205 Z" fill="#e05252" />
-      <path d="M 0 -280 L 55 -205 L 12 -205 Z" fill="#b53e3e" />
-      <rect x="-2" y="-305" width="3" height="28" fill="#8a5a35" />
-      <path d="M 1 -305 L 30 -296 L 1 -287 Z" fill="#ffd93d" />
-      <circle cx="0" cy="-160" r="13" fill="#7ec3ff" stroke="#5a7a9c" strokeWidth="3" />
+      <path d="M -141 -94 Q 0 -102 141 -94" stroke="#756b5d" strokeWidth="4" opacity="0.32" fill="none" />
+      {/* versetzte Steinlagen, Strebepfeiler und verwitterte Stellen */}
+      <path d="M -137 -76 H 137 M -138 -49 H 138 M -140 -23 H 140" stroke="#a9977e" strokeWidth="1.5" opacity="0.48" />
+      {[-108, 108].map((px) => <path key={px} d={`M ${px - 9} 0 L ${px - 5} -92 H ${px + 7} L ${px + 13} 0 Z`} fill="#d8cbb5" opacity="0.72" />)}
+      <path d="M -126 -69 l 19 -2 M 68 -37 l 22 1 M -76 -20 l 15 -2" stroke="#8f806c" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
+      {/* Schmale Schießscharten liegen tief in der Mauer und werfen eine
+          kleine Schattenkante nach rechts unten. */}
+      {[-72, 72].map((wx) => (
+        <g key={wx} transform={`translate(${wx} -55)`}>
+          <path d="M -6 13 V -8 Q 0 -16 6 -8 V 13 Z" fill="#655f59" opacity="0.7" />
+          <path d="M -3 10 V -7 Q 0 -11 3 -7 V 10 Z" fill="url(#castle-glass)" />
+          <path d="M -2 -7 V 8" stroke="#e8f8fb" strokeWidth="1" opacity="0.48" />
+        </g>
+      ))}
+      <path d="M -48 -90 L -47 -205 Q 0 -214 47 -205 L 48 -90 Z" fill="url(#castle-stone-light)" />
+      <path d="M 14 -210 Q 34 -209 47 -205 L 48 -90 H 14 Z" fill="#b5a38a" opacity="0.56" filter="url(#edge)" />
+      <path d="M -60 -204 L 0 -302 L 60 -204 Q 0 -216 -60 -204 Z" fill="url(#castle-roof-red)" />
+      <path d="M 0 -302 L 60 -204 L 12 -210 Z" fill="#87343b" opacity="0.62" />
+      {/* feine Dachziegel folgen der Dachneigung */}
+      <path d="M -42 -217 Q 0 -229 42 -217 M -33 -235 Q 0 -244 33 -235 M -22 -254 Q 0 -261 22 -254" stroke="#ffd1bd" strokeWidth="1.4" opacity="0.42" fill="none" />
+      <path d="M -57 -204 Q 0 -215 57 -204" stroke="#642a32" strokeWidth="5" opacity="0.5" fill="none" />
+      <path d="M -45 -215 L 0 -294" stroke="#fff0df" strokeWidth="3" opacity="0.22" strokeLinecap="round" />
+      <rect x="-2" y="-334" width="3" height="32" fill="#8a5a35" />
+      <path d="M 1 -334 L 30 -325 L 1 -316 Z" fill="#ffd93d" />
+      <path d="M -14 -174 Q 0 -199 14 -174 V -146 H -14 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
+      <path d="M 0 -195 V -148 M -13 -171 H 13" stroke="#edfaff" strokeWidth="1.3" opacity="0.7" />
       <circle cx="0" cy="-122" r="11" fill="#fff" stroke="#b8a888" strokeWidth="2.5" />
       <path d="M 0 -122 L 0 -129 M 0 -122 L 5 -119" stroke="#5a4632" strokeWidth="2" strokeLinecap="round" />
-      <rect x="-30" y="-52" width="60" height="52" rx="28" fill="#8a5a35" />
-      <rect x="-30" y="-52" width="60" height="52" rx="28" fill="none" stroke="#6e4527" strokeWidth="5" />
+      <path d="M -33 0 V -47 Q 0 -82 33 -47 V 0 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="5" />
       <path d="M 0 -50 L 0 0" stroke="#6e4527" strokeWidth="3" />
-      <path d="M -18 0 L 18 0 L 40 40 L -40 40 Z" fill="#e8d5ae" />
+      <path d="M -25 -42 Q 0 -68 25 -42" stroke="#d19a61" strokeWidth="2" opacity="0.45" fill="none" />
+      <path d="M -24 -8 V -41 M -12 -2 V -54 M 12 -2 V -54 M 24 -8 V -41" stroke="#4a2f20" strokeWidth="1.4" opacity="0.55" />
+      <path d="M -28 -32 H 28 M -31 -14 H 31" stroke="#39271d" strokeWidth="2.4" opacity="0.55" />
+      {[-20, -10, 10, 20].map((nx) => <circle key={nx} cx={nx} cy="-24" r="1.6" fill="#bd8e52" opacity="0.7" />)}
+      <path d="M -31 0 H 31 L 48 23 H -48 Z" fill="url(#castle-steps)" />
+      <path d="M -34 5 H 34 M -40 13 H 40" stroke="#f4ecdc" strokeWidth="2" opacity="0.68" />
+      <path d="M 0 2 L 43 20 L 48 23 H 2 Z" fill="#75634f" opacity="0.2" filter="url(#edge)" />
     </g>
   )
 }
@@ -942,11 +982,41 @@ function SharedDefs() {
           <stop offset="0.64" stopColor="#465f96" />
           <stop offset="0.67" stopColor="#203968" />
           <stop offset="0.70" stopColor="#0f2049" />
-          <stop offset="0.78" stopColor="#0f2049" />
-          <stop offset="0.85" stopColor="#3d4a86" />
-          <stop offset="0.95" stopColor="#ffb1c9" />
-          <stop offset="1.00" stopColor="#ffd9a3" />
+          <stop offset="0.76" stopColor="#0f2049" />
+          <stop offset="0.78" stopColor="#263d70" />
+          <stop offset="0.80" stopColor="#607fb5" />
+          <stop offset="0.82" stopColor="#9bbcdf" />
+          <stop offset="0.84" stopColor="#c3deef" />
+          <stop offset="0.86" stopColor="#d5eaf4" />
+          <stop offset="0.90" stopColor="#cbe7f4" />
+          <stop offset="0.95" stopColor="#e8ddf1" />
+          <stop offset="0.98" stopColor="#ffe2cf" />
+          <stop offset="1.00" stopColor="#fff0c7" />
         </linearGradient>
+        <linearGradient id="castle-cirrus" gradientUnits="userSpaceOnUse" x1="5050" y1="80" x2="6040" y2="235">
+          <stop offset="0" stopColor="#d8efff" stopOpacity="0" />
+          <stop offset="0.25" stopColor="#f8e8f2" stopOpacity="0.4" />
+          <stop offset="0.62" stopColor="#ffd6c7" stopOpacity="0.46" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        {/* Gerader Sonnenaufgangs-Verlauf ohne radiale Kontur. */}
+        <linearGradient id="castle-sunrise-wash" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="440">
+          <stop offset="0" stopColor="#91c9ec" stopOpacity="0.46" />
+          <stop offset="0.28" stopColor="#c9b9e9" stopOpacity="0.58" />
+          <stop offset="0.56" stopColor="#f3abc2" stopOpacity="0.66" />
+          <stop offset="0.78" stopColor="#ffbe9e" stopOpacity="0.72" />
+          <stop offset="1" stopColor="#ffe39b" stopOpacity="0.78" />
+        </linearGradient>
+        <linearGradient id="castle-sunrise-side-fade" gradientUnits="userSpaceOnUse" x1="4740" y1="0" x2="6000" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.18" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="0.34" stopColor="#fff" stopOpacity="0.78" />
+          <stop offset="0.48" stopColor="#fff" stopOpacity="1" />
+          <stop offset="1" stopColor="#fff" stopOpacity="1" />
+        </linearGradient>
+        <mask id="castle-sunrise-mask" maskUnits="userSpaceOnUse" x="4740" y="0" width="1260" height="450">
+          <rect x="4740" y="0" width="1260" height="450" fill="url(#castle-sunrise-side-fade)" />
+        </mask>
         <radialGradient id="observatory-wall" cx="0.22" cy="0.12" r="0.95">
           <stop offset="0" stopColor="#9ab8cd" />
           <stop offset="0.5" stopColor="#536d8b" />
@@ -1125,6 +1195,30 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#d9d0bc" />
           <stop offset="1" stopColor="#b8a888" />
         </linearGradient>
+        <linearGradient id="castle-stone" x1="0.08" y1="0" x2="0.92" y2="1">
+          <stop offset="0" stopColor="#fff9eb" /><stop offset="0.46" stopColor="#e5dac5" /><stop offset="1" stopColor="#ad9c83" />
+        </linearGradient>
+        <linearGradient id="castle-stone-light" x1="0.08" y1="0" x2="0.92" y2="1">
+          <stop offset="0" stopColor="#fffdf3" /><stop offset="0.5" stopColor="#eee3cf" /><stop offset="1" stopColor="#b7a58a" />
+        </linearGradient>
+        <linearGradient id="castle-roof-blue" x1="0.12" y1="0" x2="0.88" y2="1">
+          <stop offset="0" stopColor="#88c8e9" /><stop offset="0.48" stopColor="#438bbd" /><stop offset="1" stopColor="#264f7c" />
+        </linearGradient>
+        <linearGradient id="castle-roof-red" x1="0.12" y1="0" x2="0.88" y2="1">
+          <stop offset="0" stopColor="#ff9384" /><stop offset="0.48" stopColor="#cf5053" /><stop offset="1" stopColor="#87343b" />
+        </linearGradient>
+        <radialGradient id="castle-glass" cx="0.28" cy="0.2" r="0.9">
+          <stop offset="0" stopColor="#f2fdff" /><stop offset="0.45" stopColor="#76c7e2" /><stop offset="1" stopColor="#356f9c" />
+        </radialGradient>
+        <linearGradient id="castle-door" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#a87545" /><stop offset="0.52" stopColor="#795032" /><stop offset="1" stopColor="#49301f" />
+        </linearGradient>
+        <linearGradient id="castle-terrace" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#eee4cf" /><stop offset="0.55" stopColor="#c6b79c" /><stop offset="1" stopColor="#918069" />
+        </linearGradient>
+        <linearGradient id="castle-steps" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#eee4d1" /><stop offset="1" stopColor="#aa987c" />
+        </linearGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.5" y2="1">
           <stop offset="0" stopColor="#d9eafa" />
           <stop offset="0.5" stopColor="#bcd6ed" />
@@ -1163,8 +1257,6 @@ export default function Panorama({ roadLayer } = {}) {
         <ellipse cx="4578" cy="132" rx="8" ry="6" fill="#d3ccb0" />
         <ellipse cx="4548" cy="141" rx="6" ry="4" fill="#e2d9bd" />
         <path d="M 4528 82 Q 4543 68 4561 66" stroke="#fffdec" strokeWidth="5" opacity="0.48" fill="none" strokeLinecap="round" />
-        <Sun x={5280} y={110} r={34} />
-
         {[[4070, 185, 0.45], [4125, 105, 0.7], [4180, 70, 0.9], [4260, 150, 0.6], [4360, 50, 1], [4450, 120, 0.7], [4650, 200, 0.6],
           [4720, 60, 0.9], [4800, 140, 0.7], [4880, 90, 0.8], [4950, 175, 0.55], [4420, 230, 0.5], [4250, 260, 0.4], [4775, 260, 0.5]].map(([x, y, o], i) => (
           <Star key={i} x={x} y={y} s={0.5 + o * 0.7} o={o} />
@@ -1173,14 +1265,15 @@ export default function Panorama({ roadLayer } = {}) {
         {/* Milchstraßen-Schleier: hell genug zur Abgrenzung, aber hinter den Sternen */}
         <path d="M 4050 255 Q 4330 115 4600 205 Q 4810 275 5010 105" stroke="#b8c8ff" strokeWidth="52" opacity="0.055" fill="none" filter="url(#soft)" />
 
-        <g opacity="0.8">
-          {['#ff5c5c', '#ff9d3c', '#ffd93d', '#58cc02', '#1cb0f6', '#b58aff'].map((c, i) => {
-            const r = 340 - i * 15
-            return (
-              <path key={c} d={`M ${5500 - r} 620 A ${r} ${r} 0 0 1 ${5500 + r} 620`} stroke={c} strokeWidth="15" fill="none" />
-            )
-          })}
-        </g>
+        {/* Königsschloss: Die Sonnenaufgangsfarben kommen aus dem einen
+            durchgehenden Himmelsverlauf; keine radialen Lichtflächen oder Bögen. */}
+        <rect x="4740" y="0" width="1260" height="450" fill="url(#castle-sunrise-wash)" mask="url(#castle-sunrise-mask)" />
+        <path d="M 5010 205 C 5200 128 5380 155 5535 115 C 5700 72 5860 108 6050 55"
+          stroke="url(#castle-cirrus)" strokeWidth="34" fill="none" opacity="0.58" filter="url(#soft)" strokeLinecap="round" />
+        <path d="M 5100 272 C 5290 204 5460 232 5635 187 C 5775 151 5910 169 6035 132"
+          stroke="url(#castle-cirrus)" strokeWidth="18" fill="none" opacity="0.42" filter="url(#soft)" strokeLinecap="round" />
+        <path d="M 5205 82 Q 5400 34 5580 74 M 5650 250 Q 5820 212 5995 236"
+          stroke="#ffffff" strokeWidth="7" fill="none" opacity="0.18" filter="url(#soft)" strokeLinecap="round" />
       </svg>
 
       {/* ---------- Ebene 2: ferne Hügel & Berge (weichgezeichnet) ---------- */}
@@ -1581,7 +1674,8 @@ export default function Panorama({ roadLayer } = {}) {
         ))}
 
         {/* ---------- Region: Königsschloss ---------- */}
-        <Castle x={5500} y={470} s={0.95} />
+        {/* Das Schloss sitzt direkt auf der vorhandenen mittleren Bodenebene. */}
+        <Castle x={5500} y={425} s={0.94} />
         <Star x={5240} y={300} s={1.4} o={0.9} />
         <Star x={5760} y={280} s={1.1} o={0.8} />
         <Flower x={5130} y={555} s={1.05} c="#ff7bac" />
