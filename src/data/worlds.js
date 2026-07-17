@@ -38,7 +38,11 @@ export function worldUnlocked(index, progress) {
 export const WORLD_NODES = {
   wald: [[150, 470], [300, 436], [480, 505], [660, 442], [900, 478]],
   wiese: [[150, 470], [320, 436], [480, 500], [660, 442], [900, 478]],
-  berge: [[60, 524], [260, 500], [470, 530], [700, 505], [860, 518]],
+  // Das vorletzte Level liegt auf der höher gelegenen, mittleren
+  // Bodenebene. Der letzte Rohpunkt wird durch WORLD_TRANSITION_SPACE noch
+  // 70 Einheiten nach links geschoben und landet so bei x=860 – frei neben
+  // dem Steinmann bei x=790 statt direkt darüber.
+  berge: [[60, 524], [260, 500], [470, 530], [700, 445], [930, 518]],
   see: [[170, 530], [300, 500], [480, 528], [680, 502], [900, 516]],
   nacht: [[80, 525], [300, 462], [470, 528], [680, 468], [940, 522]],
   schloss: [[140, 526], [500, 505], [860, 528]]
