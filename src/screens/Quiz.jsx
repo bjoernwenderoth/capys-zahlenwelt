@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Capybara from '../components/Capybara.jsx'
 import {
   generateQuestions,
@@ -60,8 +60,28 @@ function InputQuestion({ q, disabled, onAnswer }) {
 
   function press(d) {
     if (disabled) return
-    if (val.length < maxLen) setVal(val + d)
+    setVal((v) => (v.length < maxLen ? v + d : v))
   }
+
+  function submit(current) {
+    if (disabled || !current) return
+    onAnswer(parseInt(current, 10) === expected)
+  }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (disabled) return
+      if (e.key >= '0' && e.key <= '9') {
+        press(e.key)
+      } else if (e.key === 'Backspace') {
+        setVal((v) => v.slice(0, -1))
+      } else if (e.key === 'Enter') {
+        submit(val)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [disabled, val])
 
   return (
     <div className="input-area">
@@ -75,11 +95,7 @@ function InputQuestion({ q, disabled, onAnswer }) {
         <button className="btn key key-del" disabled={disabled || !val} onClick={() => setVal(val.slice(0, -1))}>
           ⌫
         </button>
-        <button
-          className="btn key key-ok"
-          disabled={disabled || !val}
-          onClick={() => onAnswer(parseInt(val, 10) === expected)}
-        >
+        <button className="btn key key-ok" disabled={disabled || !val} onClick={() => submit(val)}>
           ✓
         </button>
       </div>
@@ -181,6 +197,15 @@ export default function Quiz({ level, muted, onFinish, onExit }) {
   const [showTip, setShowTip] = useState(false)
   const [done, setDone] = useState(null) // {pass, stars, correctFirst}
   const wrongSet = useRef(new Set())
+  const weiterBtnRef = useRef(null)
+
+  // Fokus erst einen Frame später setzen, damit ein per Tastatur (Enter)
+  // abgeschicktes Ergebnis nicht sofort denselben Tastendruck für "Weiter" nutzt.
+  useEffect(() => {
+    if (!feedback) return
+    const id = requestAnimationFrame(() => weiterBtnRef.current?.focus())
+    return () => cancelAnimationFrame(id)
+  }, [feedback])
 
   const qIdx = queue[pos]
   const q = questions[qIdx]
@@ -335,7 +360,7 @@ export default function Quiz({ level, muted, onFinish, onExit }) {
       {feedback && (
         <div className={`feedback ${feedback.ok ? 'ok' : 'nope'}`}>
           <div className="feedback-text">{feedback.text}</div>
-          <button className="btn btn-primary" onClick={next} autoFocus>
+          <button className="btn btn-primary" onClick={next} ref={weiterBtnRef}>
             Weiter ➜
           </button>
         </div>
