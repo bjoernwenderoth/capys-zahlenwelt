@@ -1734,9 +1734,6 @@ export default function Panorama({ roadLayer } = {}) {
         <Butterfly x={750} y={290} s={0.8} c="#ffb1c9" />
 
         {/* ---------- Region: Zahlenwald ---------- */}
-        {/* zarte grüne Kronen-Abdunklung – wirkt wie Schatten unter dichtem Blätterdach */}
-        <ellipse cx="1500" cy="230" rx="680" ry="270" fill="#1f4a2c" opacity="0.1" filter="url(#soft)" />
-
         {/* hintere Baumreihe: klein, dunkler, nah am Horizont – zieht den Wald nach hinten */}
         <Pine x={1090} y={430} s={0.5} c="#2e6e3c" cd="#1f5c33" />
         <Tree x={1140} y={398} s={0.42} dark />
