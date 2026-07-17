@@ -3,11 +3,11 @@ import { LEVELS } from './levels.js'
 // Der Pfad führt durch 6 Welten. Die nächste Welt wird erst sichtbar,
 // wenn alle Level der vorherigen Welt geschafft sind.
 export const WORLDS = [
-  { id: 'wiese', name: 'Blumenwiese', emoji: '🌸', levelIds: ['lern-5', 'ueben-5', 'lern-10', 'ueben-10', 'wdh-1'] },
-  { id: 'wald', name: 'Zahlenwald', emoji: '🌲', levelIds: ['lern-1', 'ueben-1', 'lern-2', 'ueben-2'] },
-  { id: 'berge', name: 'Bergwelt', emoji: '⛰️', levelIds: ['lern-3', 'ueben-3', 'lern-4', 'ueben-4', 'wdh-2'] },
-  { id: 'see', name: 'Sonnensee', emoji: '⛵', levelIds: ['lern-6', 'ueben-6', 'lern-7', 'ueben-7', 'wdh-3'] },
-  { id: 'nacht', name: 'Sternenhimmel', emoji: '🌙', levelIds: ['lern-8', 'ueben-8', 'lern-9', 'ueben-9', 'wdh-4'] },
+  { id: 'wiese', name: 'Blumenwiese', emoji: '🌸', levelIds: ['lern-1', 'ueben-1', 'lern-2', 'ueben-2', 'wdh-1'] },
+  { id: 'wald', name: 'Zahlenwald', emoji: '🌲', levelIds: ['lern-5', 'ueben-5', 'lern-10', 'ueben-10', 'wdh-2'] },
+  { id: 'berge', name: 'Bergwelt', emoji: '⛰️', levelIds: ['lern-3', 'ueben-3', 'lern-4', 'ueben-4', 'wdh-3'] },
+  { id: 'see', name: 'Sonnensee', emoji: '⛵', levelIds: ['lern-6', 'ueben-6', 'lern-7', 'ueben-7', 'wdh-4'] },
+  { id: 'nacht', name: 'Sternenhimmel', emoji: '🌙', levelIds: ['lern-8', 'ueben-8', 'lern-9', 'ueben-9', 'wdh-5'] },
   { id: 'schloss', name: 'Königsschloss', emoji: '🏰', levelIds: ['final-1', 'final-2', 'final-3'] }
 ].map((w) => ({
   ...w,
@@ -35,12 +35,26 @@ export function worldUnlocked(index, progress) {
 // (siehe roadLayer), Deko darf den Weg also überlappen/verdecken – er muss
 // ihr nicht mehr geometrisch ausweichen.
 export const WORLD_NODES = {
-  wald: [[190, 470], [420, 438], [640, 500], [860, 448]],
-  wiese: [[150, 470], [300, 436], [480, 505], [660, 442], [900, 478]],
+  wald: [[150, 470], [300, 436], [480, 505], [660, 442], [900, 478]],
+  wiese: [[150, 470], [320, 436], [480, 500], [660, 442], [900, 478]],
   berge: [[60, 560], [260, 500], [470, 565], [700, 505], [860, 550]],
   see: [[170, 560], [300, 500], [480, 558], [680, 502], [900, 545]],
   nacht: [[80, 525], [300, 462], [470, 548], [680, 468], [940, 535]],
   schloss: [[140, 545], [500, 505], [860, 548]]
+}
+
+// Zusätzlicher Freiraum an den Weltgrenzen. Nur die jeweils äußeren
+// Levelstationen rücken nach innen; Landschaft und Deko bleiben dadurch
+// unverändert groß. Zwischen zwei Welten wird der verbindende Weg so um
+// 2 × WORLD_TRANSITION_SPACE länger und der Wechsel fühlt sich ruhiger an.
+export const WORLD_TRANSITION_SPACE = 70
+
+function nodesWithTransitionSpace(nodes) {
+  return nodes.map(([x, y], index) => {
+    if (index === 0) return [x + WORLD_TRANSITION_SPACE, y]
+    if (index === nodes.length - 1) return [x - WORLD_TRANSITION_SPACE, y]
+    return [x, y]
+  })
 }
 
 // Alle Level in Spielreihenfolge und ihre Positionen auf der großen Karte
@@ -48,7 +62,7 @@ export const WORLD_NODES = {
 export const ORDERED_LEVELS = WORLDS.flatMap((w) => w.levels)
 
 export const GLOBAL_NODES = WORLDS.flatMap((w, wi) =>
-  WORLD_NODES[w.id].map(([x, y]) => [wi * 1000 + x, y])
+  nodesWithTransitionSpace(WORLD_NODES[w.id]).map(([x, y]) => [wi * 1000 + x, y])
 )
 
 export const MAP_WIDTH = WORLDS.length * 1000

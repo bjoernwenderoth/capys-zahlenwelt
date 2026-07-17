@@ -5,7 +5,7 @@ export const ROW_ORDER = [1, 2, 5, 10, 3, 4, 6, 7, 8, 9]
 const ALL_ROWS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 // Nach diesen Reihen kommt jeweils ein Wiederholungslevel
-const REVIEW_AFTER = [10, 4, 7, 9]
+const REVIEW_AFTER = [2, 10, 4, 7, 9]
 
 function buildLevels() {
   const levels = []
