@@ -596,6 +596,80 @@ function SwimRing({ x, y, s = 1, rot = 0 }) {
   )
 }
 
+// Der Bach folgt dem Gefälle des Tals: hinten schmal, vorne breiter und mit
+// einem seitlichen Versatz. Er wird unter dem Weg gezeichnet, damit er wie
+// ein Teil des Bodens und nicht wie ein aufgelegtes Band wirkt.
+function MountainStream() {
+  return (
+    <g>
+      {/* Die Quelle öffnet sich direkt an der Wiesenkante (hier y≈420).
+          Keine umlaufende dunkle Fläche: links liegt heller Kies, nur die
+          rechte/unten liegende Böschung bekommt einen schmalen Schatten. */}
+      <path d="M 2278 421 C 2294 447 2329 467 2327 489 C 2325 507 2346 516 2343 535
+               C 2340 554 2393 570 2405 600 L 2435 600 C 2422 566 2365 550 2368 532
+               C 2371 510 2346 503 2348 488 C 2351 464 2317 445 2301 421
+               Q 2289 415 2278 421 Z"
+        fill="url(#mountain-stream-grad)" />
+      {/* Flaches Quellbecken an der Wiesenkante: Die transparente Lichtfläche
+          folgt derselben Öffnung und geht ohne sichtbare Abschlusslinie in
+          den schmaleren Bachlauf über. */}
+      <path d="M 2280 422 Q 2289 417 2299 422 C 2303 431 2311 440 2319 447
+               Q 2307 446 2295 438 Q 2287 431 2280 422 Z"
+        fill="#c8f2f8" opacity="0.34" />
+      <path d="M 2283 423 Q 2289 420 2297 423 M 2290 429 Q 2298 427 2306 432"
+        stroke="#effdff" strokeWidth="1.5" fill="none" opacity="0.56" strokeLinecap="round" />
+      {/* An der Kante zur vorderen Bodenebene fällt das Bachbett wenige Pixel
+          ab. Zwei helle Brechungen vermitteln den kleinen Höhenwechsel. */}
+      <path d="M 2322 489 Q 2338 498 2354 489" stroke="#f4fdff" strokeWidth="3.2" fill="none" opacity="0.82" strokeLinecap="round" />
+      <path d="M 2325 495 Q 2338 501 2352 495" stroke="#8edcf1" strokeWidth="2" fill="none" opacity="0.7" strokeLinecap="round" />
+      {/* Eine flache Stufe zeigt das Gefälle, ohne einen senkrechten Wasserfall vorzutäuschen. */}
+      <path d="M 2327 487 Q 2338 493 2348 487" stroke="#f5fdff" strokeWidth="3" fill="none" opacity="0.72" strokeLinecap="round" />
+      <path d="M 2341 544 Q 2354 550 2368 543 M 2384 574 Q 2400 581 2417 574"
+        stroke="#e7faff" strokeWidth="2.4" fill="none" opacity="0.62" strokeLinecap="round" />
+      <path d="M 2296 436 C 2306 451 2338 467 2336 482 M 2354 514 C 2347 531 2351 544 2372 555
+               M 2388 567 C 2402 576 2414 584 2420 594"
+        stroke="#dff8ff" strokeWidth="1.8" fill="none" opacity="0.58" strokeLinecap="round" />
+      {/* Steine werden nach vorne größer und verstärken die Tiefenwirkung. */}
+      {[[2295, 444, 3], [2321, 465, 4], [2318, 493, 5], [2366, 520, 5], [2338, 548, 7], [2390, 570, 8], [2440, 593, 9]].map(([sx, sy, r], i) => (
+        <g key={i}>
+          <ellipse cx={sx + 2} cy={sy + 2} rx={r + 2} ry={r * 0.55} fill="#263b42" opacity="0.24" />
+          <ellipse cx={sx} cy={sy} rx={r} ry={r * 0.62} fill="#8fa0a2" />
+          <ellipse cx={sx - r * 0.25} cy={sy - r * 0.18} rx={r * 0.42} ry={r * 0.2} fill="#d8dfdc" opacity="0.48" />
+        </g>
+      ))}
+      {/* Schaum teilt sich an einzelnen Steinen und schließt danach wieder. */}
+      <path d="M 2311 491 q 7 -5 14 0 M 2358 518 q 8 -6 16 0 M 2380 568 q 10 -7 20 0 M 2428 590 q 12 -7 22 1"
+        stroke="#f4fdff" strokeWidth="1.5" fill="none" opacity="0.7" strokeLinecap="round" />
+    </g>
+  )
+}
+
+function MountainBridge({ x, y, s = 1 }) {
+  const planks = [-36, -24, -12, 0, 12, 24, 36]
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {/* Die Brücke bleibt leicht gewölbt, ist als Ganzes aber gerade ausgerichtet. */}
+      <g>
+        <ellipse cx="3" cy="8" rx="57" ry="15" fill="#182c32" opacity="0.28" filter="url(#edge)" />
+        <path d="M -51 -13 Q 0 -22 51 -13 L 49 14 Q 0 5 -49 14 Z" fill="#704521" />
+        {planks.map((px, i) => (
+          <g key={px} transform={`translate(${px} ${-(1 - Math.abs(px) / 36) * 7})`}>
+            <rect x="-5.5" y="-13" width="11" height="26" rx="1.5" fill={i % 2 ? '#a96f35' : '#bb7d3d'} />
+            <path d="M -3 -8 Q 0 -10 3 -8 M -3 5 Q 0 3 3 5" stroke="#68401f" strokeWidth="0.8" fill="none" opacity="0.55" />
+            <path d="M -3.5 -10 L -3.5 9" stroke="#e5aa62" strokeWidth="0.7" opacity="0.45" />
+          </g>
+        ))}
+        <path d="M -49 -13 Q 0 -22 49 -13 M -49 13 Q 0 4 49 13" stroke="#57351c" strokeWidth="3" fill="none" strokeLinecap="round" />
+        {/* Geländer mit Pfosten und sichtbarer Lichtkante. */}
+        <path d="M -47 -17 L -47 -38 M -18 -20 L -18 -42 M 18 -20 L 18 -42 M 47 -17 L 47 -38"
+          stroke="#65401f" strokeWidth="4" strokeLinecap="round" />
+        <path d="M -48 -37 Q 0 -50 48 -37" stroke="#7f5128" strokeWidth="5" fill="none" strokeLinecap="round" />
+        <path d="M -47 -39 Q 0 -51 47 -39" stroke="#d99a54" strokeWidth="1.4" fill="none" opacity="0.7" strokeLinecap="round" />
+      </g>
+    </g>
+  )
+}
+
 // Fels – Streu-Deko für den Bergpfad, Licht links oben → Schatten rechts unten
 function Rock({ x, y, s = 1 }) {
   return (
@@ -933,6 +1007,11 @@ function SharedDefs() {
           <stop offset="0.55" stopColor="#94a6b0" />
           <stop offset="1" stopColor="#6b7a86" />
         </linearGradient>
+        <linearGradient id="mountain-stream-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#8edcf1" />
+          <stop offset="0.48" stopColor="#3d9bc1" />
+          <stop offset="1" stopColor="#176b94" />
+        </linearGradient>
         <linearGradient id="goat-grad" x1="0.15" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor="#f4efe4" />
           <stop offset="0.55" stopColor="#d9d0bc" />
@@ -1058,11 +1137,11 @@ export default function Panorama({ roadLayer } = {}) {
             Uferlinie. So entsteht eine echte Aussparung im Gelände, in die
             Strand und Wasser weiter unten bündig eingesetzt werden. */}
         <path
-          d="M 0 440 Q 250 417 500 435 Q 750 407 1000 425 Q 1250 407 1500 445 Q 1750 402 2000 420 Q 2250 402 2500 445 Q 2750 412 3000 430 Q 3065 422 3130 414 C 3185 391 3250 381 3320 382 C 3395 367 3470 374 3535 377 C 3610 367 3690 379 3760 387 C 3825 388 3858 399 3870 414 Q 3935 419.5 4000 425 Q 4250 407 4500 445 Q 4750 407 5000 425 Q 5250 407 5500 445 Q 5750 412 6000 430 L 6000 600 L 0 600 Z"
+          d="M 0 440 Q 250 417 500 435 Q 750 407 1000 425 Q 1250 407 1500 445 Q 1750 402 2000 420 Q 2180 405 2278 418 C 2284 423 2296 424 2302 419 Q 2400 421 2500 445 Q 2750 412 3000 430 Q 3065 422 3130 414 C 3185 391 3250 381 3320 382 C 3395 367 3470 374 3535 377 C 3610 367 3690 379 3760 387 C 3825 388 3858 399 3870 414 Q 3935 419.5 4000 425 Q 4250 407 4500 445 Q 4750 407 5000 425 Q 5250 407 5500 445 Q 5750 412 6000 430 L 6000 600 L 0 600 Z"
           fill="url(#pan-mid)"
         />
         <path
-          d="M 0 505 Q 300 486 600 500 Q 900 481 1200 495 Q 1500 481 1800 505 Q 2100 478 2400 492 Q 2700 478 3000 505 Q 3065 460 3130 414 C 3152 427 3195 436 3260 439 C 3330 444 3405 452 3485 450 C 3560 448 3640 453 3715 442 C 3790 440 3848 431 3870 414 Q 4035 460 4200 505 Q 4500 478 4800 492 Q 5100 478 5400 505 Q 5700 484 6000 498 L 6000 600 L 0 600 Z"
+          d="M 0 505 Q 300 486 600 500 Q 900 481 1200 495 Q 1500 481 1800 505 Q 2050 478 2260 488 C 2290 488 2310 493 2325 497 C 2335 503 2346 503 2357 497 C 2370 490 2385 490 2400 492 Q 2700 478 3000 505 Q 3065 460 3130 414 C 3152 427 3195 436 3260 439 C 3330 444 3405 452 3485 450 C 3560 448 3640 453 3715 442 C 3790 440 3848 431 3870 414 Q 4035 460 4200 505 Q 4500 478 4800 492 Q 5100 478 5400 505 Q 5700 484 6000 498 L 6000 600 L 0 600 Z"
           fill="url(#pan-front)"
         />
         {/* dezente Maserung, bricht die glatten Verläufe auf */}
@@ -1077,6 +1156,10 @@ export default function Panorama({ roadLayer } = {}) {
             <ellipse cx={x} cy="548" rx="128" ry="42" fill="#fff" opacity="0.055" filter="url(#soft)" />
           </g>
         ))}
+
+        {/* Der Bach ist Teil des Geländes und liegt deshalb unter Weg und
+            Brücke. Seine Breite nimmt mit der Nähe zum Betrachter zu. */}
+        <MountainStream />
 
         {/* Weg: liegt auf dem Boden, aber UNTER der gesamten Deko (Bäume,
             Büsche, Tiere …), damit die Deko realistisch vor/neben dem Weg
@@ -1171,13 +1254,14 @@ export default function Panorama({ roadLayer } = {}) {
         <Bear x={1390} y={575} s={1.05} />
 
         {/* ---------- Region: Bergwelt ---------- */}
+        <MountainBridge x={2355} y={526} s={0.9} />
         {/* zweite, höher gelegene Bodenebene: kleinere Vegetation und Geröll
             lassen die Bergwelt bis an den Fuß der Gipfel belebt wirken */}
         <Pine x={2115} y={444} s={0.42} c="#3b7650" cd="#285c3b" />
         <Rock x={2185} y={448} s={0.48} />
         <AlpineFlower x={2240} y={444} s={0.58} />
-        <Goat x={2295} y={456} s={0.5} />
-        <Pine x={2370} y={463} s={0.46} c="#3b7650" cd="#285c3b" />
+        <Goat x={2255} y={456} s={0.5} />
+        <Pine x={2440} y={463} s={0.46} c="#3b7650" cd="#285c3b" />
         <Cairn x={2460} y={455} s={0.52} />
         <AlpineFlower x={2535} y={448} s={0.55} />
         <Rock x={2635} y={447} s={0.5} />
@@ -1194,7 +1278,7 @@ export default function Panorama({ roadLayer } = {}) {
         <Pine x={2920} y={540} s={0.7} />
         <Pine x={2050} y={588} s={0.6} />
         <Pine x={2200} y={568} s={0.7} />
-        <Pine x={2320} y={592} s={0.55} />
+        <Pine x={2285} y={592} s={0.55} />
         <Pine x={2550} y={582} s={0.75} />
         <Pine x={2780} y={565} s={0.65} />
         <Pine x={2870} y={592} s={0.7} />
@@ -1202,12 +1286,11 @@ export default function Panorama({ roadLayer } = {}) {
 
         {/* Felsbrocken & Steinmänner säumen den Bergpfad */}
         <Rock x={2150} y={596} s={1} />
-        <Rock x={2350} y={556} s={0.7} />
         <Rock x={2500} y={593} s={0.85} />
         <Rock x={2620} y={572} s={0.6} />
         <Rock x={2750} y={596} s={0.95} />
         <Rock x={2900} y={559} s={0.65} />
-        <Cairn x={2400} y={586} s={0.75} />
+        <Cairn x={2470} y={590} s={0.62} />
         <Cairn x={2830} y={576} s={0.7} />
 
         {/* Alpenblumen zwischen den Felsen */}
