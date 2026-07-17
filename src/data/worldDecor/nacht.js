@@ -10,15 +10,15 @@ export default [
   { type: 'pine', x: 370, y: 438, s: 0.4, c: '#426689', cd: '#29476d', hi: '#83a4bf', trunk: '#3b5067' },
   { type: 'pine', x: 750, y: 442, s: 0.45, c: '#3d6084', cd: '#233f68', hi: '#7c9db9', trunk: '#384b62' },
   { type: 'pine', x: 910, y: 455, s: 0.5, c: '#35577b', cd: '#1d385e', hi: '#718fad', trunk: '#304258' },
-  { type: 'pine', x: 150, y: 510, s: 0.85, c: '#172b4d', cd: '#09152d', hi: '#456888', trunk: '#26364a' },
-  { type: 'pine', x: 330, y: 565, s: 0.72, c: '#1c3559', cd: '#0b1933', hi: '#4d7090', trunk: '#293a50' },
+  { type: 'pine', x: 154, y: 509, s: 0.85, c: '#172b4d', cd: '#09152d', hi: '#456888', trunk: '#26364a' },
+  { type: 'pine', x: 330, y: 571, s: 0.72, c: '#1c3559', cd: '#0b1933', hi: '#4d7090', trunk: '#293a50' },
   { type: 'pine', x: 845, y: 566, s: 0.72, c: '#193052', cd: '#0a172f', hi: '#496c8c', trunk: '#27384d' },
-  { type: 'pine', x: 980, y: 515, s: 0.84, c: '#142946', cd: '#081429', hi: '#416481', trunk: '#233348' },
+  { type: 'pine', x: 985, y: 476, s: 0.84, c: '#142946', cd: '#081429', hi: '#416481', trunk: '#233348' },
 
-  { type: 'moonRock', x: 75, y: 558, s: 0.85 },
-  { type: 'moonRock', x: 260, y: 590, s: 0.62, flip: true },
-  { type: 'moonRock', x: 860, y: 592, s: 0.72 },
-  { type: 'moonRock', x: 990, y: 568, s: 0.62, flip: true },
+  { type: 'moonRock', x: 10, y: 555, s: 0.85 },
+  { type: 'moonRock', x: 260, y: 571, s: 0.62, flip: true },
+  { type: 'moonRock', x: 860, y: 570, s: 0.72 },
+  { type: 'moonRock', x: 957, y: 479, s: 0.62, flip: true },
 
   { type: 'observatory', x: 560, y: 470, s: 0.82 },
 

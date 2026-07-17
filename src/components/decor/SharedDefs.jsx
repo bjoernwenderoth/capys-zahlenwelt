@@ -49,20 +49,21 @@ export default function SharedDefs() {
         </filter>
 
         {/* Himmel: fließt über die ganze Karte von Tag zu Nacht zu Abendrot.
-            Die Dämmerungs-Übergänge (Sonnensee → Sternenhimmel → Königsschloss)
-            sind bewusst breit gezogen, damit man beim freien Scrollen nie mitten
-            in einem harten Farbsprung landet, sondern immer eine sanfte
-            Dämmerung sieht, egal wo man gerade stehen bleibt. */}
+            Am Sonnensee bleibt das klare Tagesblau bis kurz vor dessen rechtem
+            Rand erhalten. Erst dort setzt eine kompakte, weich abgestufte blaue
+            Dämmerung ein; die volle Nacht liegt innerhalb des Sternenhimmels.
+            So färbt die Nacht nicht schon die Mitte des Sees dunkel. */}
         <linearGradient id="pan-sky" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0.00" stopColor="#8fd7ff" />
           <stop offset="0.18" stopColor="#7ecbff" />
           <stop offset="0.38" stopColor="#5aa7e8" />
           <stop offset="0.55" stopColor="#8fd3ff" />
-          <stop offset="0.58" stopColor="#8fd3ff" />
-          <stop offset="0.61" stopColor="#718fbd" />
-          <stop offset="0.64" stopColor="#465f96" />
-          <stop offset="0.67" stopColor="#203968" />
-          <stop offset="0.70" stopColor="#0f2049" />
+          <stop offset="0.62" stopColor="#8fd3ff" />
+          <stop offset="0.635" stopColor="#82b9df" />
+          <stop offset="0.65" stopColor="#668ab8" />
+          <stop offset="0.67" stopColor="#3e568b" />
+          <stop offset="0.69" stopColor="#203968" />
+          <stop offset="0.72" stopColor="#0f2049" />
           <stop offset="0.76" stopColor="#0f2049" />
           <stop offset="0.78" stopColor="#263d70" />
           <stop offset="0.80" stopColor="#607fb5" />

@@ -24,14 +24,14 @@ export default [
   { type: 'seagull', x: 820, y: 358, s: 0.9 },
 
   // Palmen bilden einen lockeren Rahmen
-  { type: 'palm', x: 85, y: 548, s: 0.95 },
-  { type: 'palm', x: 970, y: 566, s: 0.75 },
-  { type: 'palm', x: 878, y: 486, s: 0.48 },
+  { type: 'palm', x: 81, y: 547, s: 0.95 },
+  { type: 'palm', x: 978, y: 566, s: 0.75 },
+  { type: 'palm', x: 877, y: 471, s: 0.48 },
 
   // Größere Strandobjekte mit Abstand zwischen den Levelstationen
-  { type: 'sandcastle', x: 225, y: 558, s: 0.82 },
+  { type: 'sandcastle', x: 237, y: 557, s: 0.82 },
   { type: 'beachToys', x: 545, y: 590, s: 0.78 },
-  { type: 'umbrella', x: 800, y: 552, s: 0.72 },
+  { type: 'umbrella', x: 800, y: 539, s: 0.72 },
   { type: 'crab', x: 385, y: 535, s: 0.72 },
   { type: 'crab', x: 705, y: 586, s: 0.66 },
 

@@ -47,24 +47,53 @@ function Stars({ n }) {
   )
 }
 
+// Soll-Abstand zwischen zwei Wegmarkierungen (in Karten-Einheiten). Bleibt für
+// alle Segmente gleich – die Anzahl der Punkte pro Segment ergibt sich aus
+// dessen tatsächlicher Bogenlänge und variiert dadurch bewusst (kurze
+// Abschnitte bekommen wenige, lange Abschnitte mehr Punkte).
+const DOT_SPACING = 34
+// Anteil an jedem Segmentende, der frei von Punkten bleibt (Platz für den
+// Levelknoten selbst statt einer Markierung direkt darunter).
+const DOT_EDGE_GAP = 0.14
+
 // Punkte auf dem Weg: geschaffte Abschnitte (hinter Capy) leuchten golden,
 // kommende sind nur dezent zu sehen
 function SegmentDots({ progress }) {
   const dots = []
   for (let k = 0; k <= GLOBAL_NODES.length; k++) {
-    const seg = sampleSegment(PTS, k, 20)
+    const seg = sampleSegment(PTS, k, 50)
     const done = k === 0 ? true : !!progress[ORDERED_LEVELS[k - 1].id]
-    for (const i of [4, 7, 10, 13, 16]) {
-      const [x, y] = seg[i]
+
+    // Bogenlänge entlang der (gewellten) Kurve aufsummieren, damit Punkte in
+    // echtem Abstand statt in gleichmäßigen Kurven-Parametern gesetzt werden
+    // – sonst lägen sie auf langen Segmenten weiter auseinander als auf
+    // kurzen.
+    const cum = [0]
+    for (let i = 1; i < seg.length; i++) {
+      cum.push(cum[i - 1] + Math.hypot(seg[i][0] - seg[i - 1][0], seg[i][1] - seg[i - 1][1]))
+    }
+    const total = cum[cum.length - 1]
+    const from = total * DOT_EDGE_GAP
+    const to = total * (1 - DOT_EDGE_GAP)
+    const usable = to - from
+    const count = Math.max(2, Math.round(usable / DOT_SPACING))
+
+    for (let d = 0; d <= count; d++) {
+      const targetLen = from + (usable * d) / count
+      let i = 1
+      while (i < cum.length - 1 && cum[i] < targetLen) i++
+      const frac = (targetLen - cum[i - 1]) / (cum[i] - cum[i - 1] || 1)
+      const x = seg[i - 1][0] + (seg[i][0] - seg[i - 1][0]) * frac
+      const y = seg[i - 1][1] + (seg[i][1] - seg[i - 1][1]) * frac
       const r = 3.4 + 2.4 * depthNorm(y)
       dots.push(
         done ? (
-          <g key={`${k}-${i}`}>
+          <g key={`${k}-${d}`}>
             <circle cx={x} cy={y} r={r * 1.9} fill="#ffd93d" opacity="0.35" />
             <circle cx={x} cy={y} r={r} fill="#fff" stroke="#ffd93d" strokeWidth={r * 0.55} />
           </g>
         ) : (
-          <circle key={`${k}-${i}`} cx={x} cy={y} r={r * 0.8} fill="#8a6b3f" opacity="0.35" />
+          <circle key={`${k}-${d}`} cx={x} cy={y} r={r * 0.8} fill="#8a6b3f" opacity="0.35" />
         )
       )
     }

@@ -4,10 +4,10 @@
 export default [
   { type: 'glow', x: 500, y: 480, rx: 620, ry: 180, fill: '#fff3c2', opacity: 0.14 },
 
-  { type: 'tree', x: 80, y: 470, s: 0.8, dark: true },
+  { type: 'tree', x: 72, y: 470, s: 0.8, dark: true },
   { type: 'flower', x: 180, y: 520, s: 1.1, c: '#ff5c8a' },
-  { type: 'flower', x: 320, y: 480, s: 0.85, c: '#b58aff' },
-  { type: 'flower', x: 450, y: 555, s: 1.2, c: '#ffd93d' },
+  { type: 'flower', x: 350, y: 500, s: 0.85, c: '#b58aff' },
+  { type: 'flower', x: 420, y: 555, s: 1.2, c: '#ffd93d' },
   { type: 'flower', x: 580, y: 500, s: 0.95, c: '#ff7bac' },
   { type: 'flower', x: 700, y: 545, s: 1.1, c: '#ff8a5c' },
   { type: 'flower', x: 830, y: 490, s: 0.85, c: '#7ec3ff' },
