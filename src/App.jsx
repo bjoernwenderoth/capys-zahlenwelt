@@ -3,7 +3,7 @@ import Start from './screens/Start.jsx'
 import Profiles from './screens/Profiles.jsx'
 import Path from './screens/Path.jsx'
 import Quiz from './screens/Quiz.jsx'
-import { loadData, saveData, newProfile, updatedStreak } from './utils/storage.js'
+import { loadData, saveData, newProfile } from './utils/storage.js'
 
 export default function App() {
   const [data, setData] = useState(loadData)
@@ -44,8 +44,7 @@ export default function App() {
         const best = Math.max(p.progress[levelId] || 0, stars)
         return {
           ...p,
-          progress: { ...p.progress, [levelId]: best },
-          streak: updatedStreak(p.streak)
+          progress: { ...p.progress, [levelId]: best }
         }
       })
     }))

@@ -31,41 +31,6 @@ export function newProfile(name, avatar) {
     id: 'p' + Date.now() + Math.floor(Math.random() * 1000),
     name,
     avatar,
-    progress: {}, // levelId -> beste Sterne (1-3)
-    streak: { count: 0, lastDay: null }
+    progress: {} // levelId -> beste Sterne (1-3)
   }
-}
-
-export function todayStr() {
-  const d = new Date()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${m}-${day}`
-}
-
-export function yesterdayStr() {
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${m}-${day}`
-}
-
-// Streak beim Levelabschluss aktualisieren
-export function updatedStreak(streak) {
-  const today = todayStr()
-  if (streak.lastDay === today) return streak
-  if (streak.lastDay === yesterdayStr()) {
-    return { count: streak.count + 1, lastDay: today }
-  }
-  return { count: 1, lastDay: today }
-}
-
-// Streak nur anzeigen, wenn sie nicht abgerissen ist
-export function currentStreak(streak) {
-  if (!streak || !streak.lastDay) return 0
-  if (streak.lastDay === todayStr() || streak.lastDay === yesterdayStr()) {
-    return streak.count
-  }
-  return 0
 }

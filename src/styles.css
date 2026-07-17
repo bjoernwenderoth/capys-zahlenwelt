@@ -283,14 +283,6 @@ body {
   gap: 8px;
 }
 
-.streak {
-  font-weight: 800;
-  font-size: 1.1rem;
-  background: #fff;
-  border-radius: 12px;
-  padding: 6px 10px;
-}
-
 .path-capy {
   display: flex;
   align-items: center;

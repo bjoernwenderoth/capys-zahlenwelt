@@ -30,8 +30,8 @@ export default [
 
   // Größere Strandobjekte mit Abstand zwischen den Levelstationen
   { type: 'sandcastle', x: 237, y: 557, s: 0.82 },
-  { type: 'beachToys', x: 545, y: 590, s: 0.78 },
-  { type: 'umbrella', x: 800, y: 539, s: 0.72 },
+  { type: 'beachToys', x: 565, y: 480, s: 0.78 },
+  { type: 'umbrella', x: 735, y: 445, s: 0.72 },
   { type: 'crab', x: 385, y: 535, s: 0.72 },
   { type: 'crab', x: 705, y: 586, s: 0.66 },
 

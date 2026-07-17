@@ -13,7 +13,6 @@ import {
   sampleSegment,
   depthNorm
 } from '../data/worlds.js'
-import { currentStreak } from '../utils/storage.js'
 
 const WELCOME = [
   'Schön, dass du da bist! Auf zum nächsten Level!',
@@ -186,7 +185,6 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
 }
 
 export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwitchProfile }) {
-  const streak = currentStreak(profile.streak)
   const welcome = useMemo(() => WELCOME[Math.floor(Math.random() * WELCOME.length)], [])
   const currentRef = useRef(null)
   const worldsScrollRef = useRef(null)
@@ -281,7 +279,6 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
           <span className="header-name">{profile.name}</span>
         </div>
         <div className="header-right">
-          <span className="streak" title="Tage-Serie">🔥 {streak}</span>
           <button className="icon-btn" onClick={onToggleMute} title="Ton an/aus">
             {muted ? '🔇' : '🔊'}
           </button>
