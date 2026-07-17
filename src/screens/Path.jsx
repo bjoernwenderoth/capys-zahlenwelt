@@ -35,6 +35,11 @@ const PTS = extendedPoints(GLOBAL_NODES, EXIT_X)
 
 // merkt sich (solange die Seite offen ist), wo Capy zuletzt stand
 let capyLastLevelId = null
+// welches "gerade bestandene Level" schon für einen Schritt vorwärts
+// verbraucht wurde – verhindert, dass dasselbe bestandene Level beim
+// nächsten Kartenbesuch (z. B. nach einem abgebrochenen Extra-Level)
+// nochmal zu einem Vorwärtslaufen führt
+let capyConsumedPassId = null
 
 function Stars({ n }) {
   return (
@@ -184,7 +189,7 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
   )
 }
 
-export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwitchProfile }) {
+export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, onToggleMute, onSwitchProfile }) {
   const welcome = useMemo(() => WELCOME[Math.floor(Math.random() * WELCOME.length)], [])
   const currentRef = useRef(null)
   const worldsScrollRef = useRef(null)
@@ -201,12 +206,31 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
 
   let currentIdx = ORDERED_LEVELS.findIndex((lv) => !progress[lv.id])
   if (currentIdx === -1) currentIdx = ORDERED_LEVELS.length - 1
-  const currentLevel = ORDERED_LEVELS[currentIdx]
-  const currentWorldIdx = Math.max(0, WORLDS.findIndex((w) => currentLevel && w.levels.includes(currentLevel)))
+
+  // Ziel für Capys "Heimweg" auf der Karte: Wurde gerade frisch ein Level
+  // bestanden (auch ein wiederholtes altes), läuft Capy von GENAU DIESEM
+  // Level aus einen Schritt weiter – nicht zum neuesten/aktuellen Level.
+  // "Frisch" heißt: dieses bestandene Level wurde noch nicht für einen
+  // Schritt verbraucht (siehe capyConsumedPassId unten). Ist gerade nichts
+  // frisch bestanden (z. B. nach Abbruch/Nichtbestehen), bleibt Capy dort
+  // stehen, wo sie zuletzt war, statt irgendwohin zu springen.
+  const freshlyPassedIdx =
+    lastPlayedLevelId && lastPlayedLevelId !== capyConsumedPassId
+      ? ORDERED_LEVELS.findIndex((lv) => lv.id === lastPlayedLevelId)
+      : -1
+  const anchorIdx = capyLastLevelId ? ORDERED_LEVELS.findIndex((lv) => lv.id === capyLastLevelId) : -1
+  const walkTargetIdx =
+    freshlyPassedIdx !== -1
+      ? Math.min(freshlyPassedIdx + 1, ORDERED_LEVELS.length - 1)
+      : anchorIdx !== -1
+        ? anchorIdx
+        : currentIdx
+  const walkTargetLevel = ORDERED_LEVELS[walkTargetIdx]
+  const walkTargetWorldIdx = Math.max(0, WORLDS.findIndex((w) => walkTargetLevel && w.levels.includes(walkTargetLevel)))
 
   // Welche Welt gerade sichtbar ist (für die feststehende Namensanzeige,
   // die beim seitlichen Scrollen nicht mitwandert)
-  const [viewWorldIdx, setViewWorldIdx] = useState(currentWorldIdx)
+  const [viewWorldIdx, setViewWorldIdx] = useState(walkTargetWorldIdx)
 
   // Nur die sichtbare Welt + ihre direkten Nachbarn bekommen ihre Deko
   // tatsächlich gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl
@@ -223,7 +247,8 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
     if (currentRef.current) {
       currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
     }
-    capyLastLevelId = currentLevel ? currentLevel.id : null
+    capyLastLevelId = walkTargetLevel ? walkTargetLevel.id : null
+    capyConsumedPassId = lastPlayedLevelId
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -360,7 +385,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
               <div
                 key={lv.id}
                 className="world-node"
-                ref={isCurrent ? currentRef : null}
+                ref={gi === walkTargetIdx ? currentRef : null}
                 style={{
                   left: `${(x / MAP_WIDTH) * 100}%`,
                   top: `${y / 6}%`,
@@ -396,7 +421,7 @@ export default function Path({ profile, muted, onStartLevel, onToggleMute, onSwi
 
           <CapyWalker
             key={pendingWalk ? `replay-${pendingWalk.level.id}` : 'home'}
-            targetIdx={pendingWalk ? pendingWalk.idx : currentIdx}
+            targetIdx={pendingWalk ? pendingWalk.idx : walkTargetIdx}
             bubbleText={pendingWalk ? null : bubbleText}
             onArrive={
               pendingWalk

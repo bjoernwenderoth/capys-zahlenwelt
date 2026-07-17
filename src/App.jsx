@@ -9,6 +9,10 @@ export default function App() {
   const [data, setData] = useState(loadData)
   const [screen, setScreen] = useState('splash') // splash | profiles | path | quiz
   const [activeLevel, setActiveLevel] = useState(null)
+  // Level, das zuletzt gespielt (und bestanden) wurde – bestimmt, wie weit
+  // Capy auf der Karte läuft (immer nur einen Schritt weiter, auch wenn ein
+  // altes Level wiederholt wurde).
+  const [lastPlayedLevelId, setLastPlayedLevelId] = useState(null)
 
   // Spielstand bei jeder Änderung auf dem Gerät speichern
   useEffect(() => {
@@ -20,11 +24,13 @@ export default function App() {
   function createProfile(name, avatar) {
     const p = newProfile(name, avatar)
     setData((d) => ({ ...d, profiles: [...d.profiles, p], activeProfileId: p.id }))
+    setLastPlayedLevelId(null)
     setScreen('path')
   }
 
   function selectProfile(id) {
     setData((d) => ({ ...d, activeProfileId: id }))
+    setLastPlayedLevelId(null)
     setScreen('path')
   }
 
@@ -48,6 +54,7 @@ export default function App() {
         }
       })
     }))
+    setLastPlayedLevelId(levelId)
     setScreen('path')
     setActiveLevel(null)
   }
@@ -76,6 +83,7 @@ export default function App() {
       <Path
         profile={profile}
         muted={data.muted}
+        lastPlayedLevelId={lastPlayedLevelId}
         onStartLevel={(lv) => {
           setActiveLevel(lv)
           setScreen('quiz')
