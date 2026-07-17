@@ -769,6 +769,203 @@ function Eagle({ x, y, s = 1 }) {
   )
 }
 
+function RoyalLantern({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="5" cy="5" rx="18" ry="5" fill="#243728" opacity="0.24" />
+      <path d="M -10 3 L -7 -4 H 7 L 12 3 Z" fill="url(#royal-stone)" />
+      <path d="M -4 -4 L -3 -39 H 4 L 7 -4 Z" fill="url(#royal-metal)" />
+      <path d="M -12 -39 L -8 -61 H 9 L 13 -39 Z" fill="#33465b" />
+      <path d="M -7 -42 L -5 -57 H 5 L 8 -42 Z" fill="url(#royal-lamp-glow)" />
+      <path d="M -12 -61 L 0 -72 L 13 -61 Z" fill="url(#castle-roof-blue)" />
+      <path d="M 0 -72 L 13 -61 H 4 Z" fill="#264f7c" opacity="0.7" />
+      <path d="M -5 -55 L -3 -57" stroke="#fff" strokeWidth="2" opacity="0.65" strokeLinecap="round" />
+    </g>
+  )
+}
+
+function HeraldicShield({ x, y, s = 1, flip = false }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
+      <ellipse cx="5" cy="5" rx="22" ry="5" fill="#263929" opacity="0.22" />
+      <path d="M -3 3 V -42 H 3 V 3 Z" fill="url(#royal-metal)" />
+      <path d="M -22 -43 Q 0 -53 22 -43 L 18 -16 Q 0 3 -18 -16 Z" fill="url(#royal-banner)" stroke="#e4c36b" strokeWidth="3" />
+      <path d="M 2 -48 Q 21 -47 22 -43 L 18 -16 Q 9 -6 2 -2 Z" fill="#6f2f55" opacity="0.45" />
+      <path d="M -11 -30 L -8 -40 L -2 -34 L 3 -42 L 8 -34 L 12 -40 L 10 -27 Z" fill="#f4cf62" />
+      <path d="M -10 -26 H 10" stroke="#fff0a0" strokeWidth="3" />
+    </g>
+  )
+}
+
+function StoneBench({ x, y, s = 1, flip = false }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
+      <ellipse cx="5" cy="8" rx="38" ry="7" fill="#263929" opacity="0.24" filter="url(#edge)" />
+      <path d="M -33 -13 Q 0 -20 33 -13 L 30 -3 Q 0 -8 -30 -3 Z" fill="url(#royal-stone)" />
+      <path d="M -28 -1 H 29 L 33 7 H -32 Z" fill="#a99d89" />
+      <path d="M -24 6 L -20 17 H -12 L -11 5 M 22 5 L 23 17 H 31 L 29 5" fill="#8d806c" />
+      <path d="M -27 -14 Q -2 -20 23 -15" stroke="#f7f0df" strokeWidth="2" opacity="0.52" fill="none" />
+    </g>
+  )
+}
+
+function CrownPlanter({ x, y, s = 1, c = '#f18aaf' }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="4" cy="8" rx="22" ry="6" fill="#263929" opacity="0.22" />
+      {[-12, -4, 5, 13].map((dx, i) => (
+        <g key={dx} transform={`translate(${dx} ${-15 - (i % 2) * 5})`}>
+          <path d="M 0 9 V -5" stroke="#397447" strokeWidth="2.4" />
+          <circle cy="-7" r="6" fill={i % 2 ? '#f7d461' : c} />
+          <circle cx="-2" cy="-9" r="2" fill="#fff" opacity="0.32" />
+        </g>
+      ))}
+      <path d="M -20 -5 L -15 10 H 16 L 21 -5 L 12 0 L 5 -8 L -2 0 L -11 -8 Z" fill="url(#royal-planter)" />
+      <path d="M 4 -7 L -2 0 L -11 -8 L -7 8 H 15 L 20 -4 L 12 0 Z" fill="#7e5c28" opacity="0.38" />
+      <path d="M -14 6 H 15" stroke="#ffe39a" strokeWidth="2" opacity="0.55" />
+    </g>
+  )
+}
+
+function LegacyRoyalTreasure({ x, y, s = 1 }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="3" cy="10" rx="72" ry="15" fill="#253528" opacity="0.3" filter="url(#edge)" />
+      <ellipse className="pano-pulse" cx="0" cy="-35" rx="88" ry="76" fill="#ffe16b" opacity="0.16" filter="url(#soft)" />
+
+      {/* Großer geöffneter Deckel klar hinter dem Inhalt. */}
+      <path d="M -62 -37 L -58 -69 Q -50 -103 0 -107 Q 50 -103 58 -69 L 62 -37 Z"
+        fill="url(#treasure-wood)" stroke="#4f2d1b" strokeWidth="5" />
+      <path d="M -49 -42 L -46 -68 Q -38 -91 0 -94 Q 38 -91 46 -68 L 49 -42 Z" fill="#38252d" />
+      <path d="M -58 -68 Q 0 -55 58 -68 M -50 -91 Q 0 -79 50 -91"
+        stroke="url(#treasure-gold)" strokeWidth="6" fill="none" />
+      <path d="M -43 -84 Q -26 -98 -5 -99" stroke="#eeb06b" strokeWidth="4" opacity="0.45" fill="none" strokeLinecap="round" />
+
+      {/* Hoher, eindeutig sichtbarer Goldhaufen. */}
+      <path d="M -55 -35 Q -40 -64 -20 -55 Q -4 -75 14 -56 Q 38 -68 56 -34 Z" fill="#d99e27" />
+      {[-48, -36, -24, -12, 0, 12, 24, 36, 48].map((cx, i) => (
+        <g key={cx} transform={`translate(${cx} ${-37 - (i % 3) * 8}) rotate(${i % 2 ? 9 : -7})`}>
+          <ellipse rx="11" ry="5" fill="url(#treasure-gold)" stroke="#976718" strokeWidth="1.4" />
+          <path d="M -6 -1 H 6" stroke="#fff3a5" strokeWidth="1.3" opacity="0.7" />
+        </g>
+      ))}
+
+      {/* Drei große facettierte Diamanten ragen aus dem Gold. */}
+      <g transform="translate(-25 -65)">
+        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-blue)" stroke="#2f7fa2" strokeWidth="1.6" />
+        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#e8fbff" strokeWidth="1" opacity="0.7" fill="none" />
+      </g>
+      <g transform="translate(12 -73) scale(1.18)">
+        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-clear)" stroke="#6aa7c5" strokeWidth="1.6" />
+        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#fff" strokeWidth="1" opacity="0.82" fill="none" />
+      </g>
+      <g transform="translate(39 -57) scale(.82)">
+        <path d="M -14 0 L -7 -12 H 8 L 15 0 L 0 22 Z" fill="url(#diamond-pink)" stroke="#a84571" strokeWidth="1.6" />
+        <path d="M -14 0 H 15 M -7 -12 L 0 22 L 8 -12 M -14 0 L 0 -12 L 15 0" stroke="#fff0f7" strokeWidth="1" opacity="0.72" fill="none" />
+      </g>
+
+      {/* Massiver rechteckiger Truhenkörper im Vordergrund. */}
+      <path d="M -64 -38 H 64 L 58 14 Q 0 25 -58 14 Z" fill="url(#treasure-wood)" stroke="#4f2d1b" strokeWidth="5" />
+      <path d="M 10 -38 H 64 L 58 14 Q 34 20 10 21 Z" fill="#542f20" opacity="0.48" />
+      <path d="M -62 -29 H 62 M -60 3 Q 0 14 60 3" stroke="url(#treasure-gold)" strokeWidth="7" fill="none" />
+      <path d="M -52 -22 V 8 M 52 -22 V 8" stroke="#f0c253" strokeWidth="5" opacity="0.9" />
+      <path d="M -10 -35 H 10 L 13 -3 Q 0 9 -13 -3 Z" fill="url(#treasure-gold)" stroke="#815b18" strokeWidth="2" />
+      <circle cx="0" cy="-15" r="4" fill="#51371f" />
+      <path d="M 0 -11 V -5" stroke="#51371f" strokeWidth="3" strokeLinecap="round" />
+      <path d="M -54 -34 Q -25 -27 1 -30" stroke="#f3b875" strokeWidth="3" opacity="0.5" fill="none" />
+
+      {[-70, -56, 56, 70].map((mx, i) => (
+        <ellipse key={mx} cx={mx} cy={10 + (i % 2) * 5} rx="10" ry="4.5" fill="url(#treasure-gold)" stroke="#946619" strokeWidth="1.2" />
+      ))}
+      <Star x={-55} y={-74} s={0.8} o={0.9} />
+      <Star x={53} y={-59} s={0.66} o={0.85} />
+    </g>
+  )
+}
+
+function RoyalTreasure({ x, y, s = 1 }) {
+  const coins = [
+    [-30, -32, -8], [-17, -37, 7], [-3, -34, -5], [12, -39, 9], [27, -33, -6]
+  ]
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="5" cy="9" rx="50" ry="10" fill="#263629" opacity="0.27" filter="url(#edge)" />
+
+      {/* Geöffneter Deckel: einfache, kräftige Silhouette. */}
+      <path d="M -45 -31 L -43 -55 Q -38 -78 0 -82 Q 38 -78 43 -55 L 45 -31 Z"
+        fill="url(#treasure-wood)" stroke="#55321f" strokeWidth="4" />
+      <path d="M -36 -34 L -34 -54 Q -28 -68 0 -71 Q 28 -68 34 -54 L 36 -34 Z" fill="#3c2930" />
+      <path d="M -43 -54 Q 0 -45 43 -54" stroke="url(#treasure-gold)" strokeWidth="5" fill="none" />
+      <path d="M -34 -67 Q -19 -77 -2 -77" stroke="#efb16e" strokeWidth="3" opacity="0.42" fill="none" strokeLinecap="round" />
+
+      {/* Wenige Münzen bleiben auch in kleiner Darstellung klar lesbar. */}
+      {coins.map(([cx, cy, rot]) => (
+        <g key={cx} transform={`translate(${cx} ${cy}) rotate(${rot})`}>
+          <ellipse rx="9" ry="4" fill="url(#treasure-gold)" stroke="#98691c" strokeWidth="1.2" />
+          <path d="M -4 -1 H 4" stroke="#fff0a0" strokeWidth="1" opacity="0.7" />
+        </g>
+      ))}
+
+      {/* Zwei große Diamanten statt vieler kleiner, unruhiger Edelsteine. */}
+      <g transform="translate(-14 -53) scale(.82)">
+        <path d="M -12 0 L -6 -10 H 7 L 13 0 L 0 19 Z" fill="url(#diamond-clear)" stroke="#5795b6" strokeWidth="1.5" />
+        <path d="M -12 0 H 13 M -6 -10 L 0 19 L 7 -10" stroke="#fff" strokeWidth="1" opacity="0.75" fill="none" />
+      </g>
+      <g transform="translate(18 -49) scale(.72)">
+        <path d="M -12 0 L -6 -10 H 7 L 13 0 L 0 19 Z" fill="url(#diamond-blue)" stroke="#2d789c" strokeWidth="1.5" />
+        <path d="M -12 0 H 13 M -6 -10 L 0 19 L 7 -10" stroke="#ecfdff" strokeWidth="1" opacity="0.7" fill="none" />
+      </g>
+
+      {/* Kompakter Truhenkörper mit drei klaren Goldbeschlägen. */}
+      <path d="M -47 -31 H 47 L 43 10 Q 0 18 -43 10 Z" fill="url(#treasure-wood)" stroke="#55321f" strokeWidth="4" />
+      <path d="M 8 -31 H 47 L 43 10 Q 25 14 8 15 Z" fill="#583321" opacity="0.4" />
+      <path d="M -45 -23 H 45 M -44 3 Q 0 11 44 3" stroke="url(#treasure-gold)" strokeWidth="5" fill="none" />
+      <path d="M -38 -22 V 7 M 38 -22 V 7" stroke="#d8aa3c" strokeWidth="4" />
+      <path d="M -8 -28 H 8 L 10 -4 Q 0 5 -10 -4 Z" fill="url(#treasure-gold)" stroke="#80591a" strokeWidth="1.8" />
+      <circle cx="0" cy="-13" r="3" fill="#50351f" />
+      <path d="M -38 -27 Q -18 -22 0 -24" stroke="#f0b372" strokeWidth="2.5" opacity="0.45" fill="none" />
+
+      <ellipse cx="-48" cy="9" rx="8" ry="3.5" fill="#e4b23b" stroke="#97691c" strokeWidth="1" />
+      <ellipse cx="51" cy="11" rx="8" ry="3.5" fill="#e4b23b" stroke="#97691c" strokeWidth="1" />
+      <Star x={37} y={-56} s={0.48} o={0.72} />
+    </g>
+  )
+}
+
+function CastleApproach({ x, y, s = 1, path = true, greenery = true }) {
+  const bushes = [
+    [-48, 27, 0.66], [48, 27, 0.66],
+    [-63, 54, 0.78], [63, 54, 0.78],
+    [-82, 84, 0.92], [82, 84, 0.92]
+  ]
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {path && (
+        <g>
+          {/* Perspektivisch breiter werdender Kiesweg vom Tor zum Hauptpfad. */}
+          <path d="M -22 0 L 22 0 C 30 28 42 58 58 101 L -58 101 C -42 58 -30 28 -22 0 Z"
+            fill="url(#castle-approach)" />
+          <path d="M -19 3 C -28 37 -39 69 -50 96 M 19 3 C 28 37 39 69 50 96"
+            stroke="#fff0ce" strokeWidth="3" opacity="0.6" fill="none" strokeLinecap="round" />
+          <path d="M -30 35 Q 0 39 30 35 M -43 68 Q 0 73 43 68"
+            stroke="#a99270" strokeWidth="1.4" opacity="0.35" fill="none" />
+        </g>
+      )}
+      {greenery && bushes.map(([bx, by, bs], i) => (
+        <g key={`${bx}-${by}`} transform={`translate(${bx} ${by}) scale(${bs})`}>
+          <ellipse cx="5" cy="11" rx="24" ry="7" fill="#203b29" opacity="0.25" filter="url(#edge)" />
+          <path d="M -23 6 C -27 -8 -17 -23 -3 -25 C 10 -31 25 -20 25 -5 C 28 9 14 16 -1 16 C -15 16 -24 12 -23 6 Z"
+            fill="url(#royal-bush)" />
+          <path d="M 5 -27 C 21 -23 28 -9 25 3 C 23 13 12 17 2 16 C 10 3 12 -12 5 -27 Z"
+            fill="#245c38" opacity="0.48" filter="url(#edge)" />
+          <path d="M -15 -12 Q -7 -23 4 -23" stroke="#c5e69b" strokeWidth="3.5" opacity="0.46" fill="none" strokeLinecap="round" />
+          {i % 2 === 0 && <circle cx="-9" cy="-2" r="2" fill="#eef6c8" opacity="0.5" />}
+        </g>
+      ))}
+    </g>
+  )
+}
+
 // Naturstein-Schloss: unregelmäßige Silhouette, klare Lichtquelle links oben
 // und materialabhängige Schatten statt flacher Farbblöcke.
 function Castle({ x, y, s = 1 }) {
@@ -821,8 +1018,57 @@ function Castle({ x, y, s = 1 }) {
           <path d="M -2 -7 V 8" stroke="#e8f8fb" strokeWidth="1" opacity="0.48" />
         </g>
       ))}
+      {/* Die Seitentürme werden nach der verbindenden Mittelmauer nochmals
+          in der Vordergrundebene aufgebaut. So liegen ihre kompletten
+          Baukörper sichtbar vor der Mauer; der Hauptturm folgt danach. */}
+      {[-130, 130].map((tx) => (
+        <g key={`front-${tx}`} transform={`translate(${tx} 0)`}>
+          <path d="M -33 0 L -31 -149 Q 0 -157 32 -149 L 34 0 Z" fill="url(#castle-stone)" />
+          <path d="M 8 -154 Q 22 -153 32 -149 L 34 0 L 9 0 Z" fill="#a99982" opacity="0.56" filter="url(#edge)" />
+          <path d="M -42 -148 L 0 -230 L 42 -148 Q 0 -158 -42 -148 Z" fill="url(#castle-roof-blue)" />
+          <path d="M 0 -230 L 42 -148 L 8 -153 Z" fill="#264f7c" opacity="0.62" />
+          <path d="M -29 -165 L 0 -222 L 29 -165 M -21 -181 Q 0 -187 21 -181 M -13 -199 Q 0 -203 13 -199"
+            stroke="#b9ddef" strokeWidth="1.25" opacity="0.42" fill="none" />
+          <path d="M -39 -148 Q 0 -157 39 -148" stroke="#183e67" strokeWidth="4" opacity="0.5" fill="none" />
+          <path d="M -29 -153 Q 0 -164 29 -153" stroke="#d9eef6" strokeWidth="3" opacity="0.55" fill="none" />
+          <rect x="-2" y="-258" width="3" height="28" fill="#8a5a35" />
+          <path d="M 1 -258 L 26 -250 L 1 -242 Z" fill="#ff5c5c" />
+          <path d="M -15 -112 Q -6 -130 3 -112 V -92 H -15 Z" fill="url(#castle-glass)" stroke="#766d62" strokeWidth="3" />
+          <path d="M -17 -114 Q -6 -134 5 -114" stroke="#514b45" strokeWidth="2" fill="none" opacity="0.55" />
+          <path d="M -6 -127 V -94 M -14 -108 H 2" stroke="#eaf8fb" strokeWidth="1.2" opacity="0.7" />
+          <path d="M -16 -50 Q -2 -74 12 -50 V -13 H -16 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="3" />
+          <path d="M -26 -82 H 27 M -27 -32 H 31" stroke="#aa9a82" strokeWidth="1.5" opacity="0.5" />
+          <path d="M -27 -137 H 26 M -27 -107 H 27 M -28 -67 H 28 M -29 -17 H 31" stroke="#95856f" strokeWidth="1" opacity="0.34" />
+          <path d="M -12 -137 V -123 M 14 -137 V -123 M -18 -82 V -68 M 10 -82 V -68" stroke="#95856f" strokeWidth="1" opacity="0.25" />
+          <path d="M -27 -143 Q -24 -68 -27 -6" stroke="#fffdf2" strokeWidth="2.2" opacity="0.34" fill="none" />
+          <path d="M -27 -78 Q 0 -64 27 -78" stroke="#6d5846" strokeWidth="1.5" fill="none" opacity="0.78" />
+          {[
+            [-20, -74, '#d95762'], [-10, -69, '#f0b94f'], [0, -67, '#4f91bd'],
+            [10, -69, '#a55f98'], [20, -74, '#d95762']
+          ].map(([px, py, c], i) => (
+            <g key={`tower-pennant-${i}`} transform={`translate(${px} ${py})`}>
+              <path d="M -4 0 L 5 0 L 1 11 Z" fill={c} />
+              <path d="M 1 0 L 5 0 L 1 11 Z" fill="#4b3544" opacity="0.22" />
+              <path d="M -3 1 H 3" stroke="#fff" strokeWidth="0.8" opacity="0.35" />
+            </g>
+          ))}
+        </g>
+      ))}
+      {/* Der komplette Hauptturm steht minimal höher; alle zugehörigen
+          Details bewegen sich als eine gemeinsame Baugruppe. */}
+      <g transform="translate(0 -8)">
       <path d="M -48 -90 L -47 -205 Q 0 -214 47 -205 L 48 -90 Z" fill="url(#castle-stone-light)" />
       <path d="M 14 -210 Q 34 -209 47 -205 L 48 -90 H 14 Z" fill="#b5a38a" opacity="0.56" filter="url(#edge)" />
+      {/* Steinlagen und versetzte Stoßfugen wie an den Seitentürmen. */}
+      <path d="M -45 -184 Q 0 -188 45 -184 M -46 -157 H 46 M -47 -129 H 47 M -47 -103 H 47"
+        stroke="#9f8f78" strokeWidth="1.25" opacity="0.42" fill="none" />
+      <path d="M -22 -184 V -170 M 9 -184 V -170 M -34 -157 V -143 M 23 -157 V -143
+               M -16 -129 V -116 M 31 -129 V -116 M -32 -103 V -92 M 5 -103 V -92"
+        stroke="#95856f" strokeWidth="1.05" opacity="0.3" />
+      {/* Sonnenkante links und kleine unregelmäßige Verwitterungsspuren. */}
+      <path d="M -42 -198 Q -45 -150 -43 -98" stroke="#fffdf2" strokeWidth="2.5" opacity="0.36" fill="none" strokeLinecap="round" />
+      <path d="M -37 -146 l 12 -2 M 18 -188 l 16 1 M 22 -112 l 13 -2 M -31 -95 l 10 1"
+        stroke="#857662" strokeWidth="1.8" opacity="0.34" strokeLinecap="round" />
       <path d="M -60 -204 L 0 -302 L 60 -204 Q 0 -216 -60 -204 Z" fill="url(#castle-roof-red)" />
       <path d="M 0 -302 L 60 -204 L 12 -210 Z" fill="#87343b" opacity="0.62" />
       {/* feine Dachziegel folgen der Dachneigung */}
@@ -835,12 +1081,36 @@ function Castle({ x, y, s = 1 }) {
       <path d="M 0 -195 V -148 M -13 -171 H 13" stroke="#edfaff" strokeWidth="1.3" opacity="0.7" />
       <circle cx="0" cy="-122" r="11" fill="#fff" stroke="#b8a888" strokeWidth="2.5" />
       <path d="M 0 -122 L 0 -129 M 0 -122 L 5 -119" stroke="#5a4632" strokeWidth="2" strokeLinecap="round" />
+      </g>
+      {/* Dieselbe Verbindungsmauer wird im zentralen Ausschnitt vor den
+          Hauptturm gelegt. Kontur und Höhe bleiben exakt unverändert. */}
+      <g clipPath="url(#castle-center-wall-clip)">
+        <path d="M -142 0 L -141 -96 Q 0 -104 141 -96 L 142 0 Z" fill="url(#castle-stone)" />
+        <path d="M 58 -99 Q 104 -100 141 -96 L 142 0 H 58 Z" fill="#aa9a82" opacity="0.44" filter="url(#edge)" />
+        {[-120, -80, -40, 0, 40, 80].map((bx) => (
+          <path key={`center-wall-${bx}`} d={`M ${bx} -96 V -111 H ${bx + 24} V -97 Z`} fill="url(#castle-stone)" />
+        ))}
+        <path d="M -141 -94 Q 0 -102 141 -94" stroke="#756b5d" strokeWidth="4" opacity="0.32" fill="none" />
+        <path d="M -137 -76 H 137 M -138 -49 H 138 M -140 -23 H 140" stroke="#a9977e" strokeWidth="1.5" opacity="0.48" />
+      </g>
       <path d="M -33 0 V -47 Q 0 -82 33 -47 V 0 Z" fill="url(#castle-door)" stroke="#543724" strokeWidth="5" />
       <path d="M 0 -50 L 0 0" stroke="#6e4527" strokeWidth="3" />
       <path d="M -25 -42 Q 0 -68 25 -42" stroke="#d19a61" strokeWidth="2" opacity="0.45" fill="none" />
       <path d="M -24 -8 V -41 M -12 -2 V -54 M 12 -2 V -54 M 24 -8 V -41" stroke="#4a2f20" strokeWidth="1.4" opacity="0.55" />
       <path d="M -28 -32 H 28 M -31 -14 H 31" stroke="#39271d" strokeWidth="2.4" opacity="0.55" />
       {[-20, -10, 10, 20].map((nx) => <circle key={nx} cx={nx} cy="-24" r="1.6" fill="#bd8e52" opacity="0.7" />)}
+      {/* Vorderste Ebene: Die Kette hängt sichtbar vor Mauer und Tor. */}
+      <path d="M -82 -87 Q 0 -70 82 -87" stroke="#6d5846" strokeWidth="1.7" fill="none" opacity="0.8" />
+      {[
+        [-70, -83, '#4f91bd'], [-48, -78, '#f0b94f'], [-25, -74, '#d95762'],
+        [0, -72, '#a55f98'], [25, -74, '#4f91bd'], [48, -78, '#f0b94f'], [70, -83, '#d95762']
+      ].map(([px, py, c], i) => (
+        <g key={`gate-pennant-${i}`} transform={`translate(${px} ${py})`}>
+          <path d="M -4.5 0 L 5 0 L 1 12 Z" fill={c} />
+          <path d="M 1 0 L 5 0 L 1 12 Z" fill="#4b3544" opacity="0.22" />
+          <path d="M -3.5 1 H 3.5" stroke="#fff" strokeWidth="0.8" opacity="0.38" />
+        </g>
+      ))}
       <path d="M -31 0 H 31 L 48 23 H -48 Z" fill="url(#castle-steps)" />
       <path d="M -34 5 H 34 M -40 13 H 40" stroke="#f4ecdc" strokeWidth="2" opacity="0.68" />
       <path d="M 0 2 L 43 20 L 48 23 H 2 Z" fill="#75634f" opacity="0.2" filter="url(#edge)" />
@@ -948,6 +1218,9 @@ function SharedDefs() {
         <mask id="mask-fade-edges-x" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="1">
           <rect x="0" y="0" width="1" height="1" fill="url(#fade-edges-x)" />
         </mask>
+        <clipPath id="castle-center-wall-clip">
+          <rect x="-96" y="-114" width="192" height="116" />
+        </clipPath>
         {/* weichzeichnet Schatten-Overlays, damit Kanten nicht hart wirken */}
         <filter id="edge" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="1.4" />
@@ -1219,6 +1492,42 @@ function SharedDefs() {
         <linearGradient id="castle-steps" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#eee4d1" /><stop offset="1" stopColor="#aa987c" />
         </linearGradient>
+        <linearGradient id="royal-stone" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#eee9db" /><stop offset="0.55" stopColor="#bdb4a3" /><stop offset="1" stopColor="#817767" />
+        </linearGradient>
+        <linearGradient id="royal-metal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#8c9cad" /><stop offset="0.45" stopColor="#526474" /><stop offset="1" stopColor="#293a49" />
+        </linearGradient>
+        <radialGradient id="royal-lamp-glow" cx="0.3" cy="0.25" r="0.85">
+          <stop offset="0" stopColor="#fffbd2" /><stop offset="0.48" stopColor="#ffd86d" /><stop offset="1" stopColor="#dc8d35" />
+        </radialGradient>
+        <linearGradient id="royal-banner" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#bf648d" /><stop offset="0.52" stopColor="#93456f" /><stop offset="1" stopColor="#642b50" />
+        </linearGradient>
+        <linearGradient id="royal-planter" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#ffe28a" /><stop offset="0.5" stopColor="#c99a3f" /><stop offset="1" stopColor="#7e5c28" />
+        </linearGradient>
+        <linearGradient id="treasure-wood" x1="0.08" y1="0" x2="0.92" y2="1">
+          <stop offset="0" stopColor="#e29a55" /><stop offset="0.5" stopColor="#9b552d" /><stop offset="1" stopColor="#512c1c" />
+        </linearGradient>
+        <linearGradient id="treasure-gold" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#fff3a6" /><stop offset="0.45" stopColor="#e2b63f" /><stop offset="1" stopColor="#8c621a" />
+        </linearGradient>
+        <linearGradient id="diamond-clear" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#fff" /><stop offset="0.35" stopColor="#c9f4ff" /><stop offset="0.7" stopColor="#83cce8" /><stop offset="1" stopColor="#5294bb" />
+        </linearGradient>
+        <linearGradient id="diamond-blue" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#d9fbff" /><stop offset="0.4" stopColor="#65d3ed" /><stop offset="1" stopColor="#267da7" />
+        </linearGradient>
+        <linearGradient id="diamond-pink" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#ffe5f1" /><stop offset="0.42" stopColor="#ef83ae" /><stop offset="1" stopColor="#a43f70" />
+        </linearGradient>
+        <linearGradient id="castle-approach" x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stopColor="#f4e6c8" /><stop offset="0.52" stopColor="#d3bb93" /><stop offset="1" stopColor="#a58c69" />
+        </linearGradient>
+        <radialGradient id="royal-bush" cx="0.28" cy="0.2" r="0.86">
+          <stop offset="0" stopColor="#91cf75" /><stop offset="0.5" stopColor="#4d9253" /><stop offset="1" stopColor="#285f3b" />
+        </radialGradient>
         <linearGradient id="mtn-grad-far" x1="0" y1="0" x2="0.5" y2="1">
           <stop offset="0" stopColor="#d9eafa" />
           <stop offset="0.5" stopColor="#bcd6ed" />
@@ -1675,11 +1984,30 @@ export default function Panorama({ roadLayer } = {}) {
 
         {/* ---------- Region: Königsschloss ---------- */}
         {/* Das Schloss sitzt direkt auf der vorhandenen mittleren Bodenebene. */}
+        {/* Klare Tiefenfolge: Weg hinten, Schloss in der Mitte, Büsche vorne. */}
+        <CastleApproach x={5500} y={424} s={0.92} greenery={false} />
         <Castle x={5500} y={425} s={0.94} />
+        <CastleApproach x={5500} y={424} s={0.92} path={false} />
+        {/* Generierte, freigestellte Schatztruhe als finales Reiseziel. */}
+        <image
+          href={`${import.meta.env.BASE_URL}assets/generated/royal-treasure.png`}
+          x="5775" y="390" width="170" height="170"
+          preserveAspectRatio="xMidYMid meet"
+          style={{ filter: 'saturate(0.72) contrast(0.92) brightness(0.98)' }}
+        />
+        {/* Königliche Kleindeko in gestaffelten Tiefen. Die drei Levelpunkte
+            bei x=5140/5500/5860 bleiben gut erreichbar und lesbar. */}
+        <HeraldicShield x={5250} y={472} s={0.62} />
+        <HeraldicShield x={5750} y={474} s={0.62} flip />
+        <RoyalLantern x={5335} y={505} s={0.62} />
+        <RoyalLantern x={5665} y={505} s={0.62} />
+        <StoneBench x={5225} y={580} s={0.76} />
+        <StoneBench x={5775} y={580} s={0.76} flip />
+        <CrownPlanter x={5375} y={572} s={0.74} c="#f18aaf" />
+        <CrownPlanter x={5625} y={572} s={0.74} c="#b995e8" />
         <Star x={5240} y={300} s={1.4} o={0.9} />
         <Star x={5760} y={280} s={1.1} o={0.8} />
         <Flower x={5130} y={555} s={1.05} c="#ff7bac" />
-        <Flower x={5860} y={560} s={1.0} c="#ffd93d" />
         <Flower x={5960} y={520} s={0.85} c="#b58aff" />
       </svg>
     </div>
