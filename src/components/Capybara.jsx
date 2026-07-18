@@ -7,14 +7,13 @@
 import { useState } from 'react'
 
 const MOOD_IMG = {
-  normal: 'normal',   // Frontansicht, freundlich
   happy: 'happy',     // Winken / fröhlich
   cheer: 'cheer',     // Jubeln / Konfetti-Pose
   sad: 'sad',         // Schulterzucken / traurig
   think: 'think'      // Erklärbär-Pose mit erhobenem Finger
 }
 
-export default function Capybara({ mood = 'normal', size = 110 }) {
+export default function Capybara({ mood = 'happy', size = 110 }) {
   const [imgFailed, setImgFailed] = useState(false)
 
   // Start und Proud teilen sich dasselbe 3x2-Sprite-Sheet. In der
@@ -29,8 +28,11 @@ export default function Capybara({ mood = 'normal', size = 110 }) {
     )
   }
 
-  if (!imgFailed) {
-    const name = MOOD_IMG[mood] || MOOD_IMG.normal
+  // Fuer Stimmungen ohne eigenes Posen-Bild (z. B. "normal") kommt direkt die
+  // gezeichnete SVG-Version zum Einsatz statt eines Bildes, das ohnehin nicht
+  // existiert.
+  const name = MOOD_IMG[mood]
+  if (name && !imgFailed) {
     return (
       <img
         className={`capy-img capy-anim-${mood}`}

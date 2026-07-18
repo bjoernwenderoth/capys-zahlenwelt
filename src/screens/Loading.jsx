@@ -13,7 +13,6 @@ const PRELOAD_IMAGES = [
   'bilder/capy/walk-stop.png',
   'bilder/capy/proud.png',
   'bilder/capy/wrong.png',
-  'bilder/capy/normal.png',
   'bilder/capy/happy.png',
   'bilder/capy/cheer.png',
   'bilder/capy/sad.png',
