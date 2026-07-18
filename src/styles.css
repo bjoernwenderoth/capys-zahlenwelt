@@ -1069,6 +1069,40 @@ body {
   to { background-position: 120% 0; }
 }
 
+.capy-idle-stage {
+  display: block;
+  position: relative;
+  width: calc(var(--capy-idle-size) * 0.726);
+  height: calc(var(--capy-idle-size) * 1.1);
+}
+
+.capy-idle-sprite {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 700% 100%;
+  background-position: 0 0;
+}
+
+.capy-idle-stand {
+  background-image: url('/bilder/capy/idle-stand.png');
+  animation: capy-stand-cycle 3.2s linear infinite;
+}
+
+@keyframes capy-stand-cycle {
+  0%, 86% {
+    background-position: 0 0;
+    animation-timing-function: steps(6);
+  }
+  to { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capy-idle-stand {
+    animation: none;
+  }
+}
+
 /* ---------- Quiz ---------- */
 
 .quiz-screen {

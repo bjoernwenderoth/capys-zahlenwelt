@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Capybara from '../components/Capybara.jsx'
 import Panorama from '../components/Panorama.jsx'
 import {
   WORLDS,
@@ -191,7 +190,14 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
             aria-label="Capy läuft zum nächsten Level"
           />
         ) : (
-          <Capybara mood="happy" size={150 * scale} />
+          <span
+            className="capy-idle-stage"
+            style={{ '--capy-idle-size': `${150 * scale}px` }}
+            role="img"
+            aria-label="Capy wartet"
+          >
+            <span className="capy-idle-sprite capy-idle-stand" />
+          </span>
         )}
       </div>
     </div>
