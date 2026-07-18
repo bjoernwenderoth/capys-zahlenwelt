@@ -46,7 +46,7 @@ export default function Intro({ accent = 'blue', onContinue }) {
           <span className="intro-capy-stage">
             <span
               className="intro-capy-sprite"
-              style={{ '--intro-capy-image': `url(${baseUrl}bilder/capy/idle-stand.png)` }}
+              style={{ backgroundImage: `url(${baseUrl}bilder/capy/idle-stand.png)` }}
             />
           </span>
           <img

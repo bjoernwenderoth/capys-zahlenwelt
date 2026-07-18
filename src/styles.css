@@ -470,7 +470,6 @@ body {
   position: absolute;
   inset: 0;
   display: block;
-  background-image: var(--intro-capy-image);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 700% 100%;
