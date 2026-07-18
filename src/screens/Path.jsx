@@ -183,7 +183,16 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
         </div>
       )}
       <div style={{ transform: flip ? 'scaleX(-1)' : 'none' }}>
-        <Capybara mood={walking ? 'normal' : 'happy'} size={150 * scale} />
+        {walking ? (
+          <span
+            className="capy-walk-sprite"
+            style={{ '--capy-walk-size': `${150 * scale}px` }}
+            role="img"
+            aria-label="Capy läuft zum nächsten Level"
+          />
+        ) : (
+          <Capybara mood="happy" size={150 * scale} />
+        )}
       </div>
     </div>
   )
