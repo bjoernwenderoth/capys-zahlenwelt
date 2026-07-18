@@ -21,7 +21,7 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
     return g.replace('{name}', profile.name)
   }, [profile])
 
-  const imgSrc = portrait ? 'bilder/start-hoch.png' : 'bilder/start-quer.png'
+  const imgSrc = portrait ? 'bilder/start-hoch-v2.png' : 'bilder/start-quer.png'
 
   return (
     <div className="splash" data-accent={profile?.accent || 'blue'}>
