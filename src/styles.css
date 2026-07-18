@@ -40,6 +40,43 @@ body {
   align-items: center;
 }
 
+/* ---------- Ladebildschirm (nach "Spielen", waehrend Bilder vorgeladen werden) ---------- */
+
+.loading-screen {
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 18px;
+  text-align: center;
+}
+
+.loading-capy {
+  font-size: 4.5rem;
+  animation: bounce 1.1s infinite;
+}
+
+.loading-tip {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  opacity: 0.75;
+}
+
+.loading-bar-track {
+  width: 200px;
+  height: 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  background: var(--blue);
+  transition: width 0.2s ease;
+}
+
 /* ---------- Buttons ---------- */
 
 .btn {
@@ -562,16 +599,24 @@ body {
   height: 100%;
 }
 
+/* will-change auf den drei parallaxen Ebenen: sie enthalten großflächige
+   SVG-Weichzeichner-Filter (Berge, Himmel, Wolken). Ohne den Hinweis
+   rastert der Browser diese gefilterten Flächen bei jedem Scroll-Frame neu,
+   statt die bereits gezeichnete Ebene nur zu verschieben (GPU-Compositing) –
+   das war eine Hauptursache für das Ruckeln beim Hin- und Herscrollen. */
 .pano-layer-sky {
   transform: translateX(calc(var(--scroll, 0px) * 0.05));
+  will-change: transform;
 }
 
 .pano-layer-hills {
   transform: translateX(calc(var(--scroll, 0px) * 0.032));
+  will-change: transform;
 }
 
 .pano-layer-clouds {
   transform: translateX(calc(var(--scroll, 0px) * 0.018));
+  will-change: transform;
 }
 
 /* Nebel über gesperrten Regionen der Karte */
@@ -750,9 +795,13 @@ body {
   gap: 2px;
   width: 156px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.58);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  /* Bewusst KEIN backdrop-filter: diese Karte schwebt fest über der
+     horizontal scrollenden, parallax-animierten Karte. Ein Live-Weichzeichner
+     müsste bei jedem Scroll-Frame neu berechnen, was gerade darunter
+     vorbeizieht – das war einer der Hauptgründe für das Ruckeln beim
+     Scrollen. Ein ausreichend deckender heller Hintergrund sieht optisch
+     fast identisch aus, kostet aber nichts beim Scrollen. */
+  background: rgba(255, 255, 255, 0.88);
   border-radius: 22px;
   padding: 16px 14px 14px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);

@@ -286,9 +286,38 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   // useMemo verhindert eine neue Array-Identität bei jedem Path-Render (z. B.
   // durch Fortschritts-Updates), die sonst Panorama ohne echten Grund neu
   // rendern ließe.
+  //
+  // Die Welt VOR der sichtbaren (wo Capy ggf. herläuft) wird sofort mit
+  // gerendert – die ist während der Laufanimation sichtbar. Die Welt DANACH
+  // ist beim ersten Rendern reine Off-Screen-Vorschau fürs spätere Scrollen
+  // und wird deshalb erst kurz verzögert dazugemountet. Ohne diese
+  // Verzögerung mountet React beim Öffnen der Karte (z. B. direkt nach einem
+  // neu freigeschalteten Level) die Deko von bis zu drei Welten auf einen
+  // Schlag – gleichzeitig mit dem Kamera-Scroll und Capys Lauf-Animation.
+  // Das war die Hauptursache für das Ruckeln beim Freischalten einer neuen
+  // Welt. Nach dem ersten Settle bleibt das Fenster dauerhaft ±1, damit
+  // normales Scrollen weiterhin ohne Nachlade-Verzögerung bleibt.
+  const aheadReadyRef = useRef(false)
+  const [aheadReady, setAheadReady] = useState(false)
+  useEffect(() => {
+    if (aheadReadyRef.current) {
+      setAheadReady(true)
+      return
+    }
+    const id = window.setTimeout(() => {
+      aheadReadyRef.current = true
+      setAheadReady(true)
+    }, 700)
+    return () => window.clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const activeWorldWindow = useMemo(
-    () => [Math.max(0, viewWorldIdx - 1), Math.min(WORLDS.length - 1, viewWorldIdx + 1)],
-    [viewWorldIdx]
+    () => [
+      Math.max(0, viewWorldIdx - 1),
+      Math.min(WORLDS.length - 1, viewWorldIdx + (aheadReady ? 1 : 0))
+    ],
+    [viewWorldIdx, aheadReady]
   )
 
   useEffect(() => {
