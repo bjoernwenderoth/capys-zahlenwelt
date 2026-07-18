@@ -584,6 +584,8 @@ body {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  isolation: isolate;
+  overflow: hidden;
 }
 
 /* Nebel beginnt weich: links Wolkenschwaden, die langsam dichter werden.
@@ -593,18 +595,13 @@ body {
    deutliche Trübung) statt eines klaren Vorschau-Blicks. */
 .fog-zone.fog-teaser {
   background:
-    radial-gradient(ellipse 30% 16% at 10% 22%, rgba(234, 245, 255, 0.5), transparent 72%),
-    radial-gradient(ellipse 22% 12% at 34% 10%, rgba(234, 245, 255, 0.42), transparent 70%),
-    radial-gradient(ellipse 38% 20% at 22% 48%, rgba(228, 240, 253, 0.55), transparent 74%),
-    radial-gradient(ellipse 26% 14% at 6% 68%, rgba(230, 242, 254, 0.48), transparent 70%),
-    radial-gradient(ellipse 34% 18% at 42% 78%, rgba(224, 237, 252, 0.5), transparent 74%),
-    radial-gradient(ellipse 40% 22% at 58% 30%, rgba(220, 234, 250, 0.48), transparent 76%),
-    radial-gradient(ellipse 30% 16% at 74% 58%, rgba(216, 230, 248, 0.46), transparent 74%),
-    radial-gradient(ellipse 24% 13% at 88% 20%, rgba(232, 243, 255, 0.4), transparent 70%),
-    radial-gradient(ellipse 26% 15% at 66% 88%, rgba(226, 239, 253, 0.42), transparent 72%),
-    linear-gradient(90deg, transparent 0%, transparent 7%, rgba(104, 126, 158, 0.48) 30%, rgba(90, 110, 145, 0.7) 100%);
-  background-position: 0 0;
-  animation: fog-drift 52s ease-in-out infinite;
+    radial-gradient(ellipse 44% 12% at 15% 86%, rgba(242, 247, 250, 0.72), transparent 72%),
+    radial-gradient(ellipse 38% 10% at 47% 70%, rgba(232, 244, 252, 0.54), transparent 74%),
+    radial-gradient(ellipse 52% 15% at 78% 92%, rgba(239, 244, 247, 0.66), transparent 75%),
+    radial-gradient(ellipse 30% 24% at 30% 36%, rgba(224, 239, 249, 0.34), transparent 76%),
+    radial-gradient(ellipse 46% 28% at 75% 28%, rgba(215, 234, 247, 0.36), transparent 78%),
+    linear-gradient(90deg, transparent 4%, rgba(191, 218, 235, 0.24) 28%, rgba(159, 196, 220, 0.58) 100%);
+  background-size: 120% 100%, 125% 100%, 115% 100%, 130% 100%, 120% 100%, 100% 100%;
   /* exakt dieselbe Rampe wie bei ::before (siehe unten) – beide Ebenen
      müssen im Gleichschritt einblenden, sonst entsteht am Übergang
      eine sichtbare Kante zwischen "Schwaden" und "Trübung" */
@@ -638,8 +635,8 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(11px) grayscale(0.92) brightness(0.66) saturate(0.7);
-  -webkit-backdrop-filter: blur(11px) grayscale(0.92) brightness(0.66) saturate(0.7);
+  z-index: -1;
+  background: linear-gradient(90deg, transparent 5%, rgba(221, 240, 251, 0.12) 24%, rgba(190, 220, 238, 0.36) 100%);
   /* viele enge Zwischenstufen statt eines harten Zwei-Punkt-Sprungs –
      wird schon kurz nach dem nahtlosen Einstieg spürbar dunstig und
      verdichtet sich dann stetig, statt "klar → Wand" zu wirken */
@@ -670,38 +667,56 @@ body {
   pointer-events: none;
 }
 
+/* Eine zweite, langsam gegenläufig ziehende Schicht verhindert, dass der
+   Nebel wie ein festes Muster auf der Karte klebt. Die flachen Ellipsen
+   sammeln sich wie echter Bodennebel vor allem in der unteren Bildhälfte. */
+.fog-zone::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: -8% -14%;
+  background:
+    radial-gradient(ellipse 24% 8% at 12% 72%, rgba(255, 255, 255, 0.56), transparent 72%),
+    radial-gradient(ellipse 34% 11% at 42% 88%, rgba(238, 248, 253, 0.6), transparent 74%),
+    radial-gradient(ellipse 27% 9% at 68% 62%, rgba(249, 252, 253, 0.46), transparent 72%),
+    radial-gradient(ellipse 38% 12% at 90% 82%, rgba(226, 242, 251, 0.56), transparent 76%);
+  opacity: 0.82;
+}
+
+.fog-zone.fog-teaser::after {
+  mask-image: linear-gradient(90deg, transparent 4%, rgba(0, 0, 0, 0.35) 18%, #000 42%, #000 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 4%, rgba(0, 0, 0, 0.35) 18%, #000 42%, #000 90%, transparent 100%);
+  will-change: transform;
+  animation: fog-wisp 32s ease-in-out infinite alternate;
+}
+
 /* EIN durchgehender dichter Nebel über allen geheimen Welten. */
 .fog-zone.fog-dense {
   background:
-    radial-gradient(ellipse 32% 15% at 12% 20%, rgba(240, 247, 255, 0.75), transparent 70%),
-    radial-gradient(ellipse 24% 12% at 30% 8%, rgba(238, 246, 255, 0.6), transparent 68%),
-    radial-gradient(ellipse 40% 20% at 20% 55%, rgba(236, 244, 254, 0.8), transparent 74%),
-    radial-gradient(ellipse 28% 14% at 8% 82%, rgba(232, 242, 253, 0.65), transparent 70%),
-    radial-gradient(ellipse 42% 22% at 42% 78%, rgba(228, 238, 252, 0.7), transparent 74%),
-    radial-gradient(ellipse 38% 20% at 55% 32%, rgba(224, 234, 250, 0.65), transparent 74%),
-    radial-gradient(ellipse 50% 50% at 45% 40%, rgba(222, 231, 245, 0.92), transparent 90%),
-    radial-gradient(ellipse 55% 55% at 78% 70%, rgba(210, 222, 240, 0.92), transparent 90%),
-    linear-gradient(160deg, rgba(196, 210, 232, 0.96) 0%, rgba(178, 194, 220, 0.96) 100%);
-  background-position: 0 0;
-  animation: fog-drift 60s ease-in-out infinite reverse;
+    radial-gradient(ellipse 48% 16% at 18% 84%, rgba(248, 251, 252, 0.86), transparent 72%),
+    radial-gradient(ellipse 42% 14% at 62% 68%, rgba(232, 245, 252, 0.76), transparent 74%),
+    radial-gradient(ellipse 55% 18% at 88% 94%, rgba(242, 247, 249, 0.84), transparent 75%),
+    radial-gradient(ellipse 52% 38% at 26% 24%, rgba(219, 238, 249, 0.7), transparent 78%),
+    radial-gradient(ellipse 58% 44% at 84% 36%, rgba(205, 229, 244, 0.74), transparent 80%),
+    linear-gradient(160deg, rgba(204, 229, 243, 0.92), rgba(158, 198, 222, 0.94));
+  background-size: 125% 100%, 118% 100%, 130% 100%, 120% 100%, 125% 100%, 100% 100%;
   mask-image: linear-gradient(90deg, transparent 0, #000 min(55vw, 850px));
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 min(55vw, 850px));
 }
 
-@keyframes fog-drift {
-  0%, 100% { background-position: 0% 0%; }
-  50% { background-position: -2.5% 1.5%; }
+@keyframes fog-wisp {
+  0% { transform: translate3d(-3%, 1.5%, 0) scale(1.02); opacity: 0.68; }
+  100% { transform: translate3d(4%, -1%, 0) scale(1.08); opacity: 0.92; }
 }
 
 .fog-zone .locked-center {
-  z-index: 1;
+  z-index: 2;
   position: static;
   padding: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fog-zone.fog-teaser,
-  .fog-zone.fog-dense {
+  .fog-zone::after {
     animation: none;
   }
 }
@@ -1084,20 +1099,50 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   text-align: center;
   padding: 20px;
 }
 
+.locked-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: min(390px, calc(100vw - 40px));
+  padding: 16px 18px;
+  color: #20354d;
+  text-align: left;
+  background: rgba(237, 245, 255, 0.96);
+  border: 1px solid #b9d3ef;
+  border-radius: 28px;
+  box-shadow:
+    0 10px 30px rgba(38, 65, 88, 0.1),
+    0 2px 6px rgba(38, 65, 88, 0.06);
+}
+
 .locked-lock {
-  font-size: 3.2rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 18px rgba(255, 246, 201, 0.55));
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: #347fda;
+  background: #dcecff;
+  border: 1px solid #b9d3ef;
+  border-radius: 16px;
+  box-shadow: none;
   animation: locked-lock-float 3.6s ease-in-out infinite;
 }
 
+.locked-lock svg {
+  width: 27px;
+  height: 27px;
+  fill: currentColor;
+}
+
 @keyframes locked-lock-float {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-5px) rotate(2deg); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1106,20 +1151,75 @@ body {
   }
 }
 
-.locked-name {
-  font-size: 1.5rem;
+.locked-card-copy {
+  min-width: 0;
+}
+
+.locked-kicker {
+  margin-bottom: 3px;
+  color: #347fda;
+  font-size: 0.73rem;
   font-weight: 800;
-  color: #fff;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.locked-name {
+  color: #20354d;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .locked-hint {
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 14px;
-  padding: 8px 16px;
-  font-weight: 700;
-  max-width: 320px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  max-width: 300px;
+  margin-top: 6px;
+  color: #4e647d;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.locked-card-more {
+  grid-template-columns: 42px minmax(0, 1fr);
+  width: min(330px, calc(100vw - 40px));
+  padding-block: 14px;
+  background: rgba(237, 245, 255, 0.94);
+}
+
+.locked-more-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #367fae;
+  font-size: 1.35rem;
+  background: #dcecff;
+  border: 1px solid #b9d3ef;
+  border-radius: 12px;
+}
+
+.locked-card-more .locked-hint {
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .locked-card {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 24px;
+  }
+
+  .locked-lock {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+  }
+
+  .locked-name { font-size: 1.05rem; }
+  .locked-hint { font-size: 0.76rem; }
 }
 
 .worlds-more {

@@ -26,7 +26,7 @@ const KIND_ICON = { review: '🔁', final: '👑' }
 // TODO: Temporär deaktiviert, während die Welten gestaltet werden.
 // Zum Reaktivieren einfach wieder auf true setzen (siehe auch
 // SHOW_ALL_WORLDS in data/worlds.js).
-const FOG_ENABLED = false
+const FOG_ENABLED = true
 
 // Weg und Punkte einmal für die gesamte Karte berechnen
 const EXIT_X = MAP_WIDTH + 2
@@ -498,31 +498,46 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                   style={{ left: `calc(${teaserIdx * R}% - 4%)`, width: `calc(${R}% + 4%)` }}
                 >
                   <div className="locked-center">
-                    <div className="locked-lock">🔒</div>
-                    <div className="locked-name">Welt {teaserIdx + 1}: ???</div>
-                    <div className="locked-hint">
-                      Schaffe erst alle Level in „{WORLDS[teaserIdx - 1].name}“, um diese Welt zu
-                      entdecken!
+                    <div className="locked-card">
+                      <div className="locked-lock" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 1 1 4 0v2h-4V6Zm3 9.73V18h-2v-2.27a2 2 0 1 1 2 0Z" />
+                        </svg>
+                      </div>
+                      <div className="locked-card-copy">
+                        <div className="locked-kicker">Welt {teaserIdx + 1}</div>
+                        <div className="locked-name">Diese Welt ist noch geheim</div>
+                        <div className="locked-hint">
+                          Schaffe zuerst alle Level in „{WORLDS[teaserIdx - 1].name}“.
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               )
             }
             if (denseStart < WORLDS.length) {
-              // nur EINE Welt liegt komplett im Nebel, der Rest der Karte
-              // ist abgeschnitten („weitere geheime Welten“)
+              // Der dichte Nebel reicht ohne Rundungs-/Viewport-Lücke bis
+              // exakt ans Ende des Panoramas.
               parts.push(
                 <div
                   key="fog-dense"
                   className="fog-zone fog-dense"
                   style={{
                     left: `calc(${denseStart * R}% - 7%)`,
-                    width: `calc(${R}% + 7%)`
+                    right: 0
                   }}
                 >
                   <div className="locked-center">
-                    <div className="locked-name">
-                      🗺️ {denseStart + 1 < WORLDS.length ? 'Mehr geheime Welten' : 'Geheime Welt'}
+                    <div className="locked-card locked-card-more">
+                      <div className="locked-more-icon" aria-hidden="true">✦</div>
+                      <div className="locked-card-copy">
+                        <div className="locked-kicker">Bald verfügbar</div>
+                        <div className="locked-name">
+                          {denseStart + 1 < WORLDS.length ? 'Hier warten weitere Welten' : 'Hier wartet eine geheime Welt'}
+                        </div>
+                        <div className="locked-hint">Spiele weiter, um sie zu entdecken.</div>
+                      </div>
                     </div>
                   </div>
                 </div>
