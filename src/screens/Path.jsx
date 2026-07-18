@@ -205,14 +205,14 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
         {walking ? (
           <span
             className={`capy-walk-sprite capy-walk-${walkPhase}`}
-            style={{ '--capy-walk-size': `${150 * scale}px` }}
+            style={{ '--capy-walk-size': `${130 * scale}px` }}
             role="img"
             aria-label="Capy läuft zum nächsten Level"
           />
         ) : (
           <span
             className="capy-idle-stage"
-            style={{ '--capy-idle-size': `${150 * scale}px` }}
+            style={{ '--capy-idle-size': `${130 * scale}px` }}
             role="img"
             aria-label="Capy wartet"
           >
