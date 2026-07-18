@@ -6,18 +6,19 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
   const [creating, setCreating] = useState(profiles.length === 0)
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState(AVATARS[0])
+  const [accent, setAccent] = useState('blue')
 
   function submit(e) {
     e.preventDefault()
     const n = name.trim()
     if (!n) return
-    onCreate(n, avatar)
+    onCreate(n, avatar, accent)
     setName('')
     setCreating(false)
   }
 
   return (
-    <div className="screen profiles-screen">
+    <div className="screen profiles-screen" data-accent={accent}>
       <div className="profiles-hero">
         <Capybara mood="happy" size={130} />
         <div className="bubble">
@@ -30,7 +31,7 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
       {profiles.length > 0 && (
         <div className="profile-list">
           {profiles.map((p) => (
-            <div key={p.id} className="profile-card">
+            <div key={p.id} className={`profile-card profile-accent-${p.accent || 'blue'}`}>
               <button className="profile-main" onClick={() => onSelect(p.id)}>
                 <span className="profile-avatar">{p.avatar}</span>
                 <span className="profile-name">{p.name}</span>
@@ -73,6 +74,29 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
               </button>
             ))}
           </div>
+          <fieldset className="accent-fieldset">
+            <legend className="form-label">Wähle deine Farbe:</legend>
+            <div className="accent-options">
+              <button
+                type="button"
+                className={`accent-option accent-blue ${accent === 'blue' ? 'selected' : ''}`}
+                aria-pressed={accent === 'blue'}
+                onClick={() => setAccent('blue')}
+              >
+                <span className="accent-swatch" aria-hidden="true" />
+                Blau
+              </button>
+              <button
+                type="button"
+                className={`accent-option accent-purple ${accent === 'purple' ? 'selected' : ''}`}
+                aria-pressed={accent === 'purple'}
+                onClick={() => setAccent('purple')}
+              >
+                <span className="accent-swatch" aria-hidden="true" />
+                Lila
+              </button>
+            </div>
+          </fieldset>
           <button className="btn btn-primary" type="submit" disabled={!name.trim()}>
             Los geht&apos;s! 🚀
           </button>

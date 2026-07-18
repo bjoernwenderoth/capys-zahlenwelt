@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Capybara from '../components/Capybara.jsx'
+import { WORLDS } from '../data/worlds.js'
 import {
   generateQuestions,
   questionText,
@@ -14,6 +15,14 @@ const PRAISE = ['Super! 🎉', 'Klasse gemacht!', 'Richtig! Du bist spitze!', 'G
 const COMFORT = ['Macht nichts, die kommt gleich nochmal!', 'Kopf hoch, das übst du gleich nochmal!', 'Fast! Merk dir die Lösung gut!']
 
 const PASS_MIN = 8
+
+function WorldBackdrop({ world }) {
+  return (
+    <div className={`quiz-world-backdrop world-${world.id}`} aria-hidden="true">
+      <span className="quiz-world-scene" />
+    </div>
+  )
+}
 
 // ---------- Aufgabentypen ----------
 
@@ -33,7 +42,10 @@ function MCQuestion({ q, disabled, onAnswer }) {
             onAnswer(o === q.answer)
           }}
         >
-          {o}
+          <span className="answer-marker" aria-hidden="true">
+            {chosen === o && disabled ? (o === q.answer ? '✓' : '×') : ''}
+          </span>
+          <span>{o}</span>
         </button>
       ))}
     </div>
@@ -41,14 +53,32 @@ function MCQuestion({ q, disabled, onAnswer }) {
 }
 
 function TFQuestion({ q, disabled, onAnswer }) {
+  const [chosen, setChosen] = useState(null)
+  const options = [
+    { value: true, label: 'Richtig', icon: '✓' },
+    { value: false, label: 'Falsch', icon: '×' }
+  ]
+
   return (
     <div className="answers-grid tf">
-      <button className="btn answer-btn tf-true" disabled={disabled} onClick={() => onAnswer(q.isTrue)}>
-        ✓ Richtig
-      </button>
-      <button className="btn answer-btn tf-false" disabled={disabled} onClick={() => onAnswer(!q.isTrue)}>
-        ✗ Falsch
-      </button>
+      {options.map((option) => {
+        const isCorrect = option.value === q.isTrue
+        const stateClass = disabled && (chosen === option.value || isCorrect) ? (isCorrect ? 'right' : 'wrong') : ''
+        return (
+          <button
+            key={option.label}
+            className={`btn answer-btn tf-${option.value ? 'true' : 'false'} ${stateClass}`}
+            disabled={disabled}
+            onClick={() => {
+              setChosen(option.value)
+              onAnswer(isCorrect)
+            }}
+          >
+            <span className="answer-marker" aria-hidden="true">{option.icon}</span>
+            <span>{option.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -187,7 +217,7 @@ function QuestionPrompt({ q }) {
 
 // ---------- Quiz ----------
 
-export default function Quiz({ level, muted, onFinish, onExit }) {
+export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }) {
   const [round, setRound] = useState(0) // erhöht sich bei "Nochmal"
   const [questions, setQuestions] = useState(() => generateQuestions(level))
   const [queue, setQueue] = useState(() => questions.map((_, i) => i))
@@ -210,6 +240,9 @@ export default function Quiz({ level, muted, onFinish, onExit }) {
   const qIdx = queue[pos]
   const q = questions[qIdx]
   const total = questions.length
+  const worldIndex = Math.max(0, WORLDS.findIndex((candidate) => candidate.levels.some((item) => item.id === level.id)))
+  const world = WORLDS[worldIndex]
+  const levelIndex = Math.max(0, world.levels.findIndex((item) => item.id === level.id))
 
   function handleAnswer(ok) {
     if (feedback) return
@@ -273,7 +306,8 @@ export default function Quiz({ level, muted, onFinish, onExit }) {
   // ---------- Ergebnis ----------
   if (done) {
     return (
-      <div className="screen quiz-screen result-screen">
+      <div className="screen quiz-screen result-screen" data-accent={accent}>
+        <WorldBackdrop world={world} />
         <Capybara mood={done.pass ? 'cheer' : 'sad'} size={150} />
         <div className="bubble">
           {done.pass
@@ -317,45 +351,80 @@ export default function Quiz({ level, muted, onFinish, onExit }) {
 
   // ---------- Frage ----------
   return (
-    <div className="screen quiz-screen">
+    <div className="screen quiz-screen" data-accent={accent}>
+      <WorldBackdrop world={world} />
       <header className="quiz-header">
-        <button className="icon-btn" onClick={onExit} title="Level verlassen">✕</button>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${(solved / total) * 100}%` }} />
+        <button className="quiz-back-btn" onClick={onExit} title="Zurück zum Pfad" aria-label="Zurück zum Pfad">
+          <span aria-hidden="true">←</span> Pfad
+        </button>
+        <div className="quiz-status-card" aria-label={`Welt ${worldIndex + 1}, ${world.name}; Level ${levelIndex + 1}, ${level.title}; ${solved} von ${total} Fragen geschafft`}>
+          <span className="quiz-status-top">
+            <span className="quiz-location-icon" aria-hidden="true">{world.emoji}</span>
+            <span className="quiz-location-copy">
+              <span className="quiz-world-name">Welt {worldIndex + 1} · {world.name}</span>
+              <span className="quiz-level-name">Level {levelIndex + 1} · {level.title} – {level.subtitle}</span>
+            </span>
+            <span className="progress-text"><strong>{solved}</strong> / {total}</span>
+          </span>
+          <span
+            className="progress-bar"
+            role="progressbar"
+            aria-label="Fragenfortschritt"
+            aria-valuemin="0"
+            aria-valuemax={total}
+            aria-valuenow={solved}
+          >
+            <span className="progress-fill" style={{ width: `${(solved / total) * 100}%` }} />
+          </span>
         </div>
-        <span className="progress-text">{solved}/{total}</span>
       </header>
 
-      <div className="quiz-top">
-        <div className="quiz-capy">
-          <Capybara mood={mood} size={80} />
-        </div>
-        <div className="quiz-question">
-          <QuestionPrompt q={q} />
-          <button className="icon-btn speak-btn" title="Vorlesen" onClick={() => speak(questionText(q), muted)}>
-            🔊
-          </button>
-        </div>
-      </div>
+      <main className="quiz-content">
+        <section className="question-card" aria-label="Aufgabe">
+          <div className="question-card-heading">
+            <div className="quiz-capy">
+              <Capybara mood={mood} size={72} />
+            </div>
+            <div className="question-meta">
+              <span className="question-kicker">Aufgabe {Math.min(solved + 1, total)} von {total}</span>
+              <span className="question-instruction">
+                {q.type === 'pairs' ? 'Ordne richtig zu' : q.type === 'tf' ? 'Prüfe die Aussage' : 'Finde die Lösung'}
+              </span>
+            </div>
+            <div className="question-actions">
+              <button className="icon-btn speak-btn" title="Aufgabe vorlesen" aria-label="Aufgabe vorlesen" onClick={() => speak(questionText(q), muted)}>
+                🔊
+              </button>
+              {!feedback && (
+                <button
+                  className={`btn btn-tip ${showTip ? 'active' : ''}`}
+                  onClick={() => setShowTip((t) => !t)}
+                  aria-expanded={showTip}
+                  title={showTip ? 'Tipp ausblenden' : 'Tipp anzeigen'}
+                >
+                  <span aria-hidden="true">💡</span>
+                  <span className="tip-action-label">Tipp</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="quiz-question"><QuestionPrompt q={q} /></div>
+        </section>
 
-      {showTip && !feedback && (
-        <div className="bubble tip-bubble">💡 {tipFor(q)}</div>
-      )}
-
-      <div className="quiz-body" key={`${round}-${pos}`}>
-        {q.type === 'mc' && <MCQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
-        {q.type === 'tf' && <TFQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
-        {(q.type === 'input' || q.type === 'reverse') && (
-          <InputQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />
+        {showTip && !feedback && (
+          <div className="bubble tip-bubble" role="status"><span aria-hidden="true">💡</span> {tipFor(q)}</div>
         )}
-        {q.type === 'pairs' && <PairsQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
-      </div>
 
-      {!feedback && (
-        <button className="btn btn-tip" onClick={() => setShowTip((t) => !t)}>
-          💡 Tipp von Capy
-        </button>
-      )}
+        <div className="quiz-body" key={`${round}-${pos}`}>
+          {q.type === 'mc' && <MCQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
+          {q.type === 'tf' && <TFQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
+          {(q.type === 'input' || q.type === 'reverse') && (
+            <InputQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />
+          )}
+          {q.type === 'pairs' && <PairsQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
+        </div>
+
+      </main>
 
       {feedback && (
         <div className={`feedback ${feedback.ok ? 'ok' : 'nope'}`}>

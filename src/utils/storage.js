@@ -1,6 +1,7 @@
 const KEY = 'einmaleins-abenteuer-v1'
 
 export const AVATARS = ['🦊', '🐸', '🦁', '🐼', '🦄', '🐙', '🐯', '🐧', '🦖', '🐰']
+export const PROFILE_ACCENTS = ['blue', 'purple']
 
 function defaults() {
   return { profiles: [], activeProfileId: null, muted: false }
@@ -26,11 +27,12 @@ export function saveData(data) {
   }
 }
 
-export function newProfile(name, avatar) {
+export function newProfile(name, avatar, accent = 'blue') {
   return {
     id: 'p' + Date.now() + Math.floor(Math.random() * 1000),
     name,
     avatar,
+    accent: PROFILE_ACCENTS.includes(accent) ? accent : 'blue',
     progress: {} // levelId -> beste Sterne (1-3)
   }
 }

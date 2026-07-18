@@ -21,8 +21,8 @@ export default function App() {
 
   const profile = data.profiles.find((p) => p.id === data.activeProfileId) || null
 
-  function createProfile(name, avatar) {
-    const p = newProfile(name, avatar)
+  function createProfile(name, avatar, accent) {
+    const p = newProfile(name, avatar, accent)
     setData((d) => ({ ...d, profiles: [...d.profiles, p], activeProfileId: p.id }))
     setLastPlayedLevelId(null)
     setScreen('path')
@@ -68,6 +68,7 @@ export default function App() {
       <Quiz
         key={activeLevel.id}
         level={activeLevel}
+        accent={profile.accent || 'blue'}
         muted={data.muted}
         onFinish={(stars) => completeLevel(activeLevel.id, stars)}
         onExit={() => {
