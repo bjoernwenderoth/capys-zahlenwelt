@@ -27,6 +27,7 @@ body {
 
 #root {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   justify-content: center;
 }
@@ -1637,6 +1638,7 @@ body {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
+  min-height: 100svh;
   max-width: 1040px;
   padding: 20px 20px 120px;
   align-items: stretch;
