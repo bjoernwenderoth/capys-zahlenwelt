@@ -560,27 +560,28 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
             }
             if (denseStart < WORLDS.length) {
               // Der dichte Nebel reicht ohne Rundungs-/Viewport-Lücke bis
-              // exakt ans Ende des Panoramas.
+              // exakt ans Ende des aktuell erreichbaren Kartenausschnitts.
               parts.push(
                 <div
                   key="fog-dense"
                   className="fog-zone fog-dense"
                   style={{
                     left: `calc(${denseStart * R}% - 7%)`,
-                    right: 0
+                    // Der dichte Nebel endet am Rand des tatsächlich
+                    // erreichbaren Kartenausschnitts. So liegt sein Inhalt
+                    // nicht unsichtbar in den später abgeschnittenen Welten.
+                    width: `calc(${R}% + 7%)`
                   }}
                 >
-                  <div className="locked-center">
-                    <div className="locked-card locked-card-more">
-                      <div className="locked-more-icon" aria-hidden="true">✦</div>
-                      <div className="locked-card-copy">
-                        <div className="locked-kicker">Bald verfügbar</div>
-                        <div className="locked-name">
-                          {denseStart + 1 < WORLDS.length ? 'Hier warten weitere Welten' : 'Hier wartet eine geheime Welt'}
-                        </div>
-                        <div className="locked-hint">Spiele weiter, um sie zu entdecken.</div>
-                      </div>
-                    </div>
+                  <div className="more-worlds-hint">
+                    <span className="more-worlds-copy">
+                      <span className="more-worlds-title">
+                        {denseStart + 1 < WORLDS.length
+                          ? 'Hier gibt es noch mehr Welten'
+                          : 'Hier gibt es noch eine weitere Welt'}
+                      </span>
+                      <span className="more-worlds-subtitle">Was wohl hinter dem Nebel wartet?</span>
+                    </span>
                   </div>
                 </div>
               )

@@ -1393,9 +1393,34 @@ body {
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 min(55vw, 850px));
 }
 
+/* Eine helle Schwade zieht VOR dem Welten-Hinweis vorbei. Dadurch wirkt die
+   Beschriftung, als läge sie im Nebel, statt einfach auf ihm zu schweben. */
+.fog-zone.fog-dense::before {
+  content: '';
+  position: absolute;
+  inset: -10% -8%;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 35% 9% at 43% 49%, rgba(255, 255, 255, 0.3), transparent 74%),
+    radial-gradient(ellipse 28% 7% at 67% 54%, rgba(234, 246, 252, 0.24), transparent 76%);
+  filter: blur(7px);
+  pointer-events: none;
+  will-change: transform;
+  animation: more-worlds-mist 18s ease-in-out infinite alternate;
+}
+
+.fog-zone.fog-dense::after {
+  z-index: 1;
+}
+
 @keyframes fog-wisp {
   0% { transform: translate3d(-3%, 1.5%, 0) scale(1.02); opacity: 0.68; }
   100% { transform: translate3d(4%, -1%, 0) scale(1.08); opacity: 0.92; }
+}
+
+@keyframes more-worlds-mist {
+  0% { transform: translate3d(-5%, 1%, 0) scale(1.02); opacity: 0.7; }
+  100% { transform: translate3d(5%, -1%, 0) scale(1.08); opacity: 1; }
 }
 
 .fog-zone .locked-center {
@@ -1405,6 +1430,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .fog-zone::before,
   .fog-zone::after {
     animation: none;
   }
@@ -1874,30 +1900,57 @@ body {
   line-height: 1.4;
 }
 
-.locked-card-more {
-  grid-template-columns: 42px minmax(0, 1fr);
-  width: min(330px, calc(100vw - 40px));
-  padding-block: 14px;
-  background: rgba(237, 245, 255, 0.94);
+.more-worlds-hint {
+  position: absolute;
+  top: 50%;
+  left: calc(100% - 50vw);
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: calc(100vw - 40px);
+  opacity: 0.78;
+  filter: saturate(0.72) blur(0.12px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
-.locked-more-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: #347fda;
-  font-size: 1.35rem;
-  background: #dcecff;
-  border: 1px solid #b9d3ef;
-  border-radius: 12px;
+.more-worlds-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
 }
 
-.locked-card-more .locked-hint {
-  margin-top: 4px;
+.more-worlds-title {
+  color: rgba(32, 53, 77, 0.72);
+  font-size: clamp(1.05rem, 1.55vw, 1.28rem);
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75), 0 0 16px rgba(255, 255, 255, 0.42);
+}
+
+.more-worlds-subtitle {
+  color: rgba(43, 68, 91, 0.55);
+  font-size: clamp(0.72rem, 1vw, 0.84rem);
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  line-height: 1.25;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.64);
 }
 
 @media (max-width: 520px) {
+  .more-worlds-copy {
+    gap: 3px;
+  }
+
+  .more-worlds-title {
+    font-size: 0.98rem;
+  }
+
   .locked-card {
     grid-template-columns: 46px minmax(0, 1fr);
     gap: 12px;
@@ -1998,6 +2051,12 @@ body {
   z-index: 25;
   pointer-events: none;
   filter: drop-shadow(0 6px 5px rgba(0, 0, 0, 0.25));
+}
+
+/* Am Level steht Capy einen Hauch höher, damit der Knoten unter ihr noch
+   sichtbar bleibt. Die Laufposition selbst bleibt unverändert. */
+.capy-walker:not(.walking) {
+  transform: translate(-50%, -96%);
 }
 
 .capy-walk-sprite {
