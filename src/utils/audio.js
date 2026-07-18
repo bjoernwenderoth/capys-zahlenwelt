@@ -50,6 +50,27 @@ export function playFail(muted) {
   ;[392, 330, 262].forEach((f, i) => tone(f, i * 0.18, 0.3, 'sine', 0.12))
 }
 
+let cachedVoice = null
+
+// Sucht die beste verfügbare deutsche Stimme: bevorzugt hochwertige
+// Online-/Natural-Stimmen, meidet einfache "Compact"-Systemstimmen.
+function pickGermanVoice() {
+  const voices = window.speechSynthesis.getVoices()
+  if (!voices.length) return null
+
+  const germanVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().startsWith('de'))
+  if (!germanVoices.length) return null
+
+  const rank = (v) => {
+    const name = v.name.toLowerCase()
+    if (name.includes('compact')) return 0
+    if (/google|natural|enhanced|neural|online|premium|siri/.test(name)) return 2
+    return 1
+  }
+
+  return germanVoices.sort((a, b) => rank(b) - rank(a))[0]
+}
+
 export function speak(text, muted) {
   if (muted) return
   if (!('speechSynthesis' in window)) return
@@ -58,6 +79,15 @@ export function speak(text, muted) {
     const u = new SpeechSynthesisUtterance(text)
     u.lang = 'de-DE'
     u.rate = 0.9
+
+    if (!cachedVoice) cachedVoice = pickGermanVoice()
+    if (cachedVoice) u.voice = cachedVoice
+    else if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+      window.speechSynthesis.onvoiceschanged = () => {
+        cachedVoice = pickGermanVoice()
+      }
+    }
+
     window.speechSynthesis.speak(u)
   } catch {
     // Sprachausgabe nicht verfügbar

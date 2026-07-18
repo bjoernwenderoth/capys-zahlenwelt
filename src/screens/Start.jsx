@@ -24,7 +24,7 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
   const imgSrc = portrait ? 'bilder/start-hoch.png' : 'bilder/start-quer.png'
 
   return (
-    <div className="splash">
+    <div className="splash" data-accent={profile?.accent || 'blue'}>
       <img
         className="splash-img"
         src={imgSrc}
@@ -50,7 +50,8 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
           <div className="splash-greeting">Hallo! Wer möchte mit Capy rechnen?</div>
         )}
         <button className="btn btn-start" onClick={onStart}>
-          ▶ Spielen
+          <span className="start-play-icon" aria-hidden="true">▶</span>
+          <span>Spielen</span>
         </button>
       </div>
 

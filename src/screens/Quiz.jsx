@@ -6,8 +6,7 @@ import {
   questionText,
   correctAnswerText,
   tipFor,
-  shuffle,
-  QUESTIONS_PER_LEVEL
+  shuffle
 } from '../data/questions.js'
 import { playCorrect, playWrong, playWin, playFail, speak } from '../utils/audio.js'
 
@@ -85,7 +84,7 @@ function TFQuestion({ q, disabled, onAnswer }) {
 
 function InputQuestion({ q, disabled, onAnswer }) {
   const [val, setVal] = useState('')
-  const expected = q.type === 'reverse' ? q.answer : q.answer
+  const expected = q.answer
   const maxLen = 3
 
   function press(d) {
@@ -259,7 +258,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
     }
   }
 
-  function finish(solvedAll) {
+  function finish() {
     const correctFirst = total - wrongSet.current.size
     const pass = correctFirst >= PASS_MIN
     const stars = correctFirst >= total ? 3 : correctFirst >= total - 1 ? 2 : correctFirst >= PASS_MIN ? 1 : 0
@@ -428,10 +427,15 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
 
       {feedback && (
         <div className={`feedback ${feedback.ok ? 'ok' : 'nope'}`}>
-          <div className="feedback-text">{feedback.text}</div>
-          <button className="btn btn-primary" onClick={next} ref={weiterBtnRef}>
-            Weiter ➜
-          </button>
+          <div className="feedback-content">
+            <div className="feedback-message">
+              <span className="feedback-icon" aria-hidden="true">{feedback.ok ? '✓' : '×'}</span>
+              <div className="feedback-text">{feedback.text}</div>
+            </div>
+            <button className="btn btn-primary" onClick={next} ref={weiterBtnRef}>
+              Weiter <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
