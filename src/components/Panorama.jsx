@@ -164,9 +164,22 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
             Brücke. Seine Breite nimmt mit der Nähe zum Betrachter zu. */}
         <MountainStream />
 
+        {/* Brücken und andere begehbare Deko liegen unter dem Pfad, damit
+            dessen Markierungen auf ihrer Oberfläche sichtbar bleiben. */}
+        {WORLD_DECOR.map((w, i) => (
+          <WorldDecor
+            key={`below-path-${w.id}`}
+            items={w.items}
+            offsetX={w.offsetX}
+            active={isWorldActive(i)}
+            pathLayer="below"
+          />
+        ))}
+
         {/* Weg: liegt auf dem Boden, aber UNTER der gesamten Deko (Bäume,
-            Büsche, Tiere …), damit die Deko realistisch vor/neben dem Weg
-            steht statt dass der Weg über Baumkronen gemalt wird. */}
+            Büsche, Tiere …), damit diese realistisch vor/neben dem Weg
+            stehen. Begehbare Objekte wie die Brücke werden direkt davor
+            gerendert, sodass der Weg auf ihnen sichtbar bleibt. */}
         {roadLayer}
 
         {/* ---------- Sonnensee: Ufer/Sand/Wasser ----------

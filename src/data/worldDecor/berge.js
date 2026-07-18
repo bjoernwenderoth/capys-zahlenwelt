@@ -2,7 +2,7 @@
 // Die großen Berg-Silhouetten selbst gehören zum Gelände (Panorama.jsx) und
 // bleiben dort, da sie fest mit dem durchgehenden Boden-Pfad verzahnt sind.
 export default [
-  { type: 'mountainBridge', x: 355, y: 526, s: 0.9 },
+  { type: 'mountainBridge', x: 355, y: 516, s: 0.9, pathLayer: 'below' },
 
   // zweite, höher gelegene Bodenebene: kleinere Vegetation und Geröll
   { type: 'pine', x: 115, y: 440, s: 0.42, c: '#3b7650', cd: '#285c3b' },
@@ -21,7 +21,6 @@ export default [
 
   // Kiefern in mehreren Reihen, unterschiedlich groß für Tiefe
   { type: 'pine', x: 129, y: 528, s: 0.8 },
-  { type: 'pine', x: 405, y: 523, s: 0.6 },
   { type: 'pine', x: 633, y: 558, s: 0.85 },
   { type: 'pine', x: 922, y: 488, s: 0.7 },
   { type: 'pine', x: 35, y: 478, s: 0.6 },

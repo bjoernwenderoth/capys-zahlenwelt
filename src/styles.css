@@ -1905,20 +1905,25 @@ body {
 .result-screen .btn-primary {
   background: var(--quiz-primary);
   box-shadow: 0 4px 0 var(--quiz-primary-dark);
+  width: min(100%, 360px);
+  min-width: 0;
 }
 
 .result-screen .bubble {
   color: var(--quiz-ink);
   background: var(--quiz-surface);
   border: 1px solid var(--quiz-outline);
+  text-align: center;
 }
 
 /* Ergebnis */
 
 .result-screen {
   justify-content: center;
+  align-items: center;
   min-height: 100vh;
   gap: 14px;
+  text-align: center;
 }
 
 .result-stars {

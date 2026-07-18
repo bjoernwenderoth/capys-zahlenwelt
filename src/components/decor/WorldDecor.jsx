@@ -6,7 +6,7 @@ import { DECOR } from './registry.js'
 // weg (kein DOM, keine laufenden CSS-Animationen) – das ist der Lazy-Mounting-
 // Hebel: nur die sichtbare Welt + ihre Nachbarn bekommen active=true
 // (siehe Panorama.jsx/Path.jsx).
-export default function WorldDecor({ items, offsetX = 0, active = true }) {
+export default function WorldDecor({ items, offsetX = 0, active = true, pathLayer = 'above' }) {
   // items kommt aus den statischen worldDecor-Datendateien (immer dieselbe
   // Array-Referenz) – ohne useMemo würde jeder Re-Render von Panorama (z. B.
   // durch Fortschritts-Updates anderswo im Baum) hier erneut alle Sprites
@@ -14,11 +14,12 @@ export default function WorldDecor({ items, offsetX = 0, active = true }) {
   const sprites = useMemo(
     () =>
       items.map((item, i) => {
-        const { type, ...props } = item
+        const { type, pathLayer: itemPathLayer = 'above', ...props } = item
+        if (itemPathLayer !== pathLayer) return null
         const Sprite = DECOR[type]
         return Sprite ? <Sprite key={i} {...props} /> : null
       }),
-    [items]
+    [items, pathLayer]
   )
 
   if (!active) return null
