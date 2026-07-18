@@ -16,7 +16,8 @@ const PRELOAD_IMAGES = [
   'bilder/capy/happy.png',
   'bilder/capy/cheer.png',
   'bilder/capy/sad.png',
-  'bilder/capy/think.png'
+  'bilder/capy/think.png',
+  'assets/generated/royal-treasure.png'
 ]
 
 // Mindestdauer, damit der Screen bei schnellem Cache nicht als bloßes

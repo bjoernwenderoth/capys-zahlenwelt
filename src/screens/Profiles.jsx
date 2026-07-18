@@ -22,7 +22,7 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
       <div className="profiles-hero">
         <Capybara mood="happy" size={130} />
         <div className="bubble">
-          Hallo! Ich bin <strong>Capy</strong>! Wer möchte heute mit mir das 1×1 üben?
+          Hallo! Ich bin <strong>Capy</strong>! Wer hilft mir heute bei der Schatzsuche?
         </div>
       </div>
 

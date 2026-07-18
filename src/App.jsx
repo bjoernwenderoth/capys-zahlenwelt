@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Start from './screens/Start.jsx'
 import Loading from './screens/Loading.jsx'
+import Intro from './screens/Intro.jsx'
 import Profiles from './screens/Profiles.jsx'
 import Path from './screens/Path.jsx'
 import Quiz from './screens/Quiz.jsx'
@@ -8,7 +9,7 @@ import { loadData, saveData, newProfile } from './utils/storage.js'
 
 export default function App() {
   const [data, setData] = useState(loadData)
-  const [screen, setScreen] = useState('splash') // splash | loading | profiles | path | quiz
+  const [screen, setScreen] = useState('splash') // splash | loading | intro | profiles | path | quiz
   const [activeLevel, setActiveLevel] = useState(null)
   const backgroundMusicRef = useRef(null)
   // Level, das zuletzt gespielt (und bestanden) wurde – bestimmt, wie weit
@@ -45,7 +46,7 @@ export default function App() {
     const music = backgroundMusicRef.current
     if (!music) return
 
-    const shouldPlay = !data.muted && (screen === 'splash' || screen === 'path')
+    const shouldPlay = !data.muted && (screen === 'splash' || screen === 'intro' || screen === 'path')
     if (!shouldPlay) {
       music.pause()
       return
@@ -161,7 +162,16 @@ export default function App() {
   }
 
   if (screen === 'loading') {
-    return <Loading onDone={() => setScreen(profile ? 'path' : 'profiles')} />
+    return <Loading onDone={() => setScreen('intro')} />
+  }
+
+  if (screen === 'intro') {
+    return (
+      <Intro
+        accent={profile?.accent || 'blue'}
+        onContinue={() => setScreen(profile ? 'path' : 'profiles')}
+      />
+    )
   }
 
   if (screen === 'profiles') {
