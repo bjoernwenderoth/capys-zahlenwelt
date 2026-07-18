@@ -1126,9 +1126,9 @@ body {
   place-items: center;
   width: 52px;
   height: 52px;
-  color: #347fda;
-  background: #dcecff;
-  border: 1px solid #b9d3ef;
+  color: var(--path-accent);
+  background: var(--path-accent-soft);
+  border: 1px solid var(--path-accent-outline);
   border-radius: 16px;
   box-shadow: none;
   animation: locked-lock-float 3.6s ease-in-out infinite;
@@ -1157,7 +1157,7 @@ body {
 
 .locked-kicker {
   margin-bottom: 3px;
-  color: #347fda;
+  color: var(--path-accent);
   font-size: 0.73rem;
   font-weight: 800;
   letter-spacing: 0.09em;
@@ -1193,7 +1193,7 @@ body {
   place-items: center;
   width: 42px;
   height: 42px;
-  color: #367fae;
+  color: #347fda;
   font-size: 1.35rem;
   background: #dcecff;
   border: 1px solid #b9d3ef;
@@ -1232,6 +1232,9 @@ body {
 }
 
 .path-screen {
+  --path-accent: #347fda;
+  --path-accent-soft: #dcecff;
+  --path-accent-outline: #b9d3ef;
   max-width: none;
   padding: 0;
   height: 100vh;
@@ -1239,6 +1242,12 @@ body {
   overflow: hidden;
   position: relative;
   display: block;
+}
+
+.path-screen[data-accent='purple'] {
+  --path-accent: #8a58cc;
+  --path-accent-soft: #eadcff;
+  --path-accent-outline: #ceb8ec;
 }
 
 /* Kopfzeile schwebt als transparente Glas-Leiste über dem Panorama,

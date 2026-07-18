@@ -39,6 +39,10 @@ let capyLastLevelId = null
 // nächsten Kartenbesuch (z. B. nach einem abgebrochenen Extra-Level)
 // nochmal zu einem Vorwärtslaufen führt
 let capyConsumedPassId = null
+// welchem Profil die gemerkte Position oben gehört – wechselt das Profil,
+// ist die alte Position wertlos (sonst steht Capy beim Profilwechsel an der
+// Stelle des vorherigen Kindes statt am eigenen Fortschritt)
+let capyProfileId = null
 
 function Stars({ n }) {
   return (
@@ -130,9 +134,9 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
   const targetPt = PTS[targetIdx + 1]
 
   const walkPath = useMemo(() => {
-    if (!capyLastLevelId) {
-      return targetIdx === 0 ? sampleSegment(PTS, 0, 40) : null // Spielstart: hereinlaufen
-    }
+    // Keine gemerkte Vorposition (Spielstart oder Profilwechsel): Capy steht
+    // sofort ohne Laufanimation am weitesten erreichten Level.
+    if (!capyLastLevelId) return null
     const prevIdx = ORDERED_LEVELS.findIndex((lv) => lv.id === capyLastLevelId)
     if (prevIdx === -1 || prevIdx === targetIdx) return null
     return pathBetween(prevIdx, targetIdx)
@@ -235,6 +239,15 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
 
   const progress = profile.progress
 
+  // Anderes Profil als beim letzten Mal? Dann ist Capys gemerkte Position
+  // die des vorherigen Profils – verwerfen, damit die Figur sofort (ohne
+  // Laufanimation) am eigenen Fortschritt dieses Profils steht.
+  if (profile.id !== capyProfileId) {
+    capyProfileId = profile.id
+    capyLastLevelId = null
+    capyConsumedPassId = null
+  }
+
   let firstOpenWorld = WORLDS.findIndex((w) => !worldDone(w, progress))
   if (firstOpenWorld === -1) firstOpenWorld = WORLDS.length - 1
   const allDone = WORLDS.every((w) => worldDone(w, progress))
@@ -335,7 +348,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   }
 
   return (
-    <div className="screen path-screen">
+    <div className="screen path-screen" data-accent={profile.accent || 'blue'}>
       <header className="path-header">
         <div className="header-profile">
           <span className="header-avatar">
