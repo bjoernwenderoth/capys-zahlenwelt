@@ -1120,6 +1120,32 @@ body {
   clip-path: polygon(8% 100%, 8% 57%, 18% 57%, 18% 43%, 26% 43%, 26% 63%, 39% 63%, 39% 35%, 46% 35%, 50% 18%, 54% 35%, 61% 35%, 61% 63%, 74% 63%, 74% 43%, 82% 43%, 82% 57%, 92% 57%, 92% 100%);
 }
 
+/* Handgezeichnete, weltbezogene Linienmuster. Der Bogen bleibt als
+   ruhiger Vordergrund erhalten; das Muster liegt nur hauchzart dahinter. */
+.quiz-world-backdrop {
+  top: 0;
+  height: auto;
+}
+
+.quiz-world-backdrop .quiz-world-scene {
+  inset: 0;
+  opacity: 0.075;
+  background-color: transparent;
+  background-repeat: repeat;
+  background-position: center top;
+  background-size: min(920px, 125vw) auto;
+  clip-path: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.quiz-world-backdrop.world-wiese .quiz-world-scene { background-image: url('./assets/quiz-patterns/wiese.jpg'); }
+.quiz-world-backdrop.world-wald .quiz-world-scene { background-image: url('./assets/quiz-patterns/wald.jpg'); }
+.quiz-world-backdrop.world-berge .quiz-world-scene { background-image: url('./assets/quiz-patterns/berge.jpg'); }
+.quiz-world-backdrop.world-see .quiz-world-scene { background-image: url('./assets/quiz-patterns/see.jpg'); }
+.quiz-world-backdrop.world-nacht .quiz-world-scene { background-image: url('./assets/quiz-patterns/nacht.jpg'); }
+.quiz-world-backdrop.world-schloss .quiz-world-scene { background-image: url('./assets/quiz-patterns/schloss.jpg'); }
+
 .quiz-world-backdrop::before {
   content: '';
   position: absolute;
