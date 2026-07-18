@@ -415,6 +415,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
           {ORDERED_LEVELS.map((lv, gi) => {
             const wi = WORLDS.findIndex((w) => w.levels.includes(lv))
             if (!worldUnlocked(wi, progress)) return null
+            const levelNumber = WORLDS[wi].levels.indexOf(lv) + 1
             const stars = progress[lv.id] || 0
             const unlocked = gi === 0 || !!progress[ORDERED_LEVELS[gi - 1].id]
             const isCurrent = gi === currentIdx
@@ -437,12 +438,17 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                   style={{ width: 64 * scale, height: 64 * scale }}
                   disabled={!unlocked}
                   onClick={() => handleNodeClick(lv, gi)}
+                  aria-label={`${lv.title}: ${lv.subtitle}${stars ? `, ${stars} von 3 Sternen` : ''}`}
                 >
+                  <span className="node-shine" aria-hidden="true" />
                   <span className="node-icon" style={{ fontSize: `${1.25 * scale}rem` }}>
                     {!unlocked
                       ? '🔒'
                       : KIND_ICON[lv.kind] || (lv.kind === 'learn' ? `${lv.rows[0]}·` : `${lv.rows[0]}×`)}
                   </span>
+                  {unlocked && lv.kind !== 'final' && (
+                    <span className="node-level-number" aria-hidden="true">{levelNumber}</span>
+                  )}
                 </button>
                 <button
                   type="button"
@@ -451,6 +457,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                   disabled={!unlocked}
                   onClick={() => handleNodeClick(lv, gi)}
                 >
+                  {isCurrent && <span className="node-status">Als Nächstes</span>}
                   <div className="node-title">{lv.title}</div>
                   <div className="node-sub">{lv.subtitle}</div>
                   {stars > 0 && <Stars n={stars} />}

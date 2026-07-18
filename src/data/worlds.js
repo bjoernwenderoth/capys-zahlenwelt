@@ -43,7 +43,9 @@ export const WORLD_NODES = {
   // 70 Einheiten nach links geschoben und landet so bei x=860 – frei neben
   // dem Steinmann bei x=790 statt direkt darüber.
   berge: [[60, 524], [260, 500], [470, 530], [700, 445], [930, 518]],
-  see: [[170, 530], [300, 500], [480, 528], [680, 502], [900, 516]],
+  // Der erste Rohpunkt wird unten noch um 70 Einheiten nach innen gerückt.
+  // Deshalb startet er weiter links, damit er nicht mit Level 2 kollidiert.
+  see: [[100, 530], [340, 500], [500, 528], [680, 502], [900, 516]],
   nacht: [[80, 525], [300, 462], [470, 528], [680, 468], [940, 522]],
   schloss: [[140, 526], [500, 505], [860, 528]]
 }
