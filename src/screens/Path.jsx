@@ -141,7 +141,12 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
 
   const [pos, setPos] = useState(() => (walkPath ? walkPath[0] : targetPt))
   const [walking, setWalking] = useState(!!walkPath)
-  const [flip, setFlip] = useState(false)
+  const [walkPhase, setWalkPhase] = useState('start')
+  const [flip, setFlip] = useState(() => {
+    if (!walkPath) return false
+    const firstStep = walkPath.find((point) => point[0] !== walkPath[0][0])
+    return firstStep ? firstStep[0] < walkPath[0][0] : false
+  })
 
   useEffect(() => {
     if (!walkPath) {
@@ -151,21 +156,36 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
     const dur = Math.min(3200, Math.max(1200, walkPath.length * 26))
     let start = null
     let raf
+    let finishTimer
     function step(ts) {
       if (start === null) start = ts
-      let t = Math.min(1, (ts - start) / dur)
+      const elapsed = ts - start
+      const nextPhase = elapsed < 300 ? 'start' : 'loop'
+      setWalkPhase((phase) => phase === nextPhase ? phase : nextPhase)
+      let t = Math.min(1, elapsed / dur)
       t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
       const i = Math.min(walkPath.length - 1, Math.floor(t * (walkPath.length - 1)))
       setPos(walkPath[i])
-      if (i > 0) setFlip(walkPath[i][0] < walkPath[i - 1][0])
+      if (i > 0) {
+        const dx = walkPath[i][0] - walkPath[i - 1][0]
+        if (dx !== 0) setFlip(dx < 0)
+      }
       if (t < 1) raf = requestAnimationFrame(step)
       else {
-        setWalking(false)
-        onArrive?.()
+        // Erst am Ziel abbremsen. onArrive darf erst feuern, wenn der letzte
+        // Frame der Schlussanimation sichtbar abgeschlossen ist.
+        setWalkPhase('stop')
+        finishTimer = window.setTimeout(() => {
+          setWalking(false)
+          onArrive?.()
+        }, 300)
       }
     }
     raf = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(finishTimer)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -184,7 +204,7 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
       <div style={{ transform: flip ? 'scaleX(-1)' : 'none' }}>
         {walking ? (
           <span
-            className="capy-walk-sprite"
+            className={`capy-walk-sprite capy-walk-${walkPhase}`}
             style={{ '--capy-walk-size': `${150 * scale}px` }}
             role="img"
             aria-label="Capy läuft zum nächsten Level"
@@ -262,7 +282,6 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     if (currentRef.current) {
       currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
     }
-    capyLastLevelId = walkTargetLevel ? walkTargetLevel.id : null
     capyConsumedPassId = lastPlayedLevelId
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -303,8 +322,12 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
 
   function handleNodeClick(lv, gi) {
     if (pendingWalk) return // Capy ist schon unterwegs
+    const capyIdx = capyLastLevelId
+      ? ORDERED_LEVELS.findIndex((level) => level.id === capyLastLevelId)
+      : -1
+    const needsWalk = capyIdx !== -1 && capyIdx !== gi
     const isPastLevel = !!progress[lv.id] && gi !== currentIdx
-    if (isPastLevel) {
+    if (needsWalk || isPastLevel) {
       setPendingWalk({ idx: gi, level: lv })
     } else {
       onStartLevel(lv)
@@ -446,7 +469,9 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                     capyLastLevelId = pendingWalk.level.id
                     onStartLevel(pendingWalk.level)
                   }
-                : undefined
+                : () => {
+                    capyLastLevelId = walkTargetLevel ? walkTargetLevel.id : null
+                  }
             }
           />
 

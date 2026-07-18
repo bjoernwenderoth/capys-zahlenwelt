@@ -1054,19 +1054,36 @@ body {
 
 .capy-walk-sprite {
   display: block;
-  /* Das Sheet ist hochkant pro Frame. Die Laufpose wird etwas höher
-     gerendert, damit ihre sichtbare Körperhöhe der Standpose entspricht. */
-  width: calc(var(--capy-walk-size) * 0.89);
+  width: calc(var(--capy-walk-size) * 0.96);
   height: calc(var(--capy-walk-size) * 1.08);
-  background-image: url('/bilder/capy/walk-sheet.png');
   background-repeat: no-repeat;
-  background-size: 600% 100%;
   background-position: 0 0;
-  animation: capy-walk-cycle 0.66s steps(6) infinite;
 }
 
-@keyframes capy-walk-cycle {
+.capy-walk-start {
+  background-image: url('/bilder/capy/walk-start.png');
+  background-size: 300% 100%;
+  animation: capy-walk-transition 0.3s steps(2) forwards;
+}
+
+.capy-walk-loop {
+  background-image: url('/bilder/capy/walk-loop.png');
+  background-size: 600% 100%;
+  animation: capy-walk-loop 0.54s steps(6) infinite;
+}
+
+.capy-walk-stop {
+  background-image: url('/bilder/capy/walk-stop.png');
+  background-size: 300% 100%;
+  animation: capy-walk-transition 0.28s steps(2) forwards;
+}
+
+@keyframes capy-walk-loop {
   to { background-position: 120% 0; }
+}
+
+@keyframes capy-walk-transition {
+  to { background-position: 100% 0; }
 }
 
 .capy-idle-stage {
