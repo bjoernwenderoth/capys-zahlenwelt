@@ -23,7 +23,7 @@ const PRELOAD_IMAGES = [
 // Mindestdauer, damit der Screen bei schnellem Cache nicht als bloßes
 // Aufblitzen wahrgenommen wird; Maximaldauer, damit ein einzelnes langsames
 // oder fehlerhaftes Bild niemals blockiert.
-const MIN_DURATION_MS = 500
+const MIN_DURATION_MS = 900
 const MAX_DURATION_MS = 4000
 
 const TIPS = [
@@ -75,10 +75,52 @@ export default function Loading({ onDone }) {
 
   return (
     <div className="screen loading-screen">
-      <div className="loading-capy" aria-hidden="true">🦫</div>
-      <div className="loading-tip">{tip}</div>
-      <div className="loading-bar-track">
-        <div className="loading-bar-fill" style={{ width: `${pct}%` }} />
+      <div className="loading-sky" aria-hidden="true">
+        <span className="loading-cloud loading-cloud-one" />
+        <span className="loading-cloud loading-cloud-two" />
+        <span className="loading-spark loading-spark-one">✦</span>
+        <span className="loading-spark loading-spark-two">✦</span>
+        <span className="loading-spark loading-spark-three">✦</span>
+      </div>
+
+      <main className="loading-card">
+        <div className="loading-capy-wrap" aria-hidden="true">
+          <span className="loading-orbit loading-orbit-one">2</span>
+          <span className="loading-orbit loading-orbit-two">×</span>
+          <span className="loading-orbit loading-orbit-three">5</span>
+          <img className="loading-capy" src="bilder/icon/capy-kopf.png" alt="" draggable={false} />
+        </div>
+
+        <div className="loading-copy">
+          <h1>Capy macht alles bereit</h1>
+          <p>{tip}</p>
+        </div>
+
+        <div
+          className="loading-progress"
+          role="progressbar"
+          aria-label="Spiel wird geladen"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={pct}
+        >
+          <div className="loading-bar-track">
+            <div className="loading-bar-fill" style={{ width: `${pct}%` }}>
+              <span className="loading-bar-glint" />
+            </div>
+          </div>
+          <div className="loading-progress-meta">
+            <span>Auf ins Abenteuer!</span>
+            <strong>{pct}%</strong>
+          </div>
+        </div>
+      </main>
+
+      <div className="loading-landscape" aria-hidden="true">
+        <span className="loading-hill loading-hill-back" />
+        <span className="loading-hill loading-hill-front" />
+        <span className="loading-flower loading-flower-one">✿</span>
+        <span className="loading-flower loading-flower-two">✿</span>
       </div>
     </div>
   )
