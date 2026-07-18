@@ -2292,6 +2292,25 @@ body {
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
 }
 
+.capy-reaction-sprite {
+  display: inline-block;
+  flex: 0 0 auto;
+  background-image: url('/bilder/capy/proud.png');
+  background-repeat: no-repeat;
+  background-size: 1100% 100%;
+  background-position: 0 0;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.14));
+}
+
+.capy-reaction-wrong {
+  background-image: url('/bilder/capy/wrong.png');
+}
+
+.capy-reaction-proud,
+.capy-reaction-wrong {
+  animation: capy-reaction 0.72s steps(10, end) both;
+}
+
 /* Ruhig atmen, wenn nichts passiert */
 .capy-anim-normal {
   animation: capy-breathe 3.2s ease-in-out infinite;
@@ -2350,6 +2369,11 @@ body {
 @keyframes capy-sway {
   0%, 100% { transform: rotate(-2.5deg); }
   50% { transform: rotate(2.5deg) translateY(-3px); }
+}
+
+@keyframes capy-reaction {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
 }
 
 @media (max-width: 380px) {

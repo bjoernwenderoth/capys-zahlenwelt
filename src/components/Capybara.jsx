@@ -1,5 +1,5 @@
 // Capy, das Capybara-Maskottchen
-// Stimmungen: normal | happy | cheer | sad | think
+// Stimmungen: normal | start | proud | wrong | happy | cheer | sad | think
 //
 // Es werden echte Posen-Bilder aus bilder/capy/ verwendet (vom Character-Sheet).
 // Fehlen die Bilder, springt automatisch die gezeichnete SVG-Version ein.
@@ -16,6 +16,18 @@ const MOOD_IMG = {
 
 export default function Capybara({ mood = 'normal', size = 110 }) {
   const [imgFailed, setImgFailed] = useState(false)
+
+  // Start und Proud teilen sich dasselbe 3x2-Sprite-Sheet. In der
+  // Startposition bleibt der erste Frame stehen, Proud spielt alle Frames ab.
+  if (mood === 'start' || mood === 'proud' || mood === 'wrong') {
+    return (
+      <span
+        className={`capy-reaction-sprite capy-reaction-${mood}`}
+        aria-hidden="true"
+        style={{ width: size, height: size }}
+      />
+    )
+  }
 
   if (!imgFailed) {
     const name = MOOD_IMG[mood] || MOOD_IMG.normal

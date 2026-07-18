@@ -51,6 +51,8 @@ export function playFail(muted) {
 }
 
 let cachedVoice = null
+let voicesReady = false
+let voicesPromise = null
 
 // Sucht die beste verfügbare deutsche Stimme: bevorzugt hochwertige
 // Online-/Natural-Stimmen, meidet einfache "Compact"-Systemstimmen.
@@ -71,24 +73,56 @@ function pickGermanVoice() {
   return germanVoices.sort((a, b) => rank(b) - rank(a))[0]
 }
 
+function tryResolveVoices() {
+  const voice = pickGermanVoice()
+  if (voice || window.speechSynthesis.getVoices().length) {
+    cachedVoice = voice
+    voicesReady = true
+    return true
+  }
+  return false
+}
+
+// Die Stimmenliste wird von manchen Browsern erst asynchron nachgeladen.
+// Ohne Wartezeit würde die erste Sprachausgabe mit der schlechteren
+// System-Standardstimme statt der bevorzugten Stimme starten.
+function waitForVoices() {
+  if (voicesReady) return Promise.resolve()
+  if (voicesPromise) return voicesPromise
+
+  voicesPromise = new Promise((resolve) => {
+    if (tryResolveVoices()) {
+      resolve()
+      return
+    }
+    const onChange = () => {
+      if (tryResolveVoices()) {
+        window.speechSynthesis.removeEventListener('voiceschanged', onChange)
+        resolve()
+      }
+    }
+    window.speechSynthesis.addEventListener('voiceschanged', onChange)
+    setTimeout(() => {
+      tryResolveVoices()
+      window.speechSynthesis.removeEventListener('voiceschanged', onChange)
+      resolve()
+    }, 1000)
+  })
+  return voicesPromise
+}
+
 export function speak(text, muted) {
   if (muted) return
   if (!('speechSynthesis' in window)) return
   try {
     window.speechSynthesis.cancel()
-    const u = new SpeechSynthesisUtterance(text)
-    u.lang = 'de-DE'
-    u.rate = 0.9
-
-    if (!cachedVoice) cachedVoice = pickGermanVoice()
-    if (cachedVoice) u.voice = cachedVoice
-    else if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
-      window.speechSynthesis.onvoiceschanged = () => {
-        cachedVoice = pickGermanVoice()
-      }
-    }
-
-    window.speechSynthesis.speak(u)
+    waitForVoices().then(() => {
+      const u = new SpeechSynthesisUtterance(text)
+      u.lang = 'de-DE'
+      u.rate = 0.9
+      if (cachedVoice) u.voice = cachedVoice
+      window.speechSynthesis.speak(u)
+    })
   } catch {
     // Sprachausgabe nicht verfügbar
   }

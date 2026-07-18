@@ -300,7 +300,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
     setRound((r) => r + 1)
   }
 
-  const mood = feedback ? (feedback.ok ? 'happy' : 'sad') : showTip ? 'think' : 'normal'
+  const mood = feedback ? (feedback.ok ? 'proud' : 'wrong') : showTip ? 'think' : 'start'
 
   // ---------- Ergebnis ----------
   if (done) {
