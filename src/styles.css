@@ -361,6 +361,12 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12), inset 0 0 0 1.5px rgba(255, 255, 255, 0.7);
 }
 
+.header-avatar-symbol {
+  display: block;
+  line-height: 1;
+  transform: translateY(2px);
+}
+
 .header-name {
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.75), 0 1px 8px rgba(255, 255, 255, 0.4);
   letter-spacing: 0.2px;
@@ -720,7 +726,7 @@ body {
    wenn man auf der Karte nach links/rechts scrollt. */
 .world-banner-fixed {
   position: absolute;
-  top: 84px;
+  top: 100px;
   left: 24px;
   z-index: 15;
   display: flex;
@@ -729,7 +735,7 @@ body {
   gap: 2px;
   width: 156px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.58);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 22px;
@@ -799,6 +805,63 @@ body {
 .world-banner-fixed.locked .world-banner-progress-text {
   opacity: 0.6;
   font-style: italic;
+}
+
+/* Auf kleinen Displays liegt die aktuelle Welt als kompakte, waagerechte
+   Kachel mittig über der Karte. */
+@media (max-width: 600px) {
+  .world-banner-fixed {
+    top: 96px;
+    left: 50%;
+    width: min(340px, calc(100% - 32px));
+    min-height: 88px;
+    padding: 12px 16px;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 12px;
+    row-gap: 3px;
+    align-items: center;
+    text-align: left;
+    border-radius: 20px;
+  }
+
+  .world-banner-icon {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    width: 54px;
+    height: 54px;
+    margin: 0;
+  }
+
+  .world-banner-label {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .world-banner-name {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    margin: 0;
+  }
+
+  .world-banner-bar-track {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .world-banner-progress-text {
+    grid-column: 3;
+    grid-row: 3;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .world-banner-fixed.locked .world-banner-progress-text {
+    grid-column: 2 / -1;
+  }
 }
 
 /* unsichtbarer Messpunkt am Anfang jeder Welt (keine eigene Darstellung) */

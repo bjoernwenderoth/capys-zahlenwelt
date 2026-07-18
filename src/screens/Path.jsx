@@ -300,7 +300,9 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     <div className="screen path-screen">
       <header className="path-header">
         <div className="header-profile">
-          <span className="header-avatar">{profile.avatar}</span>
+          <span className="header-avatar">
+            <span className="header-avatar-symbol">{profile.avatar}</span>
+          </span>
           <span className="header-name">{profile.name}</span>
         </div>
         <div className="header-right">
