@@ -24,7 +24,7 @@ export default [
   { type: 'fern', x: 355, y: 548, s: 0.9 },
   { type: 'fern', x: 615, y: 588, s: 1.05 },
   { type: 'fern', x: 875, y: 562, s: 0.9 },
-  { type: 'log', x: 475, y: 560, s: 0.85, rot: -6 },
+  { type: 'log', x: 555, y: 510, s: 0.8, rot: -12 },
   { type: 'mushroom', x: 250, y: 560 },
   { type: 'mushroom', x: 790, y: 572, s: 0.8, cap: '#e08a3c' },
   { type: 'mushroom', x: 880, y: 558, s: 0.6, cap: '#e08a3c' },

@@ -197,35 +197,41 @@ export default function App() {
     setData((d) => ({ ...d, muted: !d.muted }))
   }
 
-  if (screen === 'quiz' && profile && activeLevel) {
+  // Path bleibt während eines Quiz-Durchlaufs im Hintergrund gemountet
+  // (unsichtbar hinter dem Quiz-Screen, siehe z-index in .path-screen) statt
+  // komplett neu aufgebaut zu werden. Vorher wurde beim Zurückkehren von
+  // JEDEM Quiz-Versuch die komplette Kartendekoration neu gemountet – das
+  // war die eigentliche Ursache für das Ruckeln beim Scrollen kurz nach der
+  // Rückkehr zur Karte, nicht nur beim erstmaligen Erreichen einer Welt.
+  if ((screen === 'path' || screen === 'quiz') && profile) {
     return (
-      <Quiz
-        key={activeLevel.id}
-        level={activeLevel}
-        accent={profile.accent || 'blue'}
-        muted={data.muted}
-        onFinish={(stars) => completeLevel(activeLevel.id, stars)}
-        onExit={() => {
-          setScreen('path')
-          setActiveLevel(null)
-        }}
-      />
-    )
-  }
-
-  if (screen === 'path' && profile) {
-    return (
-      <Path
-        profile={profile}
-        muted={data.muted}
-        lastPlayedLevelId={lastPlayedLevelId}
-        onStartLevel={(lv) => {
-          setActiveLevel(lv)
-          setScreen('quiz')
-        }}
-        onToggleMute={toggleMute}
-        onSwitchProfile={() => setScreen('profiles')}
-      />
+      <>
+        <Path
+          profile={profile}
+          muted={data.muted}
+          lastPlayedLevelId={lastPlayedLevelId}
+          onStartLevel={(lv) => {
+            setActiveLevel(lv)
+            setScreen('quiz')
+          }}
+          onToggleMute={toggleMute}
+          onSwitchProfile={() => setScreen('profiles')}
+          revealed={screen === 'path'}
+        />
+        {screen === 'quiz' && activeLevel && (
+          <Quiz
+            key={activeLevel.id}
+            level={activeLevel}
+            accent={profile.accent || 'blue'}
+            muted={data.muted}
+            onFinish={(stars) => completeLevel(activeLevel.id, stars)}
+            onExit={() => {
+              setScreen('path')
+              setActiveLevel(null)
+            }}
+          />
+        )}
+      </>
     )
   }
 

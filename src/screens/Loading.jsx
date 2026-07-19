@@ -18,7 +18,8 @@ const PRELOAD_IMAGES = [
   'bilder/capy/cheer.png',
   'bilder/capy/sad.png',
   'bilder/capy/think.png',
-  'assets/generated/royal-treasure.png'
+  'assets/generated/royal-treasure.png',
+  'assets/creativeandcode-logo.png'
 ]
 
 // Mindestdauer, damit der Screen bei schnellem Cache nicht als bloßes
@@ -55,9 +56,17 @@ export default function Loading({ onDone }) {
         })
     )
 
+    // Die Panorama-Szene hat kein "fertig geladen"-Ereignis wie ein <img> –
+    // zwei verschachtelte requestAnimationFrame-Aufrufe garantieren aber,
+    // dass der Browser einen echten Malvorgang abgeschlossen hat, bevor es
+    // weitergeht (nicht nur, dass React sie ins DOM committed hat).
+    const panoramaPainted = new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    })
+
     const timeout = new Promise((resolve) => setTimeout(resolve, MAX_DURATION_MS))
 
-    Promise.race([Promise.all(loads), timeout]).then(() => {
+    Promise.race([Promise.all([...loads, panoramaPainted]), timeout]).then(() => {
       if (cancelled) return
       const elapsed = Date.now() - start
       const rest = Math.max(0, MIN_DURATION_MS - elapsed)

@@ -245,7 +245,7 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
   )
 }
 
-export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, onToggleMute, onSwitchProfile }) {
+export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, onToggleMute, onSwitchProfile, revealed = true }) {
   const welcome = useMemo(() => WELCOME[Math.floor(Math.random() * WELCOME.length)], [])
   const currentRef = useRef(null)
   const worldsScrollRef = useRef(null)
@@ -341,13 +341,18 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     [viewWorldIdx, aheadReady]
   )
 
+  // Path bleibt jetzt über den Quiz-Besuch hinweg gemountet (siehe App.jsx) –
+  // dieser Effekt lief früher einmal pro (Neu-)Mount, muss also jetzt gezielt
+  // erneut laufen, sobald die Karte nach einem Quiz wieder sichtbar wird
+  // (revealed wechselt zu true), statt nur beim allerersten Mount.
   useEffect(() => {
+    if (!revealed) return
     if (currentRef.current) {
       currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
     }
     capyConsumedPassId = lastPlayedLevelId
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [revealed])
 
   useEffect(() => {
     const el = worldsScrollRef.current
@@ -398,7 +403,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   }
 
   return (
-    <div className="screen path-screen" data-accent={profile.accent || 'blue'}>
+    <div className="screen path-screen" data-accent={profile.accent || 'blue'} inert={!revealed ? '' : undefined}>
       <header className="path-header">
         <div className="header-profile">
           <span className="header-avatar">
@@ -539,7 +544,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
           })}
 
           <CapyWalker
-            key={pendingWalk ? `replay-${pendingWalk.level.id}` : 'home'}
+            key={pendingWalk ? `replay-${pendingWalk.level.id}` : `home-${walkTargetIdx}`}
             targetIdx={pendingWalk ? pendingWalk.idx : walkTargetIdx}
             bubbleText={pendingWalk ? null : bubbleText}
             onArrive={

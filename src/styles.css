@@ -2217,7 +2217,17 @@ body {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  position: relative;
+  /* Bleibt jetzt auch während eines Quiz gemountet (siehe App.jsx), damit
+     einmal geladene Welten für die ganze Sitzung geladen bleiben statt bei
+     jeder Rückkehr von einem Quiz neu aufgebaut zu werden. position: fixed
+     löst die Karte dafür aus dem normalen Layoutfluss. z-index bewusst NICHT
+     negativ: #root selbst erzeugt keinen eigenen Stacking-Context, ein
+     negativer Wert würde hier hinter #roots eigener (unsichtbarer) Box
+     verschwinden. z-index: 0 plus die DOM-Reihenfolge (Quiz steht in
+     App.jsx nach Path) reichen aus, damit Quiz beim Öffnen darüber liegt. */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   display: block;
 }
 
