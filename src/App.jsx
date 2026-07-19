@@ -41,6 +41,7 @@ export default function App() {
   const [screen, setScreen] = useState('splash') // splash | loading | intro | profiles | path | quiz
   const [activeLevel, setActiveLevel] = useState(null)
   const [introReading, setIntroReading] = useState(false)
+  const [pageHidden, setPageHidden] = useState(() => typeof document !== 'undefined' && document.hidden)
   const backgroundMusicRef = useRef(null)
   // Level, das zuletzt gespielt (und bestanden) wurde – bestimmt, wie weit
   // Capy auf der Karte läuft (immer nur einen Schritt weiter, auch wenn ein
@@ -72,12 +73,27 @@ export default function App() {
     }
   }, [])
 
+  // Wird der Tab/die App in den Hintergrund geschickt (z. B. iOS: nach oben
+  // wischen), soll die Musik sofort stoppen statt als Hintergrund-Player
+  // weiterzulaufen. requestAnimationFrame (das der Fade-Mechanismus nutzt)
+  // pausiert selbst im Hintergrund, ein Fade-out würde die Musik also einfach
+  // ungebremst weiterlaufen lassen – deshalb hier direkt pausieren.
+  useEffect(() => {
+    function onVisibilityChange() {
+      if (document.hidden) backgroundMusicRef.current?.pause()
+      setPageHidden(document.hidden)
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+  }, [])
+
   useEffect(() => {
     const music = backgroundMusicRef.current
     if (!music) return
 
     const shouldPlay =
       !data.muted &&
+      !pageHidden &&
       (screen === 'splash' || screen === 'intro' || screen === 'path')
 
     // Beim Levelstart (Quiz) und beim Stummschalten soll die Musik kurz
@@ -140,7 +156,7 @@ export default function App() {
       window.removeEventListener('pointerdown', onFirstInteraction)
       window.removeEventListener('keydown', onFirstInteraction)
     }
-  }, [screen, data.muted, introReading])
+  }, [screen, data.muted, introReading, pageHidden])
 
   const profile = data.profiles.find((p) => p.id === data.activeProfileId) || null
 
