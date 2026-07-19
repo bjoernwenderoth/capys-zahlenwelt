@@ -6,6 +6,7 @@ import Profiles from './screens/Profiles.jsx'
 import Path from './screens/Path.jsx'
 import Quiz from './screens/Quiz.jsx'
 import { loadData, saveData, newProfile } from './utils/storage.js'
+import { WebAudioMusicPlayer } from './utils/webAudioMusic.js'
 
 // Lautstärke der Hintergrundmusik: normal, und leiser ("geduckt"), während
 // gleichzeitig etwas vorgelesen wird, damit man die Sprachausgabe versteht.
@@ -57,18 +58,12 @@ export default function App() {
   // pause() bewahrt currentTime, sodass die Musik nach dem Quiz weiterläuft,
   // statt bei jedem Kartenbesuch wieder von vorne zu beginnen.
   useEffect(() => {
-    const music = new Audio(`${import.meta.env.BASE_URL}audio/background-music.mp3`)
-    music.loop = true
-    music.preload = 'auto'
+    const music = new WebAudioMusicPlayer(`${import.meta.env.BASE_URL}audio/background-music.mp3`)
     music.volume = BASE_MUSIC_VOLUME
     backgroundMusicRef.current = music
 
     return () => {
-      music.pause()
-      // Die Quelle lösen, damit auch ein bereits angestoßener asynchroner
-      // play()-Versuch diese alte Instanz nicht später wiederbeleben kann.
-      music.removeAttribute('src')
-      music.load()
+      music.dispose()
       if (backgroundMusicRef.current === music) backgroundMusicRef.current = null
     }
   }, [])

@@ -299,23 +299,25 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   // die beim seitlichen Scrollen nicht mitwandert)
   const [viewWorldIdx, setViewWorldIdx] = useState(walkTargetWorldIdx)
 
-  // Nur die sichtbare Welt + ihre direkten Nachbarn bekommen ihre Deko
-  // tatsächlich gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl
-  // laufender CSS-Animationen unabhängig von der Gesamtzahl der Welten klein.
+  // Nur die sichtbare Welt + ihre Nachbarn bekommen ihre Deko tatsächlich
+  // gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl laufender
+  // CSS-Animationen unabhängig von der Gesamtzahl der Welten klein.
   // useMemo verhindert eine neue Array-Identität bei jedem Path-Render (z. B.
   // durch Fortschritts-Updates), die sonst Panorama ohne echten Grund neu
   // rendern ließe.
   //
   // Die Welt VOR der sichtbaren (wo Capy ggf. herläuft) wird sofort mit
-  // gerendert – die ist während der Laufanimation sichtbar. Die Welt DANACH
-  // ist beim ersten Rendern reine Off-Screen-Vorschau fürs spätere Scrollen
-  // und wird deshalb erst kurz verzögert dazugemountet. Ohne diese
+  // gerendert – die ist während der Laufanimation sichtbar. Die Welten DANACH
+  // sind beim ersten Rendern reine Off-Screen-Vorschau fürs spätere Scrollen
+  // und werden deshalb erst kurz verzögert dazugemountet. Ohne diese
   // Verzögerung mountet React beim Öffnen der Karte (z. B. direkt nach einem
-  // neu freigeschalteten Level) die Deko von bis zu drei Welten auf einen
-  // Schlag – gleichzeitig mit dem Kamera-Scroll und Capys Lauf-Animation.
-  // Das war die Hauptursache für das Ruckeln beim Freischalten einer neuen
-  // Welt. Nach dem ersten Settle bleibt das Fenster dauerhaft ±1, damit
-  // normales Scrollen weiterhin ohne Nachlade-Verzögerung bleibt.
+  // neu freigeschalteten Level) die Deko mehrerer Welten auf einen Schlag –
+  // gleichzeitig mit dem Kamera-Scroll und Capys Lauf-Animation. Das war die
+  // Hauptursache für das Ruckeln beim Freischalten einer neuen Welt. Nach dem
+  // ersten Settle bleibt das Fenster dauerhaft ±2 (statt nur ±1) – so sind
+  // beim normalen Hin-und-Herscrollen auf dem Smartphone auch die
+  // übernächsten Welten schon geladen, statt erst beim Erreichen zu
+  // ruckeln.
   const aheadReadyRef = useRef(false)
   const [aheadReady, setAheadReady] = useState(false)
   useEffect(() => {
@@ -326,15 +328,15 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     const id = window.setTimeout(() => {
       aheadReadyRef.current = true
       setAheadReady(true)
-    }, 700)
+    }, 400)
     return () => window.clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const activeWorldWindow = useMemo(
     () => [
-      Math.max(0, viewWorldIdx - 1),
-      Math.min(WORLDS.length - 1, viewWorldIdx + (aheadReady ? 1 : 0))
+      Math.max(0, viewWorldIdx - (aheadReady ? 2 : 1)),
+      Math.min(WORLDS.length - 1, viewWorldIdx + (aheadReady ? 2 : 0))
     ],
     [viewWorldIdx, aheadReady]
   )
