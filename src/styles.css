@@ -1492,13 +1492,11 @@ body {
   will-change: transform;
 }
 
-/* Nebel über gesperrten Regionen der Karte – vorgerenderte Bilder (siehe
-   fog-capture.html) statt live berechneter Verläufe/Masken/Blur mit
-   Dauer-Animation. Das war zum einen unnötig teuer beim Scrollen, zum
-   anderen blendete die frühere, sehr sanfte Masken-Rampe über einen so
-   großen Bereich ein, dass die gesperrte Welt kurz nach der Grenze noch
-   fast unvernebelt sichtbar war. Die Bilder haben den (jetzt deutlich
-   zügigeren) Übergang fest eingebacken. */
+/* Nebel über gesperrten Regionen der Karte – vorgerenderte Bilder statt live
+   berechneter Verläufe/Masken/Blur mit Dauer-Animation. Das ist beim Scrollen
+   deutlich günstiger. Die v2-Bilder enthalten außerdem einen abgestimmten
+   Crossfade: Der erste Nebel wird früh sichtbar und blendet erst innerhalb
+   der 7%-Überlappung aus, während der dichte Nebel dort weich einblendet. */
 .fog-zone {
   position: absolute;
   top: 0;
@@ -1829,6 +1827,7 @@ body {
 .node-chip .node-title {
   font-size: 0.86rem;
   line-height: 1.05;
+  white-space: nowrap;
 }
 
 .node-chip .node-sub {

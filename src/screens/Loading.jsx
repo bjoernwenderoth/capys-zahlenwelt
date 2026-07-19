@@ -11,8 +11,8 @@ import panoramaGroundTerrain from '../assets/panorama/ground-terrain.png'
 import panoramaLake from '../assets/panorama/lake.png'
 import panoramaDecorAbove from '../assets/panorama/decor-above.png'
 import panoramaDecorForeground from '../assets/panorama/decor-foreground.png'
-import fogTeaserArt from '../assets/panorama/fog-teaser.png'
-import fogDenseArt from '../assets/panorama/fog-dense.png'
+import fogTeaserArt from '../assets/panorama/fog-teaser-v2.png'
+import fogDenseArt from '../assets/panorama/fog-dense-v2.png'
 
 // Bilder, die direkt nach dem Start gebraucht werden: Capys Lauf-/Steh-Sprites
 // (kommen zum ersten Mal auf der Karte zum Einsatz, sobald Capy loslaeuft),

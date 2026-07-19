@@ -14,8 +14,8 @@ import {
   sampleSegment,
   depthNorm
 } from '../data/worlds.js'
-import fogTeaserArt from '../assets/panorama/fog-teaser.png'
-import fogDenseArt from '../assets/panorama/fog-dense.png'
+import fogTeaserArt from '../assets/panorama/fog-teaser-v2.png'
+import fogDenseArt from '../assets/panorama/fog-dense-v2.png'
 
 const WELCOME = [
   'Schön, dass du da bist! Auf zum nächsten Level!',
@@ -637,7 +637,10 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
               einen so großen Bereich ein, dass die gesperrte Welt kurz nach
               der Grenze noch fast unvernebelt sichtbar war. Die neuen Bilder
               haben den Übergang fest eingebacken und werden direkt am
-              Weltrand (alle Welten sind exakt gleich breit) angesetzt. */}
+              Weltrand (alle Welten sind exakt gleich breit) angesetzt. Die
+              v2-Dateien nutzen in der 7%-Überlappung einen abgestimmten
+              Crossfade: Der Teaser blendet aus, während der dichte Nebel
+              über dieselbe Strecke weich einblendet. */}
           {FOG_ENABLED && (() => {
             const teaserIdx = firstOpenWorld + 1
             const denseStart = firstOpenWorld + 2
