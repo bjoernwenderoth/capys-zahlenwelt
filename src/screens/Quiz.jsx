@@ -82,8 +82,7 @@ function TFQuestion({ q, disabled, onAnswer }) {
   )
 }
 
-function InputQuestion({ q, disabled, onAnswer }) {
-  const [val, setVal] = useState('')
+function InputQuestion({ q, val, setVal, disabled, onAnswer }) {
   const expected = q.answer
   const maxLen = 3
 
@@ -114,7 +113,6 @@ function InputQuestion({ q, disabled, onAnswer }) {
 
   return (
     <div className="input-area">
-      <div className="input-display">{val || '?'}</div>
       <div className="keypad">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
           <button key={d} className="btn key" disabled={disabled} onClick={() => press(String(d))}>
@@ -188,18 +186,22 @@ function PairsQuestion({ q, disabled, onAnswer }) {
 
 // ---------- Fragetext ----------
 
-function QuestionPrompt({ q }) {
+function QuestionPrompt({ q, inputValue = '' }) {
   if (q.type === 'mc' || q.type === 'input') {
     return (
       <div className="equation">
-        {q.a} × {q.b} = <span className="gap">?</span>
+        {q.a} × {q.b} = <span className={`gap ${q.type === 'input' && inputValue ? 'is-filled' : ''}`} aria-live="polite">
+          {q.type === 'input' ? inputValue || '?' : '?'}
+        </span>
       </div>
     )
   }
   if (q.type === 'reverse') {
     return (
       <div className="equation">
-        {q.a} × <span className="gap">?</span> = {q.product}
+        {q.a} × <span className={`gap ${inputValue ? 'is-filled' : ''}`} aria-live="polite">
+          {inputValue || '?'}
+        </span> = {q.product}
       </div>
     )
   }
@@ -224,6 +226,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
   const [solved, setSolved] = useState(0)
   const [feedback, setFeedback] = useState(null) // {ok, text}
   const [showTip, setShowTip] = useState(false)
+  const [inputValue, setInputValue] = useState('')
   const [done, setDone] = useState(null) // {pass, stars, correctFirst}
   const wrongSet = useRef(new Set())
   const weiterBtnRef = useRef(null)
@@ -271,6 +274,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
     const wasOk = feedback.ok
     setFeedback(null)
     setShowTip(false)
+    setInputValue('')
     let newQueue = queue
     if (!wasOk) {
       newQueue = [...queue, qIdx] // falsche Aufgabe kommt ans Ende nochmal
@@ -296,6 +300,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
     setSolved(0)
     setFeedback(null)
     setShowTip(false)
+    setInputValue('')
     setDone(null)
     setRound((r) => r + 1)
   }
@@ -407,7 +412,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
               )}
             </div>
           </div>
-          <div className="quiz-question"><QuestionPrompt q={q} /></div>
+          <div className="quiz-question"><QuestionPrompt q={q} inputValue={inputValue} /></div>
         </section>
 
         {showTip && !feedback && (
@@ -418,7 +423,13 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
           {q.type === 'mc' && <MCQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
           {q.type === 'tf' && <TFQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
           {(q.type === 'input' || q.type === 'reverse') && (
-            <InputQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />
+            <InputQuestion
+              q={q}
+              val={inputValue}
+              setVal={setInputValue}
+              disabled={!!feedback}
+              onAnswer={handleAnswer}
+            />
           )}
           {q.type === 'pairs' && <PairsQuestion q={q} disabled={!!feedback} onAnswer={handleAnswer} />}
         </div>

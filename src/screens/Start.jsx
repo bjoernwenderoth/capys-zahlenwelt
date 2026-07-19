@@ -11,6 +11,20 @@ const GREETINGS = [
   'Capy hat schon auf dich gewartet, {name}!'
 ]
 
+function SettingsIcon() {
+  return (
+    <svg
+      className="settings-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4A2 2 0 0 0 4 9.9l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.8v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
 export default function Start({ profile, muted, onStart, onToggleMute, onSwitchProfile }) {
   const [showSettings, setShowSettings] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
@@ -56,7 +70,7 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
           aria-label="Einstellungen öffnen"
           onClick={() => setShowSettings(true)}
         >
-          ⚙️
+          <SettingsIcon />
         </button>
       </div>
 
@@ -75,7 +89,10 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
       {showSettings && (
         <div className="modal-backdrop" onClick={() => setShowSettings(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title">⚙️ Einstellungen</h2>
+            <h2 className="modal-title settings-modal-title">
+              <SettingsIcon />
+              <span>Einstellungen</span>
+            </h2>
             <button className="btn btn-secondary" onClick={onToggleMute}>
               {muted ? '🔇 Ton ist aus' : '🔊 Ton ist an'}
             </button>
