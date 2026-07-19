@@ -2217,8 +2217,30 @@ body {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  position: relative;
+  /* Bleibt jetzt auch während eines Quiz gemountet (siehe App.jsx), damit
+     einmal geladene Welten für die ganze Sitzung geladen bleiben statt bei
+     jeder Rückkehr von einem Quiz neu aufgebaut zu werden. position: fixed
+     löst die Karte dafür aus dem normalen Layoutfluss. z-index bewusst NICHT
+     negativ: #root selbst erzeugt keinen eigenen Stacking-Context, ein
+     negativer Wert würde hier hinter #roots eigener (unsichtbarer) Box
+     verschwinden. z-index: 0 plus die DOM-Reihenfolge (Quiz steht in
+     App.jsx nach Path) reichen aus, damit Quiz beim Öffnen darüber liegt. */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   display: block;
+}
+
+/* Während des Quiz ist die Karte zwar noch gemountet, aber weder sichtbar
+   noch interaktiv (inert übernimmt Fokus/Klicks) noch zeichnet der Browser
+   sie: content-visibility: hidden überspringt Layout/Malen/Hit-Testing
+   komplett, hält aber den bisherigen gerenderten Zustand im Cache, sodass
+   das Zurückschalten (revealed=true) günstig ist, statt wieder bei Null
+   anzufangen. Läuft ein Browser das (noch) nicht unterstützt, bleibt die
+   Karte einfach durch das opake Quiz-Overlay verdeckt – siehe .quiz-screen::before. */
+.path-screen.is-hidden {
+  content-visibility: hidden;
+  pointer-events: none;
 }
 
 .path-screen[data-accent='purple'] {

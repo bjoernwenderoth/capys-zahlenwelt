@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import Panorama from '../components/Panorama.jsx'
+import quizPatternWiese from '../assets/quiz-patterns/wiese.jpg'
+import quizPatternWald from '../assets/quiz-patterns/wald.jpg'
+import quizPatternBerge from '../assets/quiz-patterns/berge.jpg'
+import quizPatternSee from '../assets/quiz-patterns/see.jpg'
+import quizPatternNacht from '../assets/quiz-patterns/nacht.jpg'
+import quizPatternSchloss from '../assets/quiz-patterns/schloss.jpg'
 
 // Bilder, die direkt nach dem Start gebraucht werden: Capys Lauf-/Steh-Sprites
-// (kommen zum ersten Mal auf der Karte zum Einsatz, sobald Capy loslaeuft)
-// sowie die Quiz-Reaktionsbilder (erste Antwort im ersten Level). Werden sie
-// erst beim ersten tatsaechlichen Gebrauch angefragt, kann genau in diesem
-// Moment ein kurzer Hänger entstehen. Hier laden wir sie einmal vorab, waehrend
-// der Nutzer ohnehin auf einen (kurzen) Ladebildschirm schaut.
+// (kommen zum ersten Mal auf der Karte zum Einsatz, sobald Capy loslaeuft),
+// die Quiz-Reaktionsbilder, die Quiz-Hintergründe jeder Welt sowie die
+// Avatar-Köpfe. Werden sie erst beim ersten tatsaechlichen Gebrauch
+// angefragt, kann genau in diesem Moment ein kurzer Hänger entstehen (z. B.
+// beim allerersten Levelstart in einer Welt). Hier laden wir sie einmal
+// vorab, waehrend der Nutzer ohnehin auf einen (kurzen) Ladebildschirm
+// schaut – kein Bild soll erst "lazy" mitten im Spiel nachgeladen werden.
+//
+// Die Quiz-Hintergründe liegen unter src/assets (von Vite gebündelt und
+// gehasht) statt unter public/bilder – deshalb hier als Modul-Import statt
+// als roher Pfad, sonst würde die falsche (ungehashte) URL angefragt.
 const PRELOAD_IMAGES = [
   'bilder/capy/idle-stand.png',
   'bilder/capy/walk-start.png',
@@ -18,8 +30,21 @@ const PRELOAD_IMAGES = [
   'bilder/capy/cheer.png',
   'bilder/capy/sad.png',
   'bilder/capy/think.png',
+  'bilder/avatar/waschbaer-kopf.png',
+  'bilder/avatar/t-rex-kopf-v2.png',
   'assets/generated/royal-treasure.png',
   'assets/creativeandcode-logo.png'
+]
+
+// Bereits von Vite aufgelöste (gehashte) URLs – werden ohne BASE_URL-Präfix
+// direkt verwendet (siehe loads-Schleife unten).
+const PRELOAD_IMAGE_URLS = [
+  quizPatternWiese,
+  quizPatternWald,
+  quizPatternBerge,
+  quizPatternSee,
+  quizPatternNacht,
+  quizPatternSchloss
 ]
 
 // Mindestdauer, damit der Screen bei schnellem Cache nicht als bloßes
@@ -38,23 +63,26 @@ const TIPS = [
 export default function Loading({ onDone }) {
   const [loaded, setLoaded] = useState(0)
   const tip = useRef(TIPS[Math.floor(Math.random() * TIPS.length)]).current
-  const total = PRELOAD_IMAGES.length
+  const total = PRELOAD_IMAGES.length + PRELOAD_IMAGE_URLS.length
 
   useEffect(() => {
     let cancelled = false
     const start = Date.now()
 
-    const loads = PRELOAD_IMAGES.map(
-      (path) =>
-        new Promise((resolve) => {
-          const img = new Image()
-          img.onload = img.onerror = () => {
-            if (!cancelled) setLoaded((n) => n + 1)
-            resolve()
-          }
-          img.src = `${import.meta.env.BASE_URL}${path}`
-        })
-    )
+    const loadUrl = (src) =>
+      new Promise((resolve) => {
+        const img = new Image()
+        img.onload = img.onerror = () => {
+          if (!cancelled) setLoaded((n) => n + 1)
+          resolve()
+        }
+        img.src = src
+      })
+
+    const loads = [
+      ...PRELOAD_IMAGES.map((path) => loadUrl(`${import.meta.env.BASE_URL}${path}`)),
+      ...PRELOAD_IMAGE_URLS.map((url) => loadUrl(url))
+    ]
 
     // Die Panorama-Szene hat kein "fertig geladen"-Ereignis wie ein <img> –
     // zwei verschachtelte requestAnimationFrame-Aufrufe garantieren aber,
