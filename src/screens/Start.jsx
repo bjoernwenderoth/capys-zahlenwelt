@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import InfoModal from '../components/InfoModal.jsx'
 import { usePortrait } from '../utils/useOrientation.js'
 
 const GREETINGS = [
@@ -12,6 +13,8 @@ const GREETINGS = [
 
 export default function Start({ profile, muted, onStart, onToggleMute, onSwitchProfile }) {
   const [showSettings, setShowSettings] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
+  const infoButtonRef = useRef(null)
   const portrait = usePortrait()
 
   // Zufällige Begrüßung – bei jedem Seitenaufruf anders
@@ -35,13 +38,27 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
       />
       <div className="splash-scrim" />
 
-      <button
-        className="icon-btn splash-settings"
-        title="Einstellungen"
-        onClick={() => setShowSettings(true)}
-      >
-        ⚙️
-      </button>
+      <div className="splash-header-actions" role="group" aria-label="Weitere Optionen">
+        <button
+          ref={infoButtonRef}
+          className="icon-btn info-btn"
+          type="button"
+          title="Über dieses Spiel"
+          aria-label="Informationen über Capys Zahlenwelt öffnen"
+          onClick={() => setShowInfo(true)}
+        >
+          <span aria-hidden="true">i</span>
+        </button>
+        <button
+          className="icon-btn splash-settings"
+          type="button"
+          title="Einstellungen"
+          aria-label="Einstellungen öffnen"
+          onClick={() => setShowSettings(true)}
+        >
+          ⚙️
+        </button>
+      </div>
 
       <div className="splash-bottom">
         {greeting ? (
@@ -77,6 +94,13 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
           </div>
         </div>
       )}
+
+      <InfoModal
+        open={showInfo}
+        accent={profile?.accent || 'blue'}
+        onClose={() => setShowInfo(false)}
+        returnFocusRef={infoButtonRef}
+      />
     </div>
   )
 }
