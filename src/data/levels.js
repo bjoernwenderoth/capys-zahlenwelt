@@ -20,7 +20,7 @@ function buildLevels() {
       subtitle: 'Lernen',
       kind: 'learn',
       rows: [r],
-      types: ['mc', 'tf']
+      types: ['mc', 'input']
     })
     levels.push({
       id: `ueben-${r}`,
@@ -28,7 +28,7 @@ function buildLevels() {
       subtitle: 'Üben',
       kind: 'practice',
       rows: [r],
-      types: ['mc', 'input', 'reverse']
+      types: ['mc', 'input', 'reverse', 'tf']
     })
     if (REVIEW_AFTER.includes(r)) {
       reviewNr += 1

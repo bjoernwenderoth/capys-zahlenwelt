@@ -71,11 +71,13 @@ function makePairs(rows) {
   return { type: 'pairs', items }
 }
 
-function uniqueTasks(rows, n) {
+function uniqueTasks(rows, n, ordered = false) {
   if (rows.length === 1) {
-    // Eine Reihe: alle 10 Aufgaben der Reihe, gemischt
+    // Eine Reihe: alle 10 Aufgaben der Reihe, beim Lernen der Reihe nach
+    // (1×r, 2×r, …), beim Üben gemischt
     const r = rows[0]
-    return shuffle(Array.from({ length: 10 }, (_, i) => ({ a: r, b: i + 1 }))).slice(0, n)
+    const list = Array.from({ length: 10 }, (_, i) => ({ a: r, b: i + 1 }))
+    return (ordered ? list : shuffle(list)).slice(0, n)
   }
   const set = new Set()
   const tasks = []
@@ -100,16 +102,27 @@ export function generateQuestions(level) {
   const pairsCount = withPairs ? 1 : 0
   const normalTypes = types.filter((t) => t !== 'pairs')
 
-  const tasks = uniqueTasks(level.rows, QUESTIONS_PER_LEVEL - pairsCount)
+  // In jeder Aufgabe ist "a" die geübte Reihen-Zahl (bei einer Reihe fix,
+  // bei Wiederholung/Abschluss die für diese Aufgabe gewählte Reihe) und "b"
+  // die freie Zählzahl. Die Reihen-Zahl steht immer in der Mitte der
+  // Gleichung (1 × 5, 2 × 5, 3 × 5, …), egal in welchem Level. Lernen geht
+  // die Reihe dabei der Reihe nach durch (aufsteigend, ungemischt), alle
+  // anderen Level mischen die Aufgaben. Bei "reverse" bleibt die Reihen-Zahl
+  // als bekannter Faktor stehen, damit stets die veränderliche Zahl gesucht
+  // wird (sonst wäre die Lösung immer gleich).
+  const isLearn = level.kind === 'learn'
+
+  const tasks = uniqueTasks(level.rows, QUESTIONS_PER_LEVEL - pairsCount, isLearn)
   const questions = tasks.map(({ a, b }, i) => {
     const t = normalTypes[i % normalTypes.length]
-    if (t === 'mc') return makeMC(a, b)
-    if (t === 'input') return makeInput(a, b)
     if (t === 'reverse') return makeReverse(a, b)
-    return makeTF(a, b)
+    const [x, y] = [b, a]
+    if (t === 'mc') return makeMC(x, y)
+    if (t === 'input') return makeInput(x, y)
+    return makeTF(x, y)
   })
 
-  const result = shuffle(questions)
+  const result = isLearn ? questions : shuffle(questions)
   if (pairsCount) {
     // Paare-Aufgabe irgendwo in der Mitte einfügen
     result.splice(randInt(3, result.length - 1), 0, makePairs(level.rows))

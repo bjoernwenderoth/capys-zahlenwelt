@@ -11,7 +11,7 @@ import {
 import { playCorrect, playWrong, playWin, playFail, speak } from '../utils/audio.js'
 
 const PRAISE = ['Super! 🎉', 'Klasse gemacht!', 'Richtig! Du bist spitze!', 'Genau! Weiter so!', 'Toll! 💪']
-const COMFORT = ['Macht nichts, die kommt gleich nochmal!', 'Kopf hoch, das übst du gleich nochmal!', 'Fast! Merk dir die Lösung gut!']
+const COMFORT = ['Macht nichts, die kommt gleich nochmal!', 'Kopf hoch, das schaffst du beim nächsten mal!', 'Fast! Merk dir die Lösung gut!']
 
 const PASS_MIN = 8
 
@@ -164,7 +164,7 @@ function PairsQuestion({ q, disabled, onAnswer }) {
             disabled={disabled || matched.includes(it.c)}
             onClick={() => setSelLeft(it)}
           >
-            {it.a} × {it.b}
+            {it.b} × {it.a}
           </button>
         ))}
       </div>
@@ -199,9 +199,9 @@ function QuestionPrompt({ q, inputValue = '' }) {
   if (q.type === 'reverse') {
     return (
       <div className="equation">
-        {q.a} × <span className={`gap ${inputValue ? 'is-filled' : ''}`} aria-live="polite">
+        <span className={`gap ${inputValue ? 'is-filled' : ''}`} aria-live="polite">
           {inputValue || '?'}
-        </span> = {q.product}
+        </span> × {q.a} = {q.product}
       </div>
     )
   }
