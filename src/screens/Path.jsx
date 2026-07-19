@@ -28,7 +28,7 @@ const KIND_ICON = { review: '🔁', final: '👑' }
 // TODO: Temporär deaktiviert, während die Welten gestaltet werden.
 // Zum Reaktivieren einfach wieder auf true setzen (siehe auch
 // SHOW_ALL_WORLDS in data/worlds.js).
-const FOG_ENABLED = false
+const FOG_ENABLED = true
 
 // Weg und Punkte einmal für die gesamte Karte berechnen
 const EXIT_X = MAP_WIDTH + 2
