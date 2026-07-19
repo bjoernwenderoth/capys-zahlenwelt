@@ -11,6 +11,30 @@ import { loadData, saveData, newProfile } from './utils/storage.js'
 // gleichzeitig etwas vorgelesen wird, damit man die Sprachausgabe versteht.
 const BASE_MUSIC_VOLUME = 0.14
 const DUCKED_MUSIC_VOLUME = 0.035
+const MUSIC_FADE_MS = 600
+
+// Überblendet die Lautstärke sanft statt abrupt zu springen (z. B. beim
+// Start/Ende eines Levels). Ein Token auf dem Audio-Element sorgt dafür,
+// dass eine neu gestartete Überblendung eine noch laufende ältere abbricht,
+// ohne deren (dann veraltetes) onDone auszulösen.
+function fadeMusicVolume(music, target, onDone) {
+  const token = {}
+  music._fadeToken = token
+  const start = music.volume
+  if (start === target) {
+    onDone?.()
+    return
+  }
+  const startTime = performance.now()
+  function step(now) {
+    if (music._fadeToken !== token) return
+    const t = Math.max(0, Math.min(1, (now - startTime) / MUSIC_FADE_MS))
+    music.volume = start + (target - start) * t
+    if (t < 1) requestAnimationFrame(step)
+    else onDone?.()
+  }
+  requestAnimationFrame(step)
+}
 
 export default function App() {
   const [data, setData] = useState(loadData)
@@ -55,10 +79,29 @@ export default function App() {
     const shouldPlay =
       !data.muted &&
       (screen === 'splash' || screen === 'intro' || screen === 'path')
+
+    // Beim Levelstart (Quiz) und beim Stummschalten soll die Musik kurz
+    // ausklingen statt abrupt zu stoppen.
     if (!shouldPlay) {
-      music.pause()
+      fadeMusicVolume(music, 0, () => {
+        if (backgroundMusicRef.current === music) music.pause()
+      })
       return
     }
+
+    const targetVolume = introReading ? DUCKED_MUSIC_VOLUME : BASE_MUSIC_VOLUME
+
+    // Läuft die Musik schon (oder klingt gerade erst aus, ist also noch nicht
+    // pausiert), muss nichts neu gestartet werden – nur sanft auf die
+    // richtige Lautstärke einregeln (normal, oder geduckt während Vorlesen).
+    // Das übernimmt auch einen noch laufenden Fade-out, falls der Screen
+    // wechselt, bevor die Musik tatsächlich pausiert wurde.
+    if (!music.paused) {
+      fadeMusicVolume(music, targetVolume)
+      return
+    }
+
+    music.volume = 0
 
     // Browser dürfen Audio vor der ersten Interaktion blockieren. In diesem
     // Fall genügt der erste Klick oder Tastendruck, um dieselbe Instanz zu
@@ -68,7 +111,11 @@ export default function App() {
     function playMusic() {
       if (cancelled || backgroundMusicRef.current !== music) return
       const result = music.play()
-      if (result) result.catch(() => {})
+      if (result) result.then(fadeIn).catch(() => {})
+    }
+    function fadeIn() {
+      if (cancelled || backgroundMusicRef.current !== music) return
+      fadeMusicVolume(music, targetVolume)
     }
     function onFirstInteraction() {
       if (cancelled || !waitingForInteraction) return
@@ -77,12 +124,14 @@ export default function App() {
 
     const result = music.play()
     if (result) {
-      result.catch(() => {
+      result.then(fadeIn).catch(() => {
         if (cancelled || backgroundMusicRef.current !== music) return
         waitingForInteraction = true
         window.addEventListener('pointerdown', onFirstInteraction, { once: true })
         window.addEventListener('keydown', onFirstInteraction, { once: true })
       })
+    } else {
+      fadeIn()
     }
 
     return () => {
@@ -91,15 +140,7 @@ export default function App() {
       window.removeEventListener('pointerdown', onFirstInteraction)
       window.removeEventListener('keydown', onFirstInteraction)
     }
-  }, [screen, data.muted])
-
-  // Läuft gerade eine Vorlesen-Ausgabe, wird die Musik leiser statt pausiert,
-  // damit die Sprachausgabe gut verständlich bleibt, die Musik aber weiterläuft.
-  useEffect(() => {
-    const music = backgroundMusicRef.current
-    if (!music) return
-    music.volume = introReading ? DUCKED_MUSIC_VOLUME : BASE_MUSIC_VOLUME
-  }, [introReading])
+  }, [screen, data.muted, introReading])
 
   const profile = data.profiles.find((p) => p.id === data.activeProfileId) || null
 
