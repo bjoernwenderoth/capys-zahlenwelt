@@ -81,7 +81,7 @@ export default function InfoModal({ open, accent = 'blue', onClose, returnFocusR
 
           <div className="info-modal-content">
             <header className="info-modal-header">
-              <p className="info-modal-kicker">Über das Spiel</p>
+              <p className="info-modal-kicker">Über das Online-Spiel</p>
               <h2 className="modal-title" id={titleId}>Capys Zahlenschatz</h2>
               <p className="info-modal-lead">
               Eine kleine Lernreise für Kinder, bei der sich das Üben des kleinen Einmaleins eher wie ein Abenteuer und 
@@ -93,7 +93,7 @@ export default function InfoModal({ open, accent = 'blue', onClose, returnFocusR
               <section className="info-modal-section">
                 <h3>Ein Herzensprojekt</h3>
                 <p>
-                  Entstanden ist das Spiel mit und für meine Tochter. Nun sollen auch alle
+                  Entstanden ist das Online-Spiel mit und für meine Tochter Leni. Nun sollen auch alle
                   Kinder mit Capy spielerisch üben können – nach der Schule, in den Ferien oder
                   einfach zwischendurch.
                 </p>
