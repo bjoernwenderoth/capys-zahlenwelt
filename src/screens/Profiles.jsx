@@ -29,7 +29,7 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
       <h1 className="app-title">Capys Zahlenwelt</h1>
 
       {profiles.length > 0 && (
-        <div className="profile-list">
+        <div className={`profile-list${creating ? ' profile-list-muted' : ''}`}>
           {profiles.map((p) => (
             <div key={p.id} className={`profile-card profile-accent-${p.accent || 'blue'}`}>
               <button className="profile-main" onClick={() => onSelect(p.id)}>

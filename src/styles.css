@@ -835,6 +835,17 @@ body {
   gap: 12px;
   width: 100%;
   max-width: 340px;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.profile-list-muted {
+  opacity: 0.48;
+  filter: grayscale(0.8) saturate(0.4);
+}
+
+.profile-list-muted:focus-within {
+  opacity: 0.72;
+  filter: grayscale(0.45) saturate(0.7);
 }
 
 .profile-card {
@@ -1008,7 +1019,7 @@ body {
   }
 
   .profiles-hero .bubble {
-    max-width: 500px;
+    max-width: 400px;
     padding: 16px 20px;
     font-size: 1.15rem;
   }
@@ -1018,12 +1029,12 @@ body {
     font-size: 2.55rem;
   }
 
-  .profile-list,
-  .profile-form {
-    max-width: 720px;
+  .profile-list {
+    max-width: 420px;
   }
 
   .profile-form {
+    max-width: 720px;
     gap: 14px;
     padding: 28px 36px 30px;
     border: 2px solid rgba(255, 255, 255, 0.78);
