@@ -14,6 +14,21 @@ import {
   Glow, LakeShimmer, NightGlow
 } from './sprites.jsx'
 
+// Typen mit einer eigenen CSS-Animation (Wiegen, Flattern, Flügelschlag,
+// Funkeln, Kreisen, Glitzern, Pulsieren) – siehe die jeweilige Komponente in
+// Scenes.jsx/sprites.jsx (Klassen wie pano-sway, pano-flutter, pano-bee, …).
+// Alle anderen Typen stehen bewegungslos herum und werden deshalb NICHT mehr
+// live gerendert, sondern sind Teil der vorgerenderten Hintergrundbilder in
+// Panorama.jsx (siehe capture-entry.jsx zur Erzeugung). Ein Typ hier zu
+// vergessen bedeutet nur, dass er unnötig live bleibt (kostet etwas
+// Performance) – ihn faelschlich hier einzutragen würde ihn dagegen unsichtbar
+// machen (er würde dann weder gebacken noch live gerendert). Im Zweifel also
+// eher NICHT eintragen.
+export const ANIMATED_DECOR_TYPES = new Set([
+  'flower', 'butterfly', 'star', 'bee', 'fern',
+  'seagull', 'duneGrass', 'alpineFlower', 'eagle', 'lakeShimmer', 'nightGlow'
+])
+
 export const DECOR = {
   tree: Tree,
   pine: Pine,

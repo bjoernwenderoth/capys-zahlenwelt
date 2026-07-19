@@ -24,6 +24,8 @@ import { WORLD_DECOR, SCHLOSS_FOREGROUND } from '../data/worldDecor/index.js'
 import hillsArt from '../assets/panorama/hills.png'
 import groundTerrainArt from '../assets/panorama/ground-terrain.png'
 import lakeArt from '../assets/panorama/lake.png'
+import decorAboveArt from '../assets/panorama/decor-above.png'
+import decorForegroundArt from '../assets/panorama/decor-foreground.png'
 
 // activeWorldWindow = [ersterIndex, letzterIndex] der Welten (Reihenfolge wie
 // WORLD_DECOR/WORLDS), deren Deko tatsächlich gerendert wird. Welten
@@ -109,7 +111,11 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
         <image href={groundTerrainArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />
 
         {/* Brücken und andere begehbare Deko liegen unter dem Pfad, damit
-            dessen Markierungen auf ihrer Oberfläche sichtbar bleiben. */}
+            dessen Markierungen auf ihrer Oberfläche sichtbar bleiben. Aktuell
+            ist hier nichts animiert (nur die Brücke) – sie steckt deshalb
+            schon mit im Bild oben (siehe capture-entry.jsx). variant="dynamic"
+            bleibt trotzdem stehen, falls eine Welt hier künftig ein bewegtes
+            Element bekommt (rendert sonst nichts, kostet also nichts). */}
         {WORLD_DECOR.map((w, i) => (
           <WorldDecor
             key={`below-path-${w.id}`}
@@ -117,6 +123,7 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
             offsetX={w.offsetX}
             active={isWorldActive(i)}
             pathLayer="below"
+            variant="dynamic"
           />
         ))}
 
@@ -135,14 +142,21 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
         <image href={lakeArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />
 
         {/* Themen-Deko je Welt (Bäume, Tiere, Strand-/Bergsachen, …) – siehe
-            src/data/worldDecor/*.js. Nicht aktive Welten (weit außerhalb des
-            sichtbaren Bereichs) werden ausgelassen: kein DOM, keine
+            src/data/worldDecor/*.js. Der unbewegte Großteil (Pilze, Felsen,
+            Tiere, Strandsachen, Schlossgebäude, …) steckt als vorgerendertes
+            Bild in decorAboveArt (siehe capture-entry.jsx); live bleibt nur,
+            was sich tatsächlich bewegt (schwankende Bäume/Blumen, Schmetterlinge,
+            Bienen, Möwen, …) – variant="dynamic" filtert das entsprechend.
+            Nicht aktive Welten (weit außerhalb des sichtbaren Bereichs) werden
+            für die verbliebene Live-Deko ausgelassen: kein DOM, keine
             CSS-Animationen. Bekannter, bewusst nicht gelöster Sonderfall:
             läuft Capy quer über mehrere übersprungene Welten (Wiederholen
-            eines alten Levels), bleibt deren Deko für die Dauer der
-            Laufanimation ausgeblendet – Boden und Weg bleiben aber sichtbar. */}
+            eines alten Levels), bleibt deren Live-Deko für die Dauer der
+            Laufanimation ausgeblendet – Boden, Weg und die gebackene
+            Hintergrund-Deko bleiben aber sichtbar. */}
+        <image href={decorAboveArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />
         {WORLD_DECOR.map((w, i) => (
-          <WorldDecor key={w.id} items={w.items} offsetX={w.offsetX} active={isWorldActive(i)} />
+          <WorldDecor key={w.id} items={w.items} offsetX={w.offsetX} active={isWorldActive(i)} variant="dynamic" />
         ))}
 
         {/* Generierte, freigestellte Schatztruhe als finales Reiseziel – fest
@@ -154,7 +168,10 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
           preserveAspectRatio="xMidYMid meet"
           style={{ filter: 'saturate(0.72) contrast(0.92) brightness(0.98)' }}
         />
-        <WorldDecor items={SCHLOSS_FOREGROUND.items} offsetX={SCHLOSS_FOREGROUND.offsetX} active={isWorldActive(LAST_WORLD_IDX)} />
+        {/* Unbewegte Schloss-Kleindeko (Wappen, Laternen, Bänke, Blumenkübel)
+            ebenfalls gebacken; Sterne/Blumen bleiben live (siehe oben). */}
+        <image href={decorForegroundArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />
+        <WorldDecor items={SCHLOSS_FOREGROUND.items} offsetX={SCHLOSS_FOREGROUND.offsetX} active={isWorldActive(LAST_WORLD_IDX)} variant="dynamic" />
       </svg>
     </div>
   )

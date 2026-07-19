@@ -9,6 +9,8 @@ import quizPatternSchloss from '../assets/quiz-patterns/schloss.jpg'
 import panoramaHills from '../assets/panorama/hills.png'
 import panoramaGroundTerrain from '../assets/panorama/ground-terrain.png'
 import panoramaLake from '../assets/panorama/lake.png'
+import panoramaDecorAbove from '../assets/panorama/decor-above.png'
+import panoramaDecorForeground from '../assets/panorama/decor-foreground.png'
 
 // Bilder, die direkt nach dem Start gebraucht werden: Capys Lauf-/Steh-Sprites
 // (kommen zum ersten Mal auf der Karte zum Einsatz, sobald Capy loslaeuft),
@@ -50,7 +52,9 @@ const PRELOAD_IMAGE_URLS = [
   quizPatternSchloss,
   panoramaHills,
   panoramaGroundTerrain,
-  panoramaLake
+  panoramaLake,
+  panoramaDecorAbove,
+  panoramaDecorForeground
 ]
 
 // Mindestdauer, damit der Screen bei schnellem Cache nicht als bloßes
