@@ -132,7 +132,7 @@ function pathBetween(fromNodeIdx, toNodeIdx, perSeg = 16) {
 // Capy, der auf dem Weg steht und zum Ziel-Level läuft (vorwärts zum
 // nächsten Level, oder rückwärts, wenn ein schon geschafftes Level
 // noch einmal geübt wird). onArrive feuert, sobald Capy angekommen ist.
-function CapyWalker({ targetIdx, bubbleText, onArrive }) {
+function CapyWalker({ targetIdx, bubbleText, onArrive, onWalkingChange }) {
   const targetPt = PTS[targetIdx + 1]
 
   const walkPath = useMemo(() => {
@@ -153,6 +153,17 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
     const firstStep = walkPath.find((point) => point[0] !== walkPath[0][0])
     return firstStep ? firstStep[0] < walkPath[0][0] : false
   })
+
+  // Meldet an Path, ob gerade eine Lauf-Animation läuft – damit handleNodeClick
+  // auch das automatische Weiterlaufen nach einem Levelabschluss blockieren
+  // kann (nicht nur pendingWalk/Replay). Der Cleanup meldet "fertig", falls
+  // dieser CapyWalker aus irgendeinem Grund vorzeitig unmountet (z. B.
+  // Profilwechsel mitten in der Animation), damit die Sperre nie hängen bleibt.
+  useEffect(() => {
+    onWalkingChange?.(walking)
+    return () => onWalkingChange?.(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walking])
 
   useEffect(() => {
     const sources = [
@@ -258,6 +269,9 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   // erst sichtbar dorthin zurück, bevor das Quiz startet.
   const [pendingWalk, setPendingWalk] = useState(null)
   const [showInfo, setShowInfo] = useState(false)
+  // true, solange CapyWalker gerade läuft (egal ob automatisches
+  // Weiterlaufen nach Levelabschluss oder Replay) – siehe handleNodeClick.
+  const [capyBusy, setCapyBusy] = useState(false)
 
   const progress = profile.progress
 
@@ -422,7 +436,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     : welcome
 
   function handleNodeClick(lv, gi) {
-    if (pendingWalk) return // Capy ist schon unterwegs
+    if (pendingWalk || capyBusy) return // Capy ist schon unterwegs
     const capyIdx = capyLastLevelId
       ? ORDERED_LEVELS.findIndex((level) => level.id === capyLastLevelId)
       : -1
@@ -583,6 +597,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
           <CapyWalker
             key={pendingWalk ? `replay-${pendingWalk.level.id}` : `home-${walkTargetIdx}`}
             targetIdx={pendingWalk ? pendingWalk.idx : walkTargetIdx}
+            onWalkingChange={setCapyBusy}
             bubbleText={pendingWalk ? null : bubbleText}
             onArrive={
               pendingWalk
