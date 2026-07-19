@@ -523,7 +523,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                 <button
                   type="button"
                   className="node-chip"
-                  style={{ transform: `scale(${0.85 + 0.15 * scale})` }}
+                  style={{ transform: `translateX(-50%) scale(${0.85 + 0.15 * scale})` }}
                   disabled={!unlocked}
                   onClick={() => handleNodeClick(lv, gi)}
                 >

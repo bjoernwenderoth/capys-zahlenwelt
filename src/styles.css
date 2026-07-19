@@ -1844,7 +1844,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
   isolation: isolate;
 }
 
@@ -1949,6 +1948,9 @@ body {
 }
 
 .node-chip {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
   min-width: 112px;
   max-width: 155px;
   background: rgba(255, 255, 255, 0.94);
@@ -2286,7 +2288,7 @@ body {
 /* Am Level steht Capy einen Hauch höher, damit der Knoten unter ihr noch
    sichtbar bleibt. Die Laufposition selbst bleibt unverändert. */
 .capy-walker:not(.walking) {
-  transform: translate(-50%, -96%);
+  transform: translate(-50%, -80%);
 }
 
 /* Lauf- und Standbild bleiben gleichzeitig im DOM. Dadurch sind alle Assets
