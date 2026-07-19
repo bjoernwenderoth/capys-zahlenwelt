@@ -28,7 +28,7 @@ const KIND_ICON = { review: '🔁', final: '👑' }
 // TODO: Temporär deaktiviert, während die Welten gestaltet werden.
 // Zum Reaktivieren einfach wieder auf true setzen (siehe auch
 // SHOW_ALL_WORLDS in data/worlds.js).
-const FOG_ENABLED = true
+const FOG_ENABLED = false
 
 // Weg und Punkte einmal für die gesamte Karte berechnen
 const EXIT_X = MAP_WIDTH + 2
@@ -302,25 +302,17 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   // die beim seitlichen Scrollen nicht mitwandert)
   const [viewWorldIdx, setViewWorldIdx] = useState(walkTargetWorldIdx)
 
-  // Nur die sichtbare Welt + ihre Nachbarn bekommen ihre Deko tatsächlich
-  // gerendert (siehe Panorama.jsx) – hält DOM-Größe und Anzahl laufender
-  // CSS-Animationen unabhängig von der Gesamtzahl der Welten klein.
-  // useMemo verhindert eine neue Array-Identität bei jedem Path-Render (z. B.
-  // durch Fortschritts-Updates), die sonst Panorama ohne echten Grund neu
-  // rendern ließe.
-  //
-  // Die Welt VOR der sichtbaren (wo Capy ggf. herläuft) wird sofort mit
-  // gerendert – die ist während der Laufanimation sichtbar. Die Welten DANACH
-  // sind beim ersten Rendern reine Off-Screen-Vorschau fürs spätere Scrollen
-  // und werden deshalb erst kurz verzögert dazugemountet. Ohne diese
-  // Verzögerung mountet React beim Öffnen der Karte (z. B. direkt nach einem
-  // neu freigeschalteten Level) die Deko mehrerer Welten auf einen Schlag –
-  // gleichzeitig mit dem Kamera-Scroll und Capys Lauf-Animation. Das war die
-  // Hauptursache für das Ruckeln beim Freischalten einer neuen Welt. Nach dem
-  // ersten Settle bleibt das Fenster dauerhaft ±2 (statt nur ±1) – so sind
-  // beim normalen Hin-und-Herscrollen auf dem Smartphone auch die
-  // übernächsten Welten schon geladen, statt erst beim Erreichen zu
-  // ruckeln.
+  // Beim allerersten Rendern bekommt nur die sichtbare Welt + ihr Vorgänger
+  // (wo Capy ggf. herläuft) sofort ihre Deko gerendert – mountete React sie
+  // hier für ALLE Welten auf einen Schlag, gleichzeitig mit Kamera-Scroll und
+  // Capys Lauf-Animation, war das die Hauptursache für das Ruckeln beim
+  // Freischalten einer neuen Welt. Nach diesem kurzen Settle wird aber sofort
+  // auf ALLE Welten umgeschaltet (nicht nur ein Fenster um die sichtbare
+  // Welt): Seit Berge/Hügel/See als vorgerenderte Bilder liegen (siehe
+  // Panorama.jsx), ist die verbleibende Live-Deko pro Welt günstig genug, um
+  // sie dauerhaft geladen zu halten – vorher fehlte dieser Schritt, und beim
+  // schnellen Hin-und-Herscrollen sah man Level-Deko und Nebel sichtbar
+  // nachträglich einblenden, sobald man ihr Fenster erreichte.
   const aheadReadyRef = useRef(false)
   const [aheadReady, setAheadReady] = useState(false)
   useEffect(() => {
@@ -337,10 +329,10 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   }, [])
 
   const activeWorldWindow = useMemo(
-    () => [
-      Math.max(0, viewWorldIdx - (aheadReady ? 2 : 1)),
-      Math.min(WORLDS.length - 1, viewWorldIdx + (aheadReady ? 2 : 0))
-    ],
+    () =>
+      aheadReady
+        ? [0, WORLDS.length - 1]
+        : [Math.max(0, viewWorldIdx - 1), viewWorldIdx],
     [viewWorldIdx, aheadReady]
   )
 
