@@ -251,6 +251,9 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   const worldsScrollRef = useRef(null)
   const bannerRefs = useRef({})
   const infoButtonRef = useRef(null)
+  // Merkt sich, für welches Ziel zuletzt zur aktuellen Position gescrollt
+  // wurde – siehe scrollIntoView-Effekt unten.
+  const scrolledForTargetRef = useRef(null)
   // Wenn ein schon geschafftes Level noch einmal geübt wird, läuft Capy
   // erst sichtbar dorthin zurück, bevor das Quiz startet.
   const [pendingWalk, setPendingWalk] = useState(null)
@@ -341,47 +344,76 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     [viewWorldIdx, aheadReady]
   )
 
-  // Path bleibt jetzt über den Quiz-Besuch hinweg gemountet (siehe App.jsx) –
-  // dieser Effekt lief früher einmal pro (Neu-)Mount, muss also jetzt gezielt
-  // erneut laufen, sobald die Karte nach einem Quiz wieder sichtbar wird
-  // (revealed wechselt zu true), statt nur beim allerersten Mount.
+  // Path bleibt jetzt über den Quiz-Besuch hinweg gemountet (siehe App.jsx),
+  // muss also nicht mehr bei jeder Rückkehr vom Quiz (revealed → true) neu
+  // zur aktuellen Position scrollen – die Scrollposition ist ja unverändert
+  // stehen geblieben. Ein erneutes scrollIntoView bei jeder Rückkehr kostete
+  // im Performance-Profil genau in diesem Moment sichtbar Paint-/Raster-Zeit
+  // und wirkte wie ein kleiner Ruckler der ganzen Karte. Gescrollt wird
+  // deshalb nur noch, wenn sich das Ziel (walkTargetIdx) seit dem letzten
+  // Scroll tatsächlich geändert hat – also beim allerersten Laden und wenn
+  // Capy nach einem bestandenen Level einen Schritt weiterrückt.
   useEffect(() => {
     if (!revealed) return
-    if (currentRef.current) {
-      currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    if (scrolledForTargetRef.current !== walkTargetIdx) {
+      scrolledForTargetRef.current = walkTargetIdx
+      if (currentRef.current) {
+        currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      }
     }
     capyConsumedPassId = lastPlayedLevelId
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [revealed])
+  }, [revealed, walkTargetIdx])
 
+  // Welche Welt beim Scrollen als "aktiv" gilt, wird aus den Banner-Positionen
+  // bestimmt. Die Positionen selbst ändern sich nur bei Größenänderungen des
+  // Fensters (das Layout ist rein prozentual) – sie deshalb bei JEDEM
+  // Scroll-Frame per getBoundingClientRect() neu zu messen (wie zuvor)
+  // erzwingt an dieser Stelle bei jedem Frame ein synchrones Layout-Recalc
+  // (im Performance-Profil klar als "ForcedStyleAndLayout" sichtbar) – eine
+  // spürbare Ursache für Ruckeln beim Scrollen. Stattdessen werden die
+  // Positionen einmalig (und bei Resize) gemessen und gecacht; der
+  // Scroll-Handler selbst liest nur noch scrollLeft/clientWidth, ohne das
+  // Layout zu erzwingen.
   useEffect(() => {
     const el = worldsScrollRef.current
     if (!el) return
+    let bannerOffsets = []
+    function measure() {
+      const containerLeft = el.getBoundingClientRect().left
+      bannerOffsets = WORLDS.map((w) => {
+        const node = bannerRefs.current[w.id]
+        return node ? node.getBoundingClientRect().left - containerLeft + el.scrollLeft : 0
+      })
+    }
     let raf = null
     function update() {
       raf = null
-      el.style.setProperty('--scroll', `${el.scrollLeft}px`)
-      const containerRect = el.getBoundingClientRect()
+      const scrollLeft = el.scrollLeft
+      el.style.setProperty('--scroll', `${scrollLeft}px`)
       // eine Welt gilt schon als "aktiv", sobald ihr Anfang kurz vor der
       // Mitte des sichtbaren Bereichs steht – nicht erst, wenn sie den
       // linken Rand erreicht (das kam bisher spürbar zu spät)
-      const threshold = containerRect.width * 0.5 + 30
+      const threshold = el.clientWidth * 0.5 + 30
       let best = null
-      WORLDS.forEach((w, wi) => {
-        const node = bannerRefs.current[w.id]
-        if (!node) return
-        if (node.getBoundingClientRect().left - containerRect.left <= threshold) {
-          if (best === null || wi > best) best = wi
-        }
-      })
+      for (let wi = 0; wi < bannerOffsets.length; wi++) {
+        if (bannerOffsets[wi] - scrollLeft <= threshold) best = wi
+      }
       if (best !== null) setViewWorldIdx(best)
     }
     function onScroll() {
       if (raf === null) raf = requestAnimationFrame(update)
     }
+    measure()
     update()
     el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', measure)
+    window.addEventListener('orientationchange', measure)
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('orientationchange', measure)
+    }
   }, [])
 
   const bubbleText = allDone
