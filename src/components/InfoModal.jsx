@@ -82,7 +82,7 @@ export default function InfoModal({ open, accent = 'blue', onClose, returnFocusR
           <div className="info-modal-content">
             <header className="info-modal-header">
               <p className="info-modal-kicker">Über das Spiel</p>
-              <h2 className="modal-title" id={titleId}>Capys Zahlenwelt</h2>
+              <h2 className="modal-title" id={titleId}>Capys Zahlenschatz</h2>
               <p className="info-modal-lead">
               Eine kleine Lernreise für Kinder, bei der sich das Üben des kleinen Einmaleins eher wie ein Abenteuer und 
               weniger wie das nächste Arbeitsblatt anfühlen soll.

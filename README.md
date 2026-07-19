@@ -1,4 +1,4 @@
-# Capys Zahlenwelt 🦫
+# Capys Zahlenschatz 🦫
 
 Ein Mathespiel im Duolingo-Stil für Grundschüler (Klasse 1–4) zum Üben des kleinen Einmaleins.
 

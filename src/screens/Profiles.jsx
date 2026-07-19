@@ -26,7 +26,7 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
         </div>
       </div>
 
-      <h1 className="app-title">Capys Zahlenwelt</h1>
+      <h1 className="app-title">Capys Zahlenschatz</h1>
 
       {profiles.length > 0 && (
         <div className={`profile-list${creating ? ' profile-list-muted' : ''}`}>

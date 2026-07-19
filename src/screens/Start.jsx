@@ -45,7 +45,7 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
       <img
         className="splash-img"
         src={imgSrc}
-        alt="Capys Zahlenwelt"
+        alt="Capys Zahlenschatz"
         onError={(e) => {
           e.target.style.display = 'none'
         }}
@@ -58,7 +58,7 @@ export default function Start({ profile, muted, onStart, onToggleMute, onSwitchP
           className="icon-btn info-btn"
           type="button"
           title="Über dieses Spiel"
-          aria-label="Informationen über Capys Zahlenwelt öffnen"
+          aria-label="Informationen über Capys Zahlenschatz öffnen"
           onClick={() => setShowInfo(true)}
         >
           <span aria-hidden="true">i</span>
