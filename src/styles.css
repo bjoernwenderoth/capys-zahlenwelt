@@ -66,6 +66,14 @@ body {
   pointer-events: none;
 }
 
+.loading-panorama-prewarm {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
 .loading-card {
   width: min(100%, 390px);
   display: flex;
@@ -985,6 +993,26 @@ body {
   font-size: 2rem;
 }
 
+.animal-avatar-image {
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.animal-avatar-image-raccoon {
+  width: 1.08em;
+  height: 1.08em;
+}
+
+.animal-avatar-image-t-rex {
+  position: relative;
+  top: -0.06em;
+  width: 1em;
+  height: 1em;
+}
+
 .profile-delete {
   border: none;
   background: none;
@@ -1051,7 +1079,7 @@ body {
 }
 
 .avatar-btn {
-  font-size: 1.8rem;
+  font-size: 2rem;
   padding: 8px;
   border-radius: 14px;
   border: 3px solid transparent;
@@ -1167,7 +1195,7 @@ body {
 
   .profile-form .avatar-btn {
     min-height: 70px;
-    font-size: 2.05rem;
+    font-size: 2.2rem;
   }
 
   .profile-form .accent-option {
@@ -2252,6 +2280,7 @@ body {
   z-index: 25;
   pointer-events: none;
   filter: drop-shadow(0 6px 5px rgba(0, 0, 0, 0.25));
+  transition: transform 0.16s ease-out;
 }
 
 /* Am Level steht Capy einen Hauch höher, damit der Knoten unter ihr noch
@@ -2260,8 +2289,21 @@ body {
   transform: translate(-50%, -96%);
 }
 
+/* Lauf- und Standbild bleiben gleichzeitig im DOM. Dadurch sind alle Assets
+   vor dem Wechsel geladen und können am Ende kurz ineinander überblenden. */
+.capy-motion-stage {
+  display: block;
+  position: relative;
+  width: calc(var(--capy-walk-size) * 0.96);
+  height: calc(var(--capy-walk-size) * 1.1);
+}
+
 .capy-walk-sprite {
   display: block;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
   width: calc(var(--capy-walk-size) * 0.96);
   height: calc(var(--capy-walk-size) * 1.08);
   background-repeat: no-repeat;
@@ -2283,7 +2325,9 @@ body {
 .capy-walk-stop {
   background-image: url('/bilder/capy/walk-stop.png');
   background-size: 300% 100%;
-  animation: capy-walk-transition 0.28s steps(2) forwards;
+  animation:
+    capy-walk-transition 0.28s steps(2) forwards,
+    capy-walk-fade-out 0.3s ease-in forwards;
 }
 
 @keyframes capy-walk-loop {
@@ -2294,11 +2338,32 @@ body {
   to { background-position: 100% 0; }
 }
 
+@keyframes capy-walk-fade-out {
+  0%, 72% { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .capy-idle-stage {
   display: block;
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
   width: calc(var(--capy-idle-size) * 0.726);
   height: calc(var(--capy-idle-size) * 1.1);
+}
+
+.capy-motion-stage.walking .capy-idle-stage {
+  opacity: 0;
+}
+
+.capy-motion-stage.walking.stopping .capy-idle-stage {
+  animation: capy-idle-reveal 0.3s ease-out forwards;
+}
+
+@keyframes capy-idle-reveal {
+  0%, 72% { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .capy-idle-sprite {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import AnimalAvatar from '../components/AnimalAvatar.jsx'
 import InfoModal from '../components/InfoModal.jsx'
 import Panorama from '../components/Panorama.jsx'
 import {
@@ -154,6 +155,19 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
   })
 
   useEffect(() => {
+    const sources = [
+      '/bilder/capy/walk-start.png',
+      '/bilder/capy/walk-loop.png',
+      '/bilder/capy/walk-stop.png',
+      '/bilder/capy/idle-stand.png'
+    ]
+    sources.forEach((src) => {
+      const image = new Image()
+      image.src = src
+    })
+  }, [])
+
+  useEffect(() => {
     if (!walkPath) {
       onArrive?.()
       return
@@ -207,23 +221,25 @@ function CapyWalker({ targetIdx, bubbleText, onArrive }) {
         </div>
       )}
       <div style={{ transform: flip ? 'scaleX(-1)' : 'none' }}>
-        {walking ? (
-          <span
-            className={`capy-walk-sprite capy-walk-${walkPhase}`}
-            style={{ '--capy-walk-size': `${130 * scale}px` }}
-            role="img"
-            aria-label="Capy läuft zum nächsten Level"
-          />
-        ) : (
-          <span
-            className="capy-idle-stage"
-            style={{ '--capy-idle-size': `${130 * scale}px` }}
-            role="img"
-            aria-label="Capy wartet"
-          >
+        <span
+          className={`capy-motion-stage ${walking ? 'walking' : ''} ${walkPhase === 'stop' ? 'stopping' : ''}`}
+          style={{
+            '--capy-walk-size': `${130 * scale}px`,
+            '--capy-idle-size': `${130 * scale}px`
+          }}
+          role="img"
+          aria-label={walking ? 'Capy läuft zum nächsten Level' : 'Capy wartet'}
+        >
+          <span className="capy-idle-stage" aria-hidden="true">
             <span className="capy-idle-sprite capy-idle-stand" />
           </span>
-        )}
+          {walking && (
+            <span
+              className={`capy-walk-sprite capy-walk-${walkPhase}`}
+              aria-hidden="true"
+            />
+          )}
+        </span>
       </div>
     </div>
   )
@@ -384,7 +400,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
       <header className="path-header">
         <div className="header-profile">
           <span className="header-avatar">
-            <span className="header-avatar-symbol">{profile.avatar}</span>
+            <AnimalAvatar avatar={profile.avatar} className="header-avatar-symbol" />
           </span>
           <span className="header-name">{profile.name}</span>
         </div>

@@ -1,6 +1,20 @@
 const KEY = 'einmaleins-abenteuer-v1'
 
-export const AVATARS = ['🦊', '🐸', '🦁', '🐼', '🦄', '🐙', '🐯', '🐧', '🦖', '🐰']
+export const RACCOON_AVATAR = '🦝'
+export const T_REX_AVATAR = '🦖'
+export const AVATARS = ['🐰', '🦊', RACCOON_AVATAR, '🦁', '🐼', '🦄', '🐶', '🐱', '🐴', T_REX_AVATAR]
+export const AVATAR_LABELS = {
+  '🐰': 'Hase',
+  '🦊': 'Fuchs',
+  [RACCOON_AVATAR]: 'Waschbär',
+  '🦁': 'Löwe',
+  '🐼': 'Panda',
+  '🦄': 'Einhorn',
+  '🐶': 'Hund',
+  '🐱': 'Katze',
+  '🐴': 'Pferd',
+  [T_REX_AVATAR]: 'T-Rex'
+}
 export const PROFILE_ACCENTS = ['blue', 'purple']
 
 function defaults() {

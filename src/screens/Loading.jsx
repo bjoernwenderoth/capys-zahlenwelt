@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Panorama from '../components/Panorama.jsx'
 
 // Bilder, die direkt nach dem Start gebraucht werden: Capys Lauf-/Steh-Sprites
 // (kommen zum ersten Mal auf der Karte zum Einsatz, sobald Capy loslaeuft)
@@ -75,6 +76,14 @@ export default function Loading({ onDone }) {
 
   return (
     <div className="screen loading-screen">
+      {/* Unsichtbar mitgerendert: dieselbe Panorama-Szene, die gleich im
+          Intro-Screen erscheint. Ihr erster Aufbau (SVG-Filter, Verläufe,
+          viele Deko-Sprites) kostet spürbar Zeit – findet das hier statt,
+          während ohnehin schon der Ladebildschirm läuft, statt erst in dem
+          Moment, in dem die Introbox aufploppt. */}
+      <div className="loading-panorama-prewarm" aria-hidden="true">
+        <Panorama activeWorldWindow={[0, 0]} />
+      </div>
       <div className="loading-sky" aria-hidden="true">
         <span className="loading-cloud loading-cloud-one" />
         <span className="loading-cloud loading-cloud-two" />

@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import AnimalAvatar from '../components/AnimalAvatar.jsx'
 import Capybara from '../components/Capybara.jsx'
-import { AVATARS } from '../utils/storage.js'
+import { AVATARS, AVATAR_LABELS } from '../utils/storage.js'
 
 export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
   const [creating, setCreating] = useState(profiles.length === 0)
@@ -33,7 +34,7 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
           {profiles.map((p) => (
             <div key={p.id} className={`profile-card profile-accent-${p.accent || 'blue'}`}>
               <button className="profile-main" onClick={() => onSelect(p.id)}>
-                <span className="profile-avatar">{p.avatar}</span>
+                <AnimalAvatar avatar={p.avatar} className="profile-avatar" />
                 <span className="profile-name">{p.name}</span>
               </button>
               <button
@@ -68,9 +69,11 @@ export default function Profiles({ profiles, onSelect, onCreate, onDelete }) {
                 type="button"
                 key={a}
                 className={`avatar-btn ${a === avatar ? 'selected' : ''}`}
+                aria-label={AVATAR_LABELS[a]}
+                aria-pressed={a === avatar}
                 onClick={() => setAvatar(a)}
               >
-                {a}
+                <AnimalAvatar avatar={a} />
               </button>
             ))}
           </div>
