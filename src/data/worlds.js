@@ -36,18 +36,18 @@ export function worldUnlocked(index, progress) {
 // (siehe roadLayer), Deko darf den Weg also überlappen/verdecken – er muss
 // ihr nicht mehr geometrisch ausweichen.
 export const WORLD_NODES = {
-  wald: [[150, 470], [300, 436], [480, 505], [660, 442], [900, 478]],
-  wiese: [[150, 470], [320, 436], [480, 500], [660, 442], [900, 478]],
+  wald: [[80, 470], [300, 436], [480, 520], [660, 442], [900, 478]],
+  wiese: [[185, 470], [380, 456], [510, 500], [660, 442], [900, 478]],
   // Das vorletzte Level liegt auf der höher gelegenen, mittleren
   // Bodenebene. Der letzte Rohpunkt wird durch WORLD_TRANSITION_SPACE noch
   // 70 Einheiten nach links geschoben und landet so bei x=860 – frei neben
   // dem Steinmann bei x=790 statt direkt darüber.
-  berge: [[60, 524], [260, 500], [470, 530], [700, 445], [930, 518]],
+  berge: [[60, 478], [260, 530], [470, 500], [700, 445], [930, 476]],
   // Der erste Rohpunkt wird unten noch um 70 Einheiten nach innen gerückt.
   // Deshalb startet er weiter links, damit er nicht mit Level 2 kollidiert.
-  see: [[100, 530], [340, 500], [500, 528], [680, 502], [900, 516]],
-  nacht: [[80, 525], [300, 462], [470, 528], [680, 468], [940, 522]],
-  schloss: [[140, 526], [500, 505], [860, 528]]
+  see: [[100, 510], [320, 470], [500, 495], [680, 471], [900, 475]],
+  nacht: [[130, 478], [380, 462], [520, 510], [680, 468], [940, 477]],
+  schloss: [[140, 471], [500, 481], [860, 471]]
 }
 
 // Zusätzlicher Freiraum an den Weltgrenzen. Nur die jeweils äußeren

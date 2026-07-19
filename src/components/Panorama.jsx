@@ -33,7 +33,12 @@ import decorForegroundArt from '../assets/panorama/decor-foreground.png'
 // Weg und Levelknoten bleiben davon unberührt (siehe Path.jsx).
 const LAST_WORLD_IDX = WORLD_DECOR.length - 1
 
-export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD_IDX] } = {}) {
+export default function Panorama({
+  roadLayer,
+  activeWorldWindow = [0, LAST_WORLD_IDX],
+  treasureOpen = false,
+  treasureOpening = false
+} = {}) {
   const [activeLo, activeHi] = activeWorldWindow
   const isWorldActive = (i) => i >= activeLo && i <= activeHi
 
@@ -71,6 +76,7 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
           stroke="url(#castle-cirrus)" strokeWidth="18" fill="none" opacity="0.42" filter="url(#soft)" strokeLinecap="round" />
         <path d="M 5205 82 Q 5400 34 5580 74 M 5650 250 Q 5820 212 5995 236"
           stroke="#ffffff" strokeWidth="7" fill="none" opacity="0.18" filter="url(#soft)" strokeLinecap="round" />
+
       </svg>
 
       {/* ---------- Ebene 2: ferne Hügel & Berge (weichgezeichnet) ----------
@@ -109,6 +115,57 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
             Levelknoten, Deko-Tiere/-Pflanzen und Capy bleiben unverändert
             echtes SVG/DOM, weil sie sich bewegen oder vom Fortschritt abhängen. */}
         <image href={groundTerrainArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />
+
+        {/* Siegesfeuerwerk bleibt in der nicht verschobenen Hauptebene exakt
+            hinter und neben dem Schloss. Das Schloss selbst wird erst weiter
+            unten mit decorAboveArt darueber gerendert. */}
+        {treasureOpen && (
+          <g className="victory-fireworks is-active">
+            <ellipse className="victory-castle-glow" cx="5500" cy="265" rx="400" ry="245" fill="#ffe88a" />
+            {[
+              { x: 5095, y: 155, color: '#ff6fae', accent: '#ffe3f1', delay: '0.72s', size: 1.05 },
+              { x: 5275, y: 245, color: '#ff9f43', accent: '#fff0b3', delay: '1.05s', size: 0.9 },
+              { x: 5525, y: 105, color: '#ffd93d', accent: '#fffbd1', delay: '0.92s', size: 1.28 },
+              { x: 5745, y: 240, color: '#bd7bff', accent: '#f1ddff', delay: '1.28s', size: 0.95 },
+              { x: 5850, y: 155, color: '#65d8ff', accent: '#e1fbff', delay: '1.48s', size: 1.08 }
+            ].map(({ x, y, color, accent, delay, size }, i) => (
+              <g
+                key={`firework-${i}`}
+                style={{
+                  '--firework-color': color,
+                  '--firework-accent': accent,
+                  '--firework-delay': delay
+                }}
+                transform={`translate(${x} ${y})`}
+              >
+                <g transform={`scale(${size})`}>
+                  <g className="victory-firework">
+                    <circle className="firework-ring" r="51" fill="none" stroke={accent} strokeWidth="4" />
+                    <circle className="firework-flash" r="15" fill={accent} />
+                    <g className="firework-rays" fill="none" stroke={color} strokeWidth="7" strokeLinecap="round">
+                      <path d="M0-18V-68 M0 18V68 M-18 0H-68 M18 0H68" />
+                      <path d="M-13-13L-49-49 M13 13L49 49 M13-13L49-49 M-13 13L-49 49" />
+                    </g>
+                    <g className="firework-rays-secondary" fill="none" stroke={accent} strokeWidth="4" strokeLinecap="round">
+                      <path d="M-7-23L-20-72 M7 23L20 72 M23-7L72-20 M-23 7L-72 20" />
+                      <path d="M-21-8L-64-31 M21 8L64 31 M8-21L31-64 M-8 21L-31 64" />
+                    </g>
+                    <g className="firework-dots" fill={color}>
+                      <circle cx="0" cy="-88" r="6" />
+                      <circle cx="62" cy="-62" r="5" fill={accent} />
+                      <circle cx="88" cy="0" r="6" />
+                      <circle cx="62" cy="62" r="5" fill={accent} />
+                      <circle cx="0" cy="88" r="6" />
+                      <circle cx="-62" cy="62" r="5" fill={accent} />
+                      <circle cx="-88" cy="0" r="6" />
+                      <circle cx="-62" cy="-62" r="5" fill={accent} />
+                    </g>
+                  </g>
+                </g>
+              </g>
+            ))}
+          </g>
+        )}
 
         {/* Brücken und andere begehbare Deko liegen unter dem Pfad, damit
             dessen Markierungen auf ihrer Oberfläche sichtbar bleiben. Aktuell
@@ -159,15 +216,34 @@ export default function Panorama({ roadLayer, activeWorldWindow = [0, LAST_WORLD
           <WorldDecor key={w.id} items={w.items} offsetX={w.offsetX} active={isWorldActive(i)} variant="dynamic" />
         ))}
 
-        {/* Generierte, freigestellte Schatztruhe als finales Reiseziel – fest
-            zwischen Schloss-Hintergrund (Weg/Gebäude/Büsche) und -Kleindeko
-            verdrahtet, da sie ein einmaliges <image> mit BASE_URL ist. */}
-        <image
-          href={`${import.meta.env.BASE_URL}assets/generated/royal-treasure.png`}
-          x="5775" y="390" width="170" height="170"
-          preserveAspectRatio="xMidYMid meet"
-          style={{ filter: 'saturate(0.72) contrast(0.92) brightness(0.98)' }}
-        />
+        {/* Die Truhe bleibt bis zum bestandenen Koenigslevel geschlossen.
+            Beim ersten Wechsel zum offenen Zustand werden beide passenden
+            Sprites kurz ueberblendet; Glanz und Funken machen das Oeffnen
+            auch in der kleinen Kartenansicht deutlich sichtbar. */}
+        <g className={`royal-treasure ${treasureOpen ? 'is-open' : 'is-closed'} ${treasureOpening ? 'is-opening' : ''}`}>
+          <g className="royal-treasure-glow">
+            <ellipse cx="5860" cy="465" rx="88" ry="62" fill="#fff7a8" opacity="0.42" filter="url(#soft)" />
+            <path d="M5860 370V338 M5798 389L5775 365 M5922 389L5945 365 M5776 446H5741 M5944 446H5979"
+              fill="none" stroke="#fff7a8" strokeWidth="7" strokeLinecap="round" />
+          </g>
+          <image
+            className="royal-treasure-closed"
+            href={`${import.meta.env.BASE_URL}assets/generated/royal-treasure-closed.png`}
+            x="5775" y="376" width="170" height="170"
+            preserveAspectRatio="xMidYMid meet"
+          />
+          <image
+            className="royal-treasure-open"
+            href={`${import.meta.env.BASE_URL}assets/generated/royal-treasure.png`}
+            x="5775" y="366" width="170" height="170"
+            preserveAspectRatio="xMidYMid meet"
+          />
+          <g className="royal-treasure-sparkles" fill="#fff9b8" stroke="#e6a91c" strokeWidth="1.5">
+            <path className="treasure-spark treasure-spark-one" d="M5796 391l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" />
+            <path className="treasure-spark treasure-spark-two" d="M5925 375l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" />
+            <path className="treasure-spark treasure-spark-three" d="M5953 432l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" />
+          </g>
+        </g>
         {/* Unbewegte Schloss-Kleindeko (Wappen, Laternen, Bänke, Blumenkübel)
             ebenfalls gebacken; Sterne/Blumen bleiben live (siehe oben). */}
         <image href={decorForegroundArt} x="0" y="0" width="6000" height="600" preserveAspectRatio="none" />

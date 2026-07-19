@@ -112,7 +112,7 @@ export default function Intro({ accent = 'blue', onReadingChange, onContinue }) 
           </span>
           <img
             className="intro-treasure"
-            src={`${baseUrl}assets/generated/royal-treasure.png`}
+            src={`${baseUrl}assets/generated/royal-treasure-closed.png`}
             alt=""
             draggable={false}
           />

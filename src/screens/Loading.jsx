@@ -39,6 +39,7 @@ const PRELOAD_IMAGES = [
   'bilder/capy/think.png',
   'bilder/avatar/waschbaer-kopf.png',
   'bilder/avatar/t-rex-kopf-v2.png',
+  'assets/generated/royal-treasure-closed.png',
   'assets/generated/royal-treasure.png',
   'assets/creativeandcode-logo.png'
 ]

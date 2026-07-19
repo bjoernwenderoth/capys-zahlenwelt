@@ -1437,6 +1437,7 @@ body {
 .map-clip {
   position: relative;
   overflow: hidden;
+  contain: paint;
   flex: 0 0 auto;
   height: 100%;
 }
@@ -1457,6 +1458,193 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  contain: paint;
+}
+
+.pano-layer-ground {
+  overflow: hidden;
+}
+
+/* Schatztruhe am Ende der Reise: geschlossener Grundzustand, offener
+   Dauerzustand nach dem Koenigslevel und eine einmalige Oeffnungsfeier. */
+.royal-treasure-closed,
+.royal-treasure-open {
+  filter: saturate(0.72) contrast(0.92) brightness(0.98);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.royal-treasure-open,
+.royal-treasure-glow,
+.royal-treasure-sparkles {
+  opacity: 0;
+}
+
+.royal-treasure.is-open:not(.is-opening) .royal-treasure-closed { opacity: 0; }
+.royal-treasure.is-open:not(.is-opening) .royal-treasure-open { opacity: 1; }
+
+.royal-treasure.is-opening .royal-treasure-closed {
+  animation: treasure-closed-open 0.95s ease-in-out both;
+}
+
+.royal-treasure.is-opening .royal-treasure-open {
+  animation: treasure-open-reveal 1.15s cubic-bezier(.16, 1.35, .35, 1) 0.72s both;
+}
+
+.royal-treasure.is-opening .royal-treasure-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: treasure-glow 1.25s ease-out 0.68s both;
+}
+
+.royal-treasure.is-opening .royal-treasure-sparkles {
+  animation: treasure-sparkles-in 1.2s ease-out 0.76s both;
+}
+
+.treasure-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.royal-treasure.is-opening .treasure-spark-one { animation: treasure-spark-pop .62s ease-out .82s both; }
+.royal-treasure.is-opening .treasure-spark-two { animation: treasure-spark-pop .68s ease-out 1.02s both; }
+.royal-treasure.is-opening .treasure-spark-three { animation: treasure-spark-pop .58s ease-out 1.18s both; }
+
+@keyframes treasure-closed-open {
+  0%, 45% { opacity: 1; transform: translateY(0) rotate(0); }
+  18% { transform: translateY(-2px) rotate(-1.5deg); }
+  32% { transform: translateY(0) rotate(1.5deg); }
+  65% { opacity: 1; transform: translateY(2px) scaleY(.94); }
+  100% { opacity: 0; transform: translateY(-5px) scale(1.03, .88); }
+}
+
+@keyframes treasure-open-reveal {
+  0% { opacity: 0; transform: translateY(9px) scale(.94, .72); }
+  52% { opacity: 1; transform: translateY(-4px) scale(1.035, 1.055); }
+  75% { transform: translateY(1px) scale(.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes treasure-glow {
+  0% { opacity: 0; transform: scale(.35); }
+  38% { opacity: .95; transform: scale(1.08); }
+  100% { opacity: 0; transform: scale(1.42); }
+}
+
+@keyframes treasure-sparkles-in {
+  0%, 100% { opacity: 0; }
+  28%, 72% { opacity: 1; }
+}
+
+@keyframes treasure-spark-pop {
+  0% { transform: translateY(8px) scale(0) rotate(0); }
+  55% { transform: translateY(-4px) scale(1.35) rotate(28deg); }
+  100% { transform: translateY(-10px) scale(.7) rotate(50deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .royal-treasure.is-opening .royal-treasure-closed,
+  .royal-treasure.is-opening .royal-treasure-glow,
+  .royal-treasure.is-opening .royal-treasure-sparkles { animation: none; opacity: 0; }
+  .royal-treasure.is-opening .royal-treasure-open { animation: none; opacity: 1; transform: none; }
+}
+
+/* Feuerwerk fuer den gewonnenen Zahlenschatz. Die Gruppen liegen hinter der
+   Schlossgrafik und werden nur waehrend der Oeffnungsfeier sichtbar. */
+.victory-castle-glow {
+  opacity: 0;
+  filter: blur(26px);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.victory-fireworks.is-active .victory-castle-glow {
+  animation: victory-castle-glow 2.8s ease-out .58s both;
+}
+
+.victory-firework {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.victory-fireworks.is-active .victory-firework {
+  animation: victory-firework-burst 1.85s cubic-bezier(.12, .8, .22, 1) var(--firework-delay) infinite both;
+}
+
+.firework-flash {
+  filter: drop-shadow(0 0 16px var(--firework-color));
+}
+
+.firework-rays,
+.firework-rays-secondary,
+.firework-ring,
+.firework-dots {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.victory-fireworks.is-active .firework-rays {
+  animation: victory-firework-rays 1.85s ease-out var(--firework-delay) infinite both;
+}
+
+.victory-fireworks.is-active .firework-rays-secondary {
+  animation: victory-firework-secondary-rays 1.85s ease-out var(--firework-delay) infinite both;
+}
+
+.victory-fireworks.is-active .firework-ring {
+  animation: victory-firework-ring 1.85s ease-out var(--firework-delay) infinite both;
+}
+
+.victory-fireworks.is-active .firework-dots {
+  animation: victory-firework-dots 1.85s ease-out var(--firework-delay) infinite both;
+}
+
+@keyframes victory-castle-glow {
+  0% { opacity: 0; transform: scale(.55); }
+  28% { opacity: .45; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+@keyframes victory-firework-burst {
+  0% { opacity: 0; transform: scale(.08); }
+  10% { opacity: 1; }
+  45% { opacity: 1; transform: scale(1); }
+  72%, 100% { opacity: 0; transform: scale(1.18); }
+}
+
+@keyframes victory-firework-rays {
+  0% { opacity: 0; transform: scale(.18) rotate(-16deg); }
+  17% { opacity: 1; }
+  72%, 100% { opacity: 0; transform: scale(1.16) rotate(10deg); }
+}
+
+@keyframes victory-firework-secondary-rays {
+  0% { opacity: 0; transform: scale(.12) rotate(25deg); }
+  21% { opacity: .95; }
+  72%, 100% { opacity: 0; transform: scale(1.28) rotate(-12deg); }
+}
+
+@keyframes victory-firework-ring {
+  0% { opacity: .95; transform: scale(.05); stroke-width: 8px; }
+  72%, 100% { opacity: 0; transform: scale(1.75); stroke-width: 1px; }
+}
+
+@keyframes victory-firework-dots {
+  0% { opacity: 0; transform: scale(.2); }
+  20% { opacity: 1; }
+  52% { opacity: .9; }
+  72%, 100% { opacity: 0; transform: translateY(18px) scale(1.34); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .victory-fireworks.is-active .victory-castle-glow,
+  .victory-fireworks.is-active .victory-firework,
+  .victory-fireworks.is-active .firework-rays,
+  .victory-fireworks.is-active .firework-rays-secondary,
+  .victory-fireworks.is-active .firework-ring,
+  .victory-fireworks.is-active .firework-dots { animation: none; opacity: 0; }
 }
 
 /* Fünf Tiefenebenen im Panorama, jede füllt die Karte komplett aus.
@@ -1835,6 +2023,10 @@ body {
   margin-top: 2px;
 }
 
+.node-chip-royal .node-sub {
+  white-space: nowrap;
+}
+
 .node-chip .stars {
   display: block;
   height: 13px;
@@ -2148,6 +2340,15 @@ body {
   font-size: 0.92rem;
   animation: pop 0.3s ease;
   pointer-events: none;
+}
+
+.capy-bubble .victory-crown {
+  display: block;
+  margin: 7px auto -2px;
+  font-size: 2.6rem;
+  line-height: 1;
+  text-align: center;
+  filter: drop-shadow(0 3px 2px rgba(168, 104, 0, 0.22));
 }
 
 /* Capy, der auf dem Weg von Level zu Level läuft */

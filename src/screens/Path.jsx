@@ -32,6 +32,10 @@ const KIND_ICON = { review: '🔁', final: '👑' }
 // SHOW_ALL_WORLDS in data/worlds.js).
 const FOG_ENABLED = true
 
+// TEMPORAERE DESIGN-VORSCHAU. Fuer das echte Spiel bleibt sie aus: Truhe und
+// Feuerwerk werden dauerhaft ueber den gespeicherten Sieg in final-3 aktiviert.
+const TREASURE_DESIGN_PREVIEW = false
+
 // Weg und Punkte einmal für die gesamte Karte berechnen
 const EXIT_X = MAP_WIDTH + 2
 const PTS = extendedPoints(GLOBAL_NODES, EXIT_X)
@@ -276,6 +280,28 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
   const [capyBusy, setCapyBusy] = useState(false)
 
   const progress = profile.progress
+  const treasureOpen = TREASURE_DESIGN_PREVIEW || !!progress['final-3']
+  const treasureWasOpenRef = useRef(TREASURE_DESIGN_PREVIEW ? false : treasureOpen)
+  const [treasureOpening, setTreasureOpening] = useState(TREASURE_DESIGN_PREVIEW)
+
+  // Nur der echte Zustandswechsel "geschlossen -> offen" loest die
+  // Animation aus. Bei einem bereits fertigen Profil ist die Truhe beim
+  // Betreten der Karte direkt offen, ohne die Feier erneut abzuspielen.
+  useEffect(() => {
+    if (TREASURE_DESIGN_PREVIEW) {
+      setTreasureOpening(true)
+      const previewTimer = window.setTimeout(() => setTreasureOpening(false), 2200)
+      return () => window.clearTimeout(previewTimer)
+    }
+
+    let timer
+    if (treasureOpen && !treasureWasOpenRef.current) {
+      setTreasureOpening(true)
+      timer = window.setTimeout(() => setTreasureOpening(false), 2200)
+    }
+    treasureWasOpenRef.current = treasureOpen
+    return () => window.clearTimeout(timer)
+  }, [treasureOpen])
 
   // Anderes Profil als beim letzten Mal? Dann ist Capys gemerkte Position
   // die des vorherigen Profils – verwerfen, damit die Figur sofort (ohne
@@ -305,12 +331,15 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
       ? ORDERED_LEVELS.findIndex((lv) => lv.id === lastPlayedLevelId)
       : -1
   const anchorIdx = capyLastLevelId ? ORDERED_LEVELS.findIndex((lv) => lv.id === capyLastLevelId) : -1
-  const walkTargetIdx =
+  const progressWalkTargetIdx =
     freshlyPassedIdx !== -1
       ? Math.min(freshlyPassedIdx + 1, ORDERED_LEVELS.length - 1)
       : anchorIdx !== -1
         ? anchorIdx
         : currentIdx
+  const walkTargetIdx = TREASURE_DESIGN_PREVIEW
+    ? ORDERED_LEVELS.length - 1
+    : progressWalkTargetIdx
   const walkTargetLevel = ORDERED_LEVELS[walkTargetIdx]
   const walkTargetWorldIdx = Math.max(0, WORLDS.findIndex((w) => walkTargetLevel && w.levels.includes(walkTargetLevel)))
 
@@ -365,8 +394,26 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     if (!revealed) return
     if (scrolledForTargetRef.current !== walkTargetIdx) {
       scrolledForTargetRef.current = walkTargetIdx
-      if (currentRef.current) {
-        currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      const viewport = worldsScrollRef.current
+      const target = currentRef.current
+      if (viewport && target) {
+        // scrollIntoView darf am letzten Kartenpunkt je nach Browser auch
+        // ueber den eigentlichen horizontalen Scrollbereich hinausziehen
+        // (besonders waehrend sich animierte Deko am Rand veraendert). Den
+        // Zielwert deshalb selbst berechnen und hart auf die echte Breite
+        // des Karten-Scrollcontainers begrenzen.
+        const viewportRect = viewport.getBoundingClientRect()
+        const targetRect = target.getBoundingClientRect()
+        const desiredLeft =
+          viewport.scrollLeft +
+          targetRect.left -
+          viewportRect.left -
+          (viewport.clientWidth - targetRect.width) / 2
+        const maxLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth)
+        viewport.scrollTo({
+          left: Math.max(0, Math.min(desiredLeft, maxLeft)),
+          behavior: 'smooth'
+        })
       }
     }
     // capyConsumedPassId wird bewusst NICHT hier gesetzt (siehe CapyWalker
@@ -433,8 +480,13 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
     }
   }, [])
 
-  const bubbleText = allDone
-    ? 'WOW! Du hast ALLE Welten geschafft! Du bist die Königin/der König der Zahlenwelt! 👑'
+  const bubbleText = allDone || TREASURE_DESIGN_PREVIEW
+    ? (
+        <>
+          <span>Wir haben es geschafft, {profile.name}! Nur mit deiner Hilfe habe ich den Schatz gefunden. Danke, du bist ein echter Zahlenprofi!</span>
+          <span className="victory-crown" aria-hidden="true">👑</span>
+        </>
+      )
     : welcome
 
   function handleNodeClick(lv, gi) {
@@ -528,7 +580,12 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
               und Deko), damit Bäume & Co. realistisch VOR dem Weg stehen statt
               dass der Weg über Baumkronen gemalt wird. Der braune Belag ist
               bewusst weg – nur die Punkte markieren den Streckenverlauf. */}
-          <Panorama roadLayer={<SegmentDots progress={progress} />} activeWorldWindow={activeWorldWindow} />
+          <Panorama
+            roadLayer={<SegmentDots progress={progress} />}
+            activeWorldWindow={activeWorldWindow}
+            treasureOpen={treasureOpen}
+            treasureOpening={treasureOpening}
+          />
 
           {/* unsichtbare Marker an der Startposition jeder Welt – dienen
               nur dazu, beim Scrollen zu erkennen, welche Welt gerade sichtbar ist */}
@@ -582,7 +639,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                 </button>
                 <button
                   type="button"
-                  className="node-chip"
+                  className={`node-chip ${lv.id === 'final-3' ? 'node-chip-royal' : ''}`}
                   style={{ transform: `translateX(-50%) scale(${0.85 + 0.15 * scale})` }}
                   disabled={!unlocked}
                   onClick={() => handleNodeClick(lv, gi)}
