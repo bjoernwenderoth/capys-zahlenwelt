@@ -53,6 +53,7 @@ export function playFail(muted) {
 let cachedVoice = null
 let voicesReady = false
 let voicesPromise = null
+let speechRequestId = 0
 
 // Sucht die beste verfügbare deutsche Stimme: bevorzugt hochwertige
 // Online-/Natural-Stimmen, meidet einfache "Compact"-Systemstimmen.
@@ -111,19 +112,109 @@ function waitForVoices() {
   return voicesPromise
 }
 
-export function speak(text, muted) {
-  if (muted) return
+export function cancelSpeech() {
+  speechRequestId += 1
   if (!('speechSynthesis' in window)) return
   try {
     window.speechSynthesis.cancel()
-    waitForVoices().then(() => {
-      const u = new SpeechSynthesisUtterance(text)
-      u.lang = 'de-DE'
-      u.rate = 0.9
-      if (cachedVoice) u.voice = cachedVoice
-      window.speechSynthesis.speak(u)
-    })
   } catch {
     // Sprachausgabe nicht verfügbar
   }
+}
+
+// Die Request-ID verhindert, dass eine während des asynchronen Stimmen-Ladens
+// gestoppte Ausgabe bis zu eine Sekunde später doch noch startet. Mehrere
+// Abschnitte werden nacheinander mit derselben Stimme gesprochen; das klingt
+// bei längeren Geschichten natürlicher als ein einziger großer Textblock.
+function startSpeech(parts, muted, {
+  onStart,
+  onEnd,
+  onError,
+  rate = 0.9,
+  pitch = 1,
+  pauseMs = 0
+} = {}) {
+  if (muted) return false
+  if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return false
+
+  const chunks = (Array.isArray(parts) ? parts : [parts])
+    .map((part) => String(part || '').trim())
+    .filter(Boolean)
+  if (!chunks.length) return false
+
+  const requestId = ++speechRequestId
+
+  try {
+    window.speechSynthesis.cancel()
+    waitForVoices()
+      .then(() => {
+        if (requestId !== speechRequestId) return
+
+        let chunkIndex = 0
+
+        function fail(event) {
+          if (requestId !== speechRequestId) return
+          speechRequestId += 1
+          onError?.(event)
+        }
+
+        function speakNext() {
+          if (requestId !== speechRequestId) return
+
+          try {
+            const u = new SpeechSynthesisUtterance(chunks[chunkIndex])
+            u.lang = 'de-DE'
+            u.rate = rate
+            u.pitch = pitch
+            if (cachedVoice) u.voice = cachedVoice
+
+            u.onstart = () => {
+              if (requestId === speechRequestId && chunkIndex === 0) onStart?.()
+            }
+            u.onend = () => {
+              if (requestId !== speechRequestId) return
+
+              if (chunkIndex >= chunks.length - 1) {
+                speechRequestId += 1
+                onEnd?.()
+                return
+              }
+
+              chunkIndex += 1
+              if (pauseMs > 0) window.setTimeout(speakNext, pauseMs)
+              else speakNext()
+            }
+            u.onerror = (event) => {
+              fail(event)
+            }
+
+            window.speechSynthesis.speak(u)
+          } catch (error) {
+            fail(error)
+          }
+        }
+
+        speakNext()
+      })
+      .catch((error) => {
+        if (requestId !== speechRequestId) return
+        speechRequestId += 1
+        onError?.(error)
+      })
+    return true
+  } catch (error) {
+    if (requestId === speechRequestId) speechRequestId += 1
+    onError?.(error)
+    return false
+  }
+}
+
+// options ist optional, damit bestehende Aufrufe (z. B. im Quiz) unverändert
+// dieselbe Stimme und dasselbe Tempo verwenden.
+export function speak(text, muted, options = {}) {
+  return startSpeech([text], muted, options)
+}
+
+export function speakSequence(parts, muted, options = {}) {
+  return startSpeech(parts, muted, options)
 }

@@ -11,6 +11,7 @@ export default function App() {
   const [data, setData] = useState(loadData)
   const [screen, setScreen] = useState('splash') // splash | loading | intro | profiles | path | quiz
   const [activeLevel, setActiveLevel] = useState(null)
+  const [introReading, setIntroReading] = useState(false)
   const backgroundMusicRef = useRef(null)
   // Level, das zuletzt gespielt (und bestanden) wurde – bestimmt, wie weit
   // Capy auf der Karte läuft (immer nur einen Schritt weiter, auch wenn ein
@@ -46,7 +47,10 @@ export default function App() {
     const music = backgroundMusicRef.current
     if (!music) return
 
-    const shouldPlay = !data.muted && (screen === 'splash' || screen === 'intro' || screen === 'path')
+    const shouldPlay =
+      !data.muted &&
+      (screen === 'splash' || screen === 'intro' || screen === 'path') &&
+      !(screen === 'intro' && introReading)
     if (!shouldPlay) {
       music.pause()
       return
@@ -83,7 +87,7 @@ export default function App() {
       window.removeEventListener('pointerdown', onFirstInteraction)
       window.removeEventListener('keydown', onFirstInteraction)
     }
-  }, [screen, data.muted])
+  }, [screen, data.muted, introReading])
 
   const profile = data.profiles.find((p) => p.id === data.activeProfileId) || null
 
@@ -169,7 +173,11 @@ export default function App() {
     return (
       <Intro
         accent={profile?.accent || 'blue'}
-        onContinue={() => setScreen(profile ? 'path' : 'profiles')}
+        onReadingChange={setIntroReading}
+        onContinue={() => {
+          setIntroReading(false)
+          setScreen(profile ? 'path' : 'profiles')
+        }}
       />
     )
   }
