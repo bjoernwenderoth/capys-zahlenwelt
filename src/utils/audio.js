@@ -126,7 +126,7 @@ export function cancelSpeech() {
 // gestoppte Ausgabe bis zu eine Sekunde später doch noch startet. Mehrere
 // Abschnitte werden nacheinander mit derselben Stimme gesprochen; das klingt
 // bei längeren Geschichten natürlicher als ein einziger großer Textblock.
-function startSpeech(parts, muted, {
+function startSpeech(parts, {
   onStart,
   onEnd,
   onError,
@@ -134,7 +134,6 @@ function startSpeech(parts, muted, {
   pitch = 1,
   pauseMs = 0
 } = {}) {
-  if (muted) return false
   if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return false
 
   const chunks = (Array.isArray(parts) ? parts : [parts])
@@ -209,12 +208,12 @@ function startSpeech(parts, muted, {
   }
 }
 
-// options ist optional, damit bestehende Aufrufe (z. B. im Quiz) unverändert
-// dieselbe Stimme und dasselbe Tempo verwenden.
-export function speak(text, muted, options = {}) {
-  return startSpeech([text], muted, options)
+// Vorlesen ist bewusst unabhängig vom Stumm-Schalter für Musik/Soundeffekte:
+// wird der Vorlesen-Button gedrückt, soll immer gesprochen werden.
+export function speak(text, options = {}) {
+  return startSpeech([text], options)
 }
 
-export function speakSequence(parts, muted, options = {}) {
-  return startSpeech(parts, muted, options)
+export function speakSequence(parts, options = {}) {
+  return startSpeech(parts, options)
 }

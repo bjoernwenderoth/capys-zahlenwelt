@@ -53,7 +53,7 @@ export default function Intro({ accent = 'blue', onReadingChange, onContinue }) 
       return
     }
 
-    const started = speakSequence(INTRO_NARRATION_PARTS, false, {
+    const started = speakSequence(INTRO_NARRATION_PARTS, {
       rate: 0.88,
       pauseMs: 140,
       onEnd: () => updateReading(false),

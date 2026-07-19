@@ -7,6 +7,11 @@ import Path from './screens/Path.jsx'
 import Quiz from './screens/Quiz.jsx'
 import { loadData, saveData, newProfile } from './utils/storage.js'
 
+// Lautstärke der Hintergrundmusik: normal, und leiser ("geduckt"), während
+// gleichzeitig etwas vorgelesen wird, damit man die Sprachausgabe versteht.
+const BASE_MUSIC_VOLUME = 0.14
+const DUCKED_MUSIC_VOLUME = 0.035
+
 export default function App() {
   const [data, setData] = useState(loadData)
   const [screen, setScreen] = useState('splash') // splash | loading | intro | profiles | path | quiz
@@ -30,7 +35,7 @@ export default function App() {
     const music = new Audio(`${import.meta.env.BASE_URL}audio/background-music.mp3`)
     music.loop = true
     music.preload = 'auto'
-    music.volume = 0.28
+    music.volume = BASE_MUSIC_VOLUME
     backgroundMusicRef.current = music
 
     return () => {
@@ -49,8 +54,7 @@ export default function App() {
 
     const shouldPlay =
       !data.muted &&
-      (screen === 'splash' || screen === 'intro' || screen === 'path') &&
-      !(screen === 'intro' && introReading)
+      (screen === 'splash' || screen === 'intro' || screen === 'path')
     if (!shouldPlay) {
       music.pause()
       return
@@ -87,7 +91,15 @@ export default function App() {
       window.removeEventListener('pointerdown', onFirstInteraction)
       window.removeEventListener('keydown', onFirstInteraction)
     }
-  }, [screen, data.muted, introReading])
+  }, [screen, data.muted])
+
+  // Läuft gerade eine Vorlesen-Ausgabe, wird die Musik leiser statt pausiert,
+  // damit die Sprachausgabe gut verständlich bleibt, die Musik aber weiterläuft.
+  useEffect(() => {
+    const music = backgroundMusicRef.current
+    if (!music) return
+    music.volume = introReading ? DUCKED_MUSIC_VOLUME : BASE_MUSIC_VOLUME
+  }, [introReading])
 
   const profile = data.profiles.find((p) => p.id === data.activeProfileId) || null
 

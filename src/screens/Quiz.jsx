@@ -396,7 +396,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
               </span>
             </div>
             <div className="question-actions">
-              <button className="icon-btn speak-btn" title="Aufgabe vorlesen" aria-label="Aufgabe vorlesen" onClick={() => speak(questionText(q), muted)}>
+              <button className="icon-btn speak-btn" title="Aufgabe vorlesen" aria-label="Aufgabe vorlesen" onClick={() => speak(questionText(q))}>
                 🔊
               </button>
               {!feedback && (
