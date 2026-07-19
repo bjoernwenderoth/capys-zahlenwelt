@@ -580,6 +580,14 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                 ? () => {
                     capyLastLevelId = pendingWalk.level.id
                     onStartLevel(pendingWalk.level)
+                    // Path bleibt jetzt während des Quiz gemountet (siehe
+                    // App.jsx) statt neu aufgebaut zu werden – das setzte
+                    // pendingWalk früher automatisch zurück. Ohne dieses
+                    // explizite Zurücksetzen bliebe pendingWalk beim
+                    // Verlassen eines unvollständigen Quiz stehen und
+                    // handleNodeClick würde JEDEN weiteren Klick blockieren
+                    // ("if (pendingWalk) return").
+                    setPendingWalk(null)
                   }
                 : () => {
                     capyLastLevelId = walkTargetLevel ? walkTargetLevel.id : null
