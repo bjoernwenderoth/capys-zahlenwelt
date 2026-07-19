@@ -14,6 +14,8 @@ import {
   sampleSegment,
   depthNorm
 } from '../data/worlds.js'
+import fogTeaserArt from '../assets/panorama/fog-teaser.png'
+import fogDenseArt from '../assets/panorama/fog-dense.png'
 
 const WELCOME = [
   'Schön, dass du da bist! Auf zum nächsten Level!',
@@ -626,9 +628,16 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
             }
           />
 
-          {/* Nebel über noch nicht erreichten Regionen:
-              ein Teaser-Nebel über der nächsten Welt und EIN durchgehender
-              dichter Nebel über allem danach (keine Kanten zwischen Zonen) */}
+          {/* Nebel über noch nicht erreichten Regionen: ein Teaser-Nebel über
+              der nächsten Welt und EIN durchgehender dichter Nebel über allem
+              danach. Beide sind vorgerenderte Bilder (siehe fog-capture.html
+              zur Erzeugung) statt live berechneter Verläufe/Masken/Blur mit
+              Dauer-Animation – das war zum einen unnötig teuer beim Scrollen,
+              zum anderen blendete die alte, sehr sanfte Masken-Rampe über
+              einen so großen Bereich ein, dass die gesperrte Welt kurz nach
+              der Grenze noch fast unvernebelt sichtbar war. Die neuen Bilder
+              haben den Übergang fest eingebacken und werden direkt am
+              Weltrand (alle Welten sind exakt gleich breit) angesetzt. */}
           {FOG_ENABLED && (() => {
             const teaserIdx = firstOpenWorld + 1
             const denseStart = firstOpenWorld + 2
@@ -639,7 +648,11 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                 <div
                   key="fog-teaser"
                   className="fog-zone fog-teaser"
-                  style={{ left: `calc(${teaserIdx * R}% - 4%)`, width: `calc(${R}% + 4%)` }}
+                  style={{
+                    left: `calc(${teaserIdx * R}% - 4%)`,
+                    width: `calc(${R}% + 4%)`,
+                    backgroundImage: `url(${fogTeaserArt})`
+                  }}
                 >
                   <div className="locked-center">
                     <div className="locked-card">
@@ -672,7 +685,8 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                     // Der dichte Nebel endet am Rand des tatsächlich
                     // erreichbaren Kartenausschnitts. So liegt sein Inhalt
                     // nicht unsichtbar in den später abgeschnittenen Welten.
-                    width: `calc(${R}% + 7%)`
+                    width: `calc(${R}% + 7%)`,
+                    backgroundImage: `url(${fogDenseArt})`
                   }}
                 >
                   <div className="more-worlds-hint">
