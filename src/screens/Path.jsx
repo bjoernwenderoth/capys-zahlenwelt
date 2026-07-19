@@ -353,7 +353,16 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
         currentRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
       }
     }
-    capyConsumedPassId = lastPlayedLevelId
+    // capyConsumedPassId wird bewusst NICHT hier gesetzt (siehe CapyWalker
+    // onArrive unten) – dieser Effekt kann während der noch laufenden
+    // Lauf-Animation mehrfach erneut feuern (z. B. durch einen Scroll-Event,
+    // der währenddessen viewWorldIdx ändert). Würde capyConsumedPassId schon
+    // hier "verbraucht", während capyLastLevelId noch den alten Stand zeigt
+    // (Capy ist ja noch unterwegs), fiele walkTargetIdx auf einem
+    // Zwischen-Render wieder auf die ALTE Position zurück – CapyWalker
+    // bekäme dadurch einen neuen key, würde mitten in der Animation
+    // abgebrochen und an der alten Stelle neu gemountet. Capy "vergaß" so
+    // das Weiterlaufen in eine frisch freigeschaltete Welt komplett.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed, walkTargetIdx])
 
@@ -591,6 +600,13 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
                   }
                 : () => {
                     capyLastLevelId = walkTargetLevel ? walkTargetLevel.id : null
+                    // Atomar zusammen mit capyLastLevelId setzen (siehe
+                    // Kommentar beim scrollIntoView-Effekt oben): erst wenn
+                    // Capy wirklich angekommen ist, gilt der frische Pass als
+                    // verbraucht. So bleibt walkTargetIdx während der
+                    // gesamten Lauf-Animation stabil, auch wenn Path
+                    // zwischendurch (z. B. durch Scrollen) erneut rendert.
+                    capyConsumedPassId = lastPlayedLevelId
                   }
             }
           />

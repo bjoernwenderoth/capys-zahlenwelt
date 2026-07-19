@@ -3980,16 +3980,23 @@ body {
 }
 
 @media (max-width: 480px) {
+  .quiz-screen[data-question-type='input'],
+  .quiz-screen[data-question-type='reverse'] {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
   .keypad {
-    grid-template-columns: repeat(3, clamp(72px, 22vw, 84px));
-    gap: 8px;
+    --key-size: clamp(48px, min(22vw, calc((100dvh - 390px) / 4)), 82px);
+    grid-template-columns: repeat(3, var(--key-size));
+    gap: clamp(7px, 1.8vw, 10px);
   }
 
   .key {
-    height: clamp(48px, calc((100dvh - 484px) / 4), 72px);
-    min-height: 48px;
+    width: var(--key-size);
+    height: var(--key-size);
+    min-height: 0;
     padding: 0;
-    font-size: clamp(1.3rem, calc(1.08rem + 0.65vh), 1.7rem);
+    font-size: clamp(1.3rem, calc(var(--key-size) * 0.36), 1.75rem);
     border-radius: 16px;
   }
 

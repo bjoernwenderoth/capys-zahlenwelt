@@ -355,7 +355,7 @@ export default function Quiz({ level, accent = 'blue', muted, onFinish, onExit }
 
   // ---------- Frage ----------
   return (
-    <div className="screen quiz-screen" data-accent={accent}>
+    <div className="screen quiz-screen" data-accent={accent} data-question-type={q.type}>
       <WorldBackdrop world={world} />
       <header className="quiz-header">
         <button className="quiz-back-btn" onClick={onExit} title="Zurück zum Pfad" aria-label="Zurück zum Pfad">
