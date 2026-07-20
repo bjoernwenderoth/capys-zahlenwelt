@@ -5,7 +5,7 @@ import Intro from './screens/Intro.jsx'
 import Profiles from './screens/Profiles.jsx'
 import Path from './screens/Path.jsx'
 import Quiz from './screens/Quiz.jsx'
-import { loadData, saveData, newProfile } from './utils/storage.js'
+import { loadData, saveData, newProfile, updateProfileAppearance } from './utils/storage.js'
 import { WebAudioMusicPlayer } from './utils/webAudioMusic.js'
 
 // Lautstärke der Hintergrundmusik: normal, und leiser ("geduckt"), während
@@ -168,6 +168,13 @@ export default function App() {
     setScreen('path')
   }
 
+  function editProfile(id, avatar, accent) {
+    setData((d) => ({
+      ...d,
+      profiles: d.profiles.map((p) => (p.id === id ? updateProfileAppearance(p, avatar, accent) : p))
+    }))
+  }
+
   function deleteProfile(id) {
     setData((d) => ({
       ...d,
@@ -260,6 +267,7 @@ export default function App() {
         onSelect={selectProfile}
         onCreate={createProfile}
         onDelete={deleteProfile}
+        onEdit={editProfile}
       />
     )
   }

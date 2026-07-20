@@ -50,3 +50,11 @@ export function newProfile(name, avatar, accent = 'blue') {
     progress: {} // levelId -> beste Sterne (1-3)
   }
 }
+
+export function updateProfileAppearance(profile, avatar, accent) {
+  return {
+    ...profile,
+    avatar,
+    accent: PROFILE_ACCENTS.includes(accent) ? accent : profile.accent
+  }
+}
