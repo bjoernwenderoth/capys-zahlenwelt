@@ -7,6 +7,7 @@ import {
   worldDone,
   worldUnlocked,
   SHOW_ALL_WORLDS,
+  DEV_MODE,
   ORDERED_LEVELS,
   GLOBAL_NODES,
   MAP_WIDTH,
@@ -572,7 +573,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
         <div
           className="map-clip"
           style={{
-            width: `calc(${SHOW_ALL_WORLDS ? WORLDS.length : Math.min(WORLDS.length, firstOpenWorld + 3)} * max(100vw, 166dvh))`
+            width: `calc(${DEV_MODE || SHOW_ALL_WORLDS ? WORLDS.length : Math.min(WORLDS.length, firstOpenWorld + 3)} * max(100vw, 166dvh))`
           }}
         >
         <div className="panorama">
@@ -604,7 +605,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
             if (!worldUnlocked(wi, progress)) return null
             const levelNumber = WORLDS[wi].levels.indexOf(lv) + 1
             const stars = progress[lv.id] || 0
-            const unlocked = gi === 0 || !!progress[ORDERED_LEVELS[gi - 1].id]
+            const unlocked = DEV_MODE || gi === 0 || !!progress[ORDERED_LEVELS[gi - 1].id]
             const isCurrent = gi === currentIdx
             const [x, y] = GLOBAL_NODES[gi]
             const scale = 0.8 + 0.35 * depthNorm(y)
@@ -698,7 +699,7 @@ export default function Path({ profile, muted, lastPlayedLevelId, onStartLevel, 
               v2-Dateien nutzen in der 7%-Überlappung einen abgestimmten
               Crossfade: Der Teaser blendet aus, während der dichte Nebel
               über dieselbe Strecke weich einblendet. */}
-          {FOG_ENABLED && (() => {
+          {FOG_ENABLED && !DEV_MODE && (() => {
             const teaserIdx = firstOpenWorld + 1
             const denseStart = firstOpenWorld + 2
             const R = 100 / WORLDS.length

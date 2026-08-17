@@ -23,8 +23,14 @@ export function worldDone(world, progress) {
 // sichtbar, Rest im Nebel) einfach false setzen.
 export const SHOW_ALL_WORLDS = false
 
+// Entwicklermodus: alle Welten & Level offen und kein Nebel, unabhängig vom
+// gespeicherten Fortschritt. Für den normalen Spielbetrieb wieder auf false
+// setzen. Wirkt auf worldUnlocked() hier sowie auf die Level-Freischaltung
+// und FOG_ENABLED in screens/Path.jsx.
+export const DEV_MODE = true
+
 export function worldUnlocked(index, progress) {
-  return SHOW_ALL_WORLDS || index === 0 || worldDone(WORLDS[index - 1], progress)
+  return DEV_MODE || SHOW_ALL_WORLDS || index === 0 || worldDone(WORLDS[index - 1], progress)
 }
 
 // Level-Stationen auf dem Boden jeder Szene (Koordinaten im 1000×600-Raum).
