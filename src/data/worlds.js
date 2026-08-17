@@ -27,7 +27,7 @@ export const SHOW_ALL_WORLDS = false
 // gespeicherten Fortschritt. Für den normalen Spielbetrieb wieder auf false
 // setzen. Wirkt auf worldUnlocked() hier sowie auf die Level-Freischaltung
 // und FOG_ENABLED in screens/Path.jsx.
-export const DEV_MODE = true
+export const DEV_MODE = false
 
 export function worldUnlocked(index, progress) {
   return DEV_MODE || SHOW_ALL_WORLDS || index === 0 || worldDone(WORLDS[index - 1], progress)
